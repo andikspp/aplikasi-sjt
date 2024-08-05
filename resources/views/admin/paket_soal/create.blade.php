@@ -90,14 +90,15 @@
         <form action="{{ route('store.QuestionSet') }}" method="POST">
             @csrf
             <div class="mb-3">
-                <label for="name" class="form-label">Set Name</label>
+                <label for="name" class="form-label">Nama Paket</label>
                 <input type="text" class="form-control" id="name" name="name" required>
             </div>
             <div class="mb-3">
-                <label for="time_limit" class="form-label">Time Limit (minutes)</label>
+                <label for="time_limit" class="form-label">Durasi Ujian (Menit)</label>
                 <input type="number" class="form-control" id="time_limit" name="time_limit" required>
             </div>
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" class="btn btn-danger me-2" onclick="goBack()">Kembali</button>
+            <button type="submit" class="btn btn-success">Simpan</button>
         </form>
     </div>
 </div>
@@ -109,5 +110,10 @@
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function goBack() {
+        window.history.back();
+    }
+</script>
 
 </html>

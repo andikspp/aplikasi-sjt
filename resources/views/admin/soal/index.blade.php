@@ -39,6 +39,16 @@
             background-color: #005689;
             color: white;
         }
+
+        .btn-custom {
+            background-color: #005689;
+            color: white;
+        }
+
+        .btn-custom:hover {
+            background-color: #012a41;
+            color: white;
+        }
     </style>
 </head>
 
@@ -81,13 +91,12 @@
     </nav>
 
     <div class="container mt-5">
-        <h2 class="text-center mb-4">Soal</h2>
         <div class="row align-items-center">
             <div class="col">
-                <h5>Pilih paket soal yang ingin dilihat!</h5>
+                <h3>Pilih paket soal yang ingin dilihat!</h3>
             </div>
             <div class="col-auto">
-                <a href="{{ route('create.QuestionSet') }}" class="btn btn-success">Tambah Paket Soal</a>
+                <a href="{{ route('create.QuestionSet') }}" class="btn btn-custom">Tambah Paket Soal</a>
             </div>
         </div>
         <div class="row mt-3">
@@ -97,7 +106,7 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ $set->name }}</h5>
                             <a href="{{ route('admin.detail-soal', ['question_set_id' => $set->id]) }}"
-                                class="btn btn-primary">Lihat
+                                class="btn btn-custom">Lihat
                                 Soal</a>
                         </div>
                     </div>

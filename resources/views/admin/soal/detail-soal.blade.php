@@ -70,6 +70,16 @@
             background-color: #005689;
             color: white;
         }
+
+        .btn-custom {
+            background-color: #005689;
+            color: white;
+        }
+
+        .btn-custom:hover {
+            background-color: #012a41;
+            color: white;
+        }
     </style>
 </head>
 
@@ -115,7 +125,7 @@
         <h2 class="text-center mb-4">Soal Paket: {{ $questionSet->name }}</h2>
         <div class="tambahSoal mb-3 d-flex justify-content-end">
             <a href="{{ route('admin.soal.create') }}">
-                <button class="btn btn-success">
+                <button class="btn btn-custom">
                     Tambah Soal
                 </button>
             </a>
