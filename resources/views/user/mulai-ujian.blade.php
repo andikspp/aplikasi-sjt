@@ -259,7 +259,7 @@
             document.getElementById('prevBtn').disabled = currentQuestion === 1;
             document.getElementById('nextBtn').style.display = currentQuestion === {{ count($questions) }} ? 'none' :
                 'block';
-            document.getElementById('submit-button').style.display = currentQuestion === {{ count($questions) }} ?
+            document.getElementById('finishBtn').style.display = currentQuestion === {{ count($questions) }} ?
                 'block' : 'none';
             markActive();
         }
@@ -354,11 +354,6 @@
                     document.getElementById('logout-form').submit();
                 }
             });
-        });
-
-        document.addEventListener('DOMContentLoaded', () => {
-            updateButtonState();
-            startExam();
         });
     </script>
 

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Detail Soal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
         .navbar {
             background-color: #005689;
@@ -87,7 +88,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('create.QuestionSet') }}">Paket Soal</a>
+                        <a class="nav-link" href="{{ route('admin.dashboard') }}">Dashboard</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.soal') }}">Soal</a>
@@ -96,19 +97,15 @@
                         <a class="nav-link" href="{{ route('hasil') }}">Hasil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">User</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('login') }}">
-                            Logout
-                        </a>
-                        <form id="logout-form" action="{{ '/' }}" method="POST" style="display: none;">
+                        <a class="nav-link" href="#" id="logout-btn">Logout</a>
+                        <form id="logout-form" action="{{ route('admin.logout') }}" method="POST"
+                            style="display: none;">
                             @csrf
                         </form>
                     </li>
                 </ul>
                 <a class="navbar-text" href="https://gurupauddikmas.kemdikbud.go.id/" target="_blank">
-                    Direktorat Jenderal PAUD dan Dikmas
+                    Direktorat Guru PAUD dan Dikmas
                 </a>
             </div>
         </div>
@@ -116,6 +113,13 @@
 
     <div class="container mt-5">
         <h2 class="text-center mb-4">Soal Paket: {{ $questionSet->name }}</h2>
+        <div class="tambahSoal mb-3 d-flex justify-content-end">
+            <a href="{{ route('admin.soal.create') }}">
+                <button class="btn btn-success">
+                    Tambah Soal
+                </button>
+            </a>
+        </div>
         <table class="table table-custom">
             <thead>
                 <tr>
@@ -173,6 +177,24 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
+    <script>
+        document.getElementById('logout-btn').addEventListener('click', function(event) {
+            event.preventDefault();
+
+            Swal.fire({
+                title: 'Anda yakin ingin logout?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, logout!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('logout-form').submit();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>

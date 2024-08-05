@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Soal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
         .navbar {
             background-color: #005689;
@@ -56,25 +57,24 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('admin.soal') }}">Soal</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('hasil') }}">Hasil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">User</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('login') }}">
-                            Logout
-                        </a>
-                        <form id="logout-form" action="{{ '/' }}" method="POST" style="display: none;">
+                        <a class="nav-link" href="#" id="logout-btn">Logout</a>
+                        <form id="logout-form" action="{{ route('admin.logout') }}" method="POST"
+                            style="display: none;">
                             @csrf
                         </form>
                     </li>
                 </ul>
                 <a class="navbar-text" href="https://gurupauddikmas.kemdikbud.go.id/" target="_blank">
-                    Direktorat Jenderal PAUD dan Dikmas
+                    Direktorat Guru PAUD dan Dikmas
                 </a>
             </div>
         </div>
@@ -83,6 +83,9 @@
     <div class="container mt-5">
         <h2 class="text-center mb-4">Soal</h2>
         <h5>Pilih paket soal yang ingin dilihat!</h5>
+        <div class="row">
+
+        </div>
         <div class="row mt-3">
             @foreach ($questionSets as $set)
                 <div class="col-md-4 mb-4">
@@ -107,6 +110,24 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
+    <script>
+        document.getElementById('logout-btn').addEventListener('click', function(event) {
+            event.preventDefault();
+
+            Swal.fire({
+                title: 'Anda yakin ingin logout?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, logout!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('logout-form').submit();
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
