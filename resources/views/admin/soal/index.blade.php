@@ -47,7 +47,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ route('dashboard') }}">
+            <a class="navbar-brand" href="{{ route('admin.dashboard') }}">
                 <img src="{{ asset('assets/logo kemendikbudristek.png') }}" alt="Logo" style="max-width: 100px;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -82,9 +82,13 @@
 
     <div class="container mt-5">
         <h2 class="text-center mb-4">Soal</h2>
-        <h5>Pilih paket soal yang ingin dilihat!</h5>
-        <div class="row">
-
+        <div class="row align-items-center">
+            <div class="col">
+                <h5>Pilih paket soal yang ingin dilihat!</h5>
+            </div>
+            <div class="col-auto">
+                <a href="{{ route('create.QuestionSet') }}" class="btn btn-success">Tambah Paket Soal</a>
+            </div>
         </div>
         <div class="row mt-3">
             @foreach ($questionSets as $set)

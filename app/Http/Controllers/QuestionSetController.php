@@ -21,7 +21,7 @@ class QuestionSetController extends Controller
 
         QuestionSet::create($request->all());
 
-        return redirect()->route('index.QuestionSet')->with('success', 'Question set created successfully.');
+        return redirect()->route('admin.soal')->with('success', 'Question set created successfully.');
     }
 
     public function index()
