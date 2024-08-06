@@ -59,6 +59,11 @@
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
+                            <div class="mb-3">
+                                <a href="{{ route('login.admin') }}" id="login">
+                                    Masuk
+                                </a>
+                            </div>
                             <button type="submit" class="btn btn-primary w-100 mt-3"
                                 style="background-color: #005689">Register</button>
                         </form>

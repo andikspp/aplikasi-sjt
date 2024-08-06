@@ -178,7 +178,7 @@
             </div>
             <div class="d-flex justify-content-end">
                 <button type="button" class="btn btn-danger me-2" onclick="goBack()">Kembali</button>
-                <button type="submit" class="btn btn-primary me-2">Simpan Soal</button>
+                <button type="submit" class="btn btn-success me-2">Simpan</button>
             </div>
         </form>
     </div>

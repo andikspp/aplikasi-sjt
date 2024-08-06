@@ -86,9 +86,8 @@
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-12">
-                <h1>Selamat Datang, {{ $admin->username }}</h1>
+                <h3>Selamat Datang, {{ $admin->username }}</h3>
                 <div class="mt-4">
-                    <h3 class="text-center mb-3">Summary</h3>
                     <div class="row">
                         <div class="col-md-6 col-lg-4 mb-4">
                             <div class="card text-white bg-primary">

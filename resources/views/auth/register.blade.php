@@ -29,7 +29,7 @@
                     <div class="card-header text-center">
                         <img src="{{ asset('assets/logo kemendikbudristek.png') }}" alt="Logo"
                             class="img-fluid mb-3" style="max-width: 150px;">
-                        <h3>Registrasi</h3>
+                        <h3>Register</h3>
                         <h4>Situational Judgement Test</h4>
                     </div>
                     <div class="card-body">

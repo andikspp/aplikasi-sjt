@@ -63,6 +63,16 @@
             background-color: #005689;
             color: white;
         }
+
+        .btn-custom {
+            background-color: #005689;
+            color: white;
+        }
+
+        .btn-custom:hover {
+            background-color: #012a41;
+            color: white;
+        }
     </style>
 </head>
 
@@ -170,7 +180,7 @@
                 </div>
 
                 <div class="d-flex justify-content-end mt-4">
-                    <button class="btn btn-primary" id="start-exam-btn">Mulai Ujian</button>
+                    <button class="btn btn-custom" id="start-exam-btn">Mulai Ujian</button>
                 </div>
             </div>
         </div>
