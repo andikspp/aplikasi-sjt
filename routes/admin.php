@@ -20,4 +20,5 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::post('/admin/paket-soal', [QuestionSetController::class, 'store'])->name('store.QuestionSet');
     Route::get('/admin/paket-soal', [QuestionSetController::class, 'index'])->name('index.QuestionSet');
     Route::get('/admin/hasil', [AdminController::class, 'resultPage'])->name('hasil');
+    Route::get('/admin/data-peserta', [AdminController::class, 'dataPeserta'])->name('data.peserta');
 });

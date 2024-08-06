@@ -97,6 +97,9 @@
                         <a class="nav-link" href="{{ route('hasil') }}">Hasil</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('data.peserta') }}">Data Peserta</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="#" id="logout-btn">Logout</a>
                         <form id="logout-form" action="{{ route('admin.logout') }}" method="POST"
                             style="display: none;">

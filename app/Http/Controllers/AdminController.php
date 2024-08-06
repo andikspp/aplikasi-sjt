@@ -173,4 +173,14 @@ class AdminController extends Controller
 
         return redirect()->route('admin.login')->with('success', 'Admin berhasil register');
     }
+
+    public function dataPeserta()
+{
+    $results = DB::table('users')
+        ->select('name', 'email', 'telepon', 'instansi', 'role')
+        ->orderBy('name')
+        ->paginate(50);
+
+    return view('admin.user', compact('results'));
+}
 }
