@@ -70,7 +70,7 @@
                         <a class="nav-link" href="{{ route('admin.dashboard') }}">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.soal') }}">Soal</a>
+                        <a class="nav-link" href="{{ route('admin.soal') }}">Paket Soal</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('hasil') }}">Hasil</a>
