@@ -162,34 +162,7 @@
                     </div>
                 </div>
 
-                <div class="card mt-4">
-                    <div class="card-header">
-                        Riwayat Ujian
-                    </div>
-                    <div class="card-body">
-                        @if ($quizAttempt)
-                            <div class="info-item">
-                                <i class="fas fa-calendar-alt"></i>
-                                <p>Waktu Mulai Ujian: {{ $startedAt->format('d-m-Y, H:i:s') }} WIB</p>
-                            </div>
-                            <div class="info-item">
-                                <i class="fas fa-calendar-alt"></i>
-                                <p>Waktu Selesai Ujian: {{ $endedAt->format('d-m-Y, H:i:s') }} WIB</p>
-                            </div>
-                        @else
-                            <p>Belum ada riwayat ujian.</p>
-                        @endif
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-end mt-4">
-                    <button class="btn btn-custom" id="start-exam-btn">Mulai Ujian</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
+                   <!-- Footer -->
     <footer class="text-center text-lg-start mt-5">
         <div class="text-center p-3">
             &copy; 2024 Guru PAUD Dikmas
