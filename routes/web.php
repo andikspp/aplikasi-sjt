@@ -8,6 +8,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\QuestionSetController;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/exam', [ExamController::class, 'index'])->name('exam');
     Route::get('/start-exam', [ExamController::class, 'examPage'])->name('examPage');
     Route::post('/submit-exam', [ExamController::class, 'submitExam'])->name('submitExam');
+    Route::get('/profil', [ProfileController::class, 'index'])->name('profil');
 });
 
 Route::get('/verify-email/{token}', [EmailVerificationController::class, 'verify'])->name('verifyEmail');

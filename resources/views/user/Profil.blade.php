@@ -143,7 +143,7 @@
                                     alt="Profile Picture" 
                                     class="img-fluid rounded-circle" 
                                     style="max-width: 150px; max-height: 150px;">
-                                <form action="{{ route('update.profile.picture') }}" method="POST" enctype="multipart/form-data" class="mt-2">
+                                <form action="#" method="POST" enctype="multipart/form-data" class="mt-2">
                                     @csrf
                                     <div class="mb-2">
                                         <input type="file" name="profile_picture" id="profile_picture" class="form-control form-control-sm">

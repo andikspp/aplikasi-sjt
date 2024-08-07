@@ -93,7 +93,7 @@
                         <a class="nav-link" href="#">FAQ</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Profil</a>
+                        <a class="nav-link" href="{{ route('profil') }}">Profil</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" id="logout-btn">Logout</a>
