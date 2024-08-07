@@ -131,33 +131,40 @@
             <div class="col-md-12">
                 <h3>Selamat Datang, {{ $user->name }}</h3>
 
-                <!-- Example Content Section -->
-                {{-- <div class="card mt-4">
-                    <div class="card-header">
-                        Ujian Aktif
-                    </div>
-                    <div class="card-body">
-                        <p>Tidak ada ujian yang aktif.</p>
-                    </div>
-                </div> --}}
-
                 <!-- Another Content Section -->
                 <div class="card mt-4">
                     <div class="card-header">
                         Informasi Pribadi
                     </div>
                     <div class="card-body">
-                        <div class="info-item">
-                            <i class="fas fa-user"></i>
-                            <p>Nama: {{ $user->name }} ({{ $user->role }})</p>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-envelope"></i>
-                            <p>Email: {{ $user->email }}</p>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-phone"></i>
-                            <p>Nomor Telepon: {{ $user->telepon }}</p>
+                        <div class="row">
+                            <div class="col-md-3 text-center mb-3">
+                                <img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('assets/default-profile.png') }}" 
+                                    alt="Profile Picture" 
+                                    class="img-fluid rounded-circle" 
+                                    style="max-width: 150px; max-height: 150px;">
+                                <form action="{{ route('update.profile.picture') }}" method="POST" enctype="multipart/form-data" class="mt-2">
+                                    @csrf
+                                    <div class="mb-2">
+                                        <input type="file" name="profile_picture" id="profile_picture" class="form-control form-control-sm">
+                                    </div>
+                                    <button type="submit" class="btn btn-sm btn-custom">Update Foto</button>
+                                </form>
+                            </div>
+                            <div class="col-md-9">
+                                <div class="info-item">
+                                    <i class="fas fa-user"></i>
+                                    <p>Nama: {{ $user->name }} ({{ $user->role }})</p>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-envelope"></i>
+                                    <p>Email: {{ $user->email }}</p>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fas fa-phone"></i>
+                                    <p>Nomor Telepon: {{ $user->telepon }}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
