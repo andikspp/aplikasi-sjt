@@ -3,11 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Question;
 use App\Models\Answer;
 use App\Models\QuestionSet;
 use Illuminate\Support\Facades\Auth;
 use App\Models\QuizAttempt;
+use App\Models\UserAnswer;
+use Illuminate\Support\Facades\DB;
 
 class ExamController extends Controller
 {
@@ -37,8 +38,19 @@ class ExamController extends Controller
         $questionSet = QuestionSet::with('questions.answers')->find($user->question_set_id);
         $questions = $questionSet->questions->toArray(); // Ubah ke array untuk pengacakan
 
-        // Acak urutan soal
-        shuffle($questions);
+        if (!session()->has('question_order')) {
+            // Acak urutan soal
+            shuffle($questions);
+
+            // Simpan urutan soal yang sudah diacak di sesi
+            session(['question_order' => $questions]);
+        } else {
+            // Ambil urutan soal dari sesi
+            $questions = session('question_order');
+        }
+
+        // Ambil jawaban pengguna dari tabel user_answers
+        $userAnswers = UserAnswer::where('user_id', $user->id)->get()->keyBy('question_id');
 
         // Acak urutan jawaban di setiap soal
         foreach ($questions as &$question) {
@@ -49,8 +61,15 @@ class ExamController extends Controller
             }
         }
 
-        return view('user.mulai-ujian', compact('questions', 'questionSet'));
+        // Menyimpan urutan soal yang sudah diacak di sesi
+        session(['questions' => $questions]);
+
+        return view('user.mulai-ujian', compact('questions', 'questionSet', 'userAnswers'));
     }
+
+
+
+
 
     public function submitExam(Request $request)
     {
@@ -96,5 +115,46 @@ class ExamController extends Controller
         session()->forget('exam_started_at');
 
         return redirect()->route('dashboard')->with('success', 'Ujian telah selesai.');
+    }
+
+    public function saveAnswer(Request $request)
+    {
+        // Validasi data request
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'question_id' => 'required|exists:answers,question_id',
+            'answer_id' => 'required|exists:answers,id',
+        ]);
+
+        // Simpan jawaban ke database
+        UserAnswer::updateOrCreate(
+            [
+                'user_id' => $request->user_id,
+                'question_id' => $request->question_id,
+            ],
+            ['answer_id' => $request->answer_id]
+        );
+
+        return response()->json(['message' => 'Answer saved successfully.']);
+    }
+
+    public function getQuestionId($answerId)
+    {
+        $answer = Answer::find($answerId);
+
+        if (!$answer) {
+            return response()->json(['message' => 'Answer not found'], 404);
+        }
+
+        return response()->json(['question_id' => $answer->question_id]);
+    }
+
+    public function getUserAnswers()
+    {
+        $userId = auth()->user()->id;
+        $answers = DB::table('user_answers')
+            ->where('user_id', $userId)
+            ->get(['question_id', 'answer_id']);
+        return response()->json($answers);
     }
 }

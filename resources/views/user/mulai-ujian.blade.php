@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Situational Judgement Test</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.min.css" rel="stylesheet">
@@ -200,18 +200,59 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script>
         let currentQuestion = 1;
         let timer;
         let totalTime = {{ $questionSet->time_limit }} * 60;
         let examEnded = false;
+        let questionOrder = [];
+
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
 
         document.addEventListener('DOMContentLoaded', function() {
             startExam();
             setupEventListeners();
+
+            // Ambil nomor soal dari localStorage jika ada
+            const savedQuestionNumber = localStorage.getItem('currentQuestion');
+            if (savedQuestionNumber) {
+                currentQuestion = parseInt(savedQuestionNumber, 10);
+            }
+
             showQuestion(currentQuestion);
             updateButtonState();
+
+            fetch('/get-question-order')
+                .then(response => response.json())
+                .then(data => {
+                    questionOrder = data;
+                    showQuestion(currentQuestion);
+                    updateButtonState();
+                });
+
+            // Ambil data jawaban dari server
+            fetch('/get-user-answers')
+                .then(response => response.json())
+                .then(data => {
+                    // Isi jawaban ke dalam radio button berdasarkan ID pertanyaan dan jawaban
+                    data.forEach(answer => {
+                        const answerElement = document.querySelector(
+                            `input[name="answers[${answer.question_id}]"][value="${answer.answer_id}"]`
+                        );
+                        if (answerElement) {
+                            answerElement.checked = true;
+                            document.getElementById(`question-number-${answer.question_id}`).classList
+                                .add('answered');
+                        }
+                    });
+                    markActive();
+                });
+
         });
 
         function startExam() {
@@ -235,6 +276,25 @@
             }, 1000);
         }
 
+        function saveAnswer(answerId, questionId) {
+            console.log('Saving answer with questionId:', questionId);
+            $.ajax({
+                url: '/save-answer',
+                method: 'POST',
+                data: {
+                    user_id: {{ auth()->user()->id }},
+                    answer_id: answerId,
+                    question_id: questionId
+                },
+                success: function(response) {
+                    console.log('Answer saved successfully.');
+                },
+                error: function(xhr) {
+                    console.log('Error saving answer:', xhr.responseText);
+                }
+            });
+        }
+
         function formatTime(seconds) {
             const minutes = Math.floor(seconds / 60);
             const secs = seconds % 60;
@@ -245,14 +305,32 @@
             document.querySelectorAll('.question-card').forEach(card => card.style.display = 'none');
             document.getElementById(`question-${questionNumber}`).style.display = 'block';
             currentQuestion = questionNumber;
+            localStorage.setItem('currentQuestion', currentQuestion); // Simpan nomor soal ke localStorage
             updateButtonState();
             markAnswered();
         }
 
         function changeQuestion(step) {
+            saveCurrentAnswer();
             let nextQuestion = currentQuestion + step;
             if (nextQuestion < 1 || nextQuestion > {{ count($questions) }}) return;
             showQuestion(nextQuestion);
+        }
+
+        function saveCurrentAnswer() {
+            const selectedInput = document.querySelector(`input[name="answers[${currentQuestion}]"]:checked`);
+            if (selectedInput) {
+                const answerId = selectedInput.value;
+                // Ambil questionId dari server menggunakan answerId
+                fetch(`/get-question-id/${answerId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const questionId = data.question_id;
+                        // Simpan jawaban ke server
+                        saveAnswer(answerId, questionId);
+                    })
+                    .catch(error => console.error('Error fetching question ID:', error));
+            }
         }
 
         function updateButtonState() {
@@ -265,13 +343,16 @@
         }
 
         function markActive() {
-            document.querySelectorAll('.question-number').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.question-number').forEach((element) => {
+                element.classList.remove('active');
+            });
             document.getElementById(`question-number-${currentQuestion}`).classList.add('active');
         }
 
         function checkCompletion() {
             if (examEnded) {
                 document.getElementById('quizForm').submit();
+                localStorage.removeItem('currentQuestion'); // Hapus nomor soal dari localStorage
                 return;
             }
 
@@ -290,6 +371,7 @@
                 });
             } else {
                 document.getElementById('quizForm').submit();
+                localStorage.removeItem('currentQuestion'); // Hapus nomor soal dari localStorage
             }
         }
 
@@ -301,6 +383,7 @@
                 }
             }
         }
+
 
         function setupEventListeners() {
             document.querySelectorAll('.next-question').forEach(btn => {
@@ -337,7 +420,11 @@
         }
 
         document.querySelectorAll('input[type="radio"]').forEach(input => {
-            input.addEventListener('change', markAnswered);
+            input.addEventListener('change', function() {
+                // Simpan jawaban saat radio button dipilih
+                saveCurrentAnswer();
+                markAnswered();
+            });
         });
 
         document.getElementById('logout-btn').addEventListener('click', function(event) {
@@ -356,6 +443,7 @@
             });
         });
     </script>
+
 
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>

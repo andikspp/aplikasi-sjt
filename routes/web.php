@@ -8,6 +8,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\QuestionSetController;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Route;
+use Tests\Unit\ExampleTest;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +38,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/exam', [ExamController::class, 'index'])->name('exam');
     Route::get('/start-exam', [ExamController::class, 'examPage'])->name('examPage');
     Route::post('/submit-exam', [ExamController::class, 'submitExam'])->name('submitExam');
+    Route::get('/get-question-id/{answerId}', [ExamController::class, 'getQuestionId']);
+    Route::post('/save-answer', [ExamController::class, 'saveAnswer'])->name('saveAnswer');
+    Route::get('/get-user-answers', [ExamController::class, 'getUserAnswers']);
+    Route::get('/get-question-order', function () {
+        $questionOrder = session('question_order', []);
+        return response()->json($questionOrder);
+    });
+    Route::get('/exam/page/{questionIndex}', [ExamController::class, 'showPage'])->name('showPage');
 });
 
 Route::get('/verify-email/{token}', [EmailVerificationController::class, 'verify'])->name('verifyEmail');
