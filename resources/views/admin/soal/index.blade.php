@@ -102,15 +102,18 @@
                 <a href="{{ route('create.QuestionSet') }}" class="btn btn-custom">Tambah Paket Soal</a>
             </div>
         </div>
+
         <div class="row mt-3">
             @foreach ($questionSets as $set)
                 <div class="col-md-4 mb-4">
                     <div class="card">
                         <div class="card-body">
                             <h5 class="card-title">{{ $set->name }}</h5>
-                            <a href="{{ route('admin.detail-soal', ['question_set_id' => $set->id]) }}"
-                                class="btn btn-custom">Lihat
-                                Soal</a>
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ route('admin.detail-soal', ['question_set_id' => $set->id]) }}"
+                                    class="btn btn-custom">Lihat Soal</a>
+                                <button class="btn btn-danger delete-set" data-id="{{ $set->id }}">Hapus</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -128,19 +131,70 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
     <script>
-        document.getElementById('logout-btn').addEventListener('click', function(event) {
-            event.preventDefault();
+        document.addEventListener('DOMContentLoaded', function() {
+            // Logout functionality
+            document.getElementById('logout-btn').addEventListener('click', function(event) {
+                event.preventDefault();
 
-            Swal.fire({
-                title: 'Anda yakin ingin logout?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, logout!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('logout-form').submit();
-                }
+                Swal.fire({
+                    title: 'Anda yakin ingin logout?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, logout!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('logout-form').submit();
+                    }
+                });
+            });
+
+            // Delete question set functionality
+            document.querySelectorAll('.delete-set').forEach(button => {
+                button.addEventListener('click', function() {
+                    const setId = this.getAttribute('data-id');
+                    
+                    Swal.fire({
+                        title: 'Anda yakin ingin menghapus paket soal ini?',
+                        text: "Tindakan ini tidak dapat dibatalkan!",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#d33',
+                        cancelButtonColor: '#3085d6',
+                        confirmButtonText: 'Ya, hapus!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            // Send delete request
+                            fetch(`{{ route('admin.delete-question-set') }}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                body: JSON.stringify({ id: setId })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    Swal.fire(
+                                        'Terhapus!',
+                                        'Paket soal telah dihapus.',
+                                        'success'
+                                    ).then(() => {
+                                        location.reload();
+                                    });
+                                } else {
+                                    Swal.fire(
+                                        'Error!',
+                                        'Terjadi kesalahan saat menghapus paket soal.',
+                                        'error'
+                                    );
+                                }
+                            });
+                        }
+                    });
+                });
             });
         });
     </script>
