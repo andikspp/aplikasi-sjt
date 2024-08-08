@@ -67,10 +67,6 @@ class ExamController extends Controller
         return view('user.mulai-ujian', compact('questions', 'questionSet', 'userAnswers'));
     }
 
-
-
-
-
     public function submitExam(Request $request)
     {
         $user = auth()->user();

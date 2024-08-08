@@ -8,7 +8,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\QuestionSetController;
 use App\Http\Controllers\RegisterController;
 use Illuminate\Support\Facades\Route;
-use Tests\Unit\ExampleTest;
+use App\Http\Controllers\ProfileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,6 +46,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return response()->json($questionOrder);
     });
     Route::get('/exam/page/{questionIndex}', [ExamController::class, 'showPage'])->name('showPage');
+    Route::get('/profil', [ProfileController::class, 'index'])->name('profil');
 });
 
 Route::get('/verify-email/{token}', [EmailVerificationController::class, 'verify'])->name('verifyEmail');

@@ -100,17 +100,6 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">FAQ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#" id="logout-btn">Logout</a>
-                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
-                            @csrf
-                        </form>
-                    </li>
-                </ul>
                 <a class="navbar-text" href="https://gurupauddikmas.kemdikbud.go.id/" target="_blank">
                     Direktorat Guru PAUD dan Dikmas
                 </a>
@@ -441,6 +430,11 @@
                     document.getElementById('logout-form').submit();
                 }
             });
+        });
+
+        window.addEventListener('beforeunload', function(e) {
+            e.preventDefault();
+            e.returnValue = ''; // Ini diperlukan untuk menampilkan dialog konfirmasi di beberapa browser
         });
     </script>
 
