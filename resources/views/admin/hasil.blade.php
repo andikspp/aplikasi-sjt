@@ -84,7 +84,7 @@
 
     <div class="container mt-5">
         <h2 class="text-center mb-4">Hasil Ujian</h2>
-        <a href="{{ route('export.results') }}" class="btn btn-success mb-3">Export to Excel</a>
+        <a href="#" class="btn btn-success mb-3">Export to Excel</a>
         <div class="table-responsive">
             <table class="table table-striped table-bordered">
                 <thead>

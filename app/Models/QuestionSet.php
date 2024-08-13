@@ -10,6 +10,7 @@ class QuestionSet extends Model
     use HasFactory;
 
     protected $fillable = ['name', 'time_limit', 'start_exam', 'end_exam', 'role'];
+    protected $dates = ['start_exam', 'end_exam'];
 
     public function questions()
     {

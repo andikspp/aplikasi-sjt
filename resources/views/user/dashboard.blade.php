@@ -90,6 +90,9 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="#">FAQ</a>
                     </li>
                     <li class="nav-item">
@@ -183,7 +186,7 @@
                 </div>
 
                 <div class="d-flex justify-content-end mt-4">
-                    <button class="btn btn-custom" id="start-exam-btn">Mulai Ujian</button>
+                    <a href="{{ route('exam') }}"><button class="btn btn-custom">Mulai Ujian</button></a>
                 </div>
             </div>
         </div>
@@ -196,58 +199,47 @@
         </div>
     </footer>
 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
     <script>
-        document.getElementById('start-exam-btn').addEventListener('click', function(event) {
-            event.preventDefault();
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoutBtn = document.getElementById('logout-btn');
 
-            Swal.fire({
-                title: 'Anda yakin ingin memulai ujian?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, mulai!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "{{ route('examPage') }}";
-                }
-            });
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(event) {
+                    event.preventDefault();
+
+                    Swal.fire({
+                        title: 'Anda yakin ingin logout?',
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Ya, logout!',
+                        cancelButtonText: 'Batal'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('logout-form').submit();
+                        }
+                    });
+                });
+            }
+
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Maaf',
+                    text: '{{ session('error') }}',
+                });
+            @endif
+
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: '{{ session('success') }}',
+                });
+            @endif
         });
-
-        document.getElementById('logout-btn').addEventListener('click', function(event) {
-            event.preventDefault();
-
-            Swal.fire({
-                title: 'Anda yakin ingin logout?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, logout!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('logout-form').submit();
-                }
-            });
-        });
-
-        @if (session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Maaf',
-                text: '{{ session('error') }}',
-            });
-        @endif
-
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: '{{ session('success') }}',
-            });
-        @endif
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 
 </html>

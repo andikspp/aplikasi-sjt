@@ -241,11 +241,14 @@
                     });
                     markActive();
                 });
-
         });
 
         function startExam() {
+            const examEndsAt = new Date(@json(session('exam_ends_at'))); // Ambil waktu akhir ujian dari sesi
+            let totalTime = Math.floor((examEndsAt - new Date()) / 1000); // Hitung waktu sisa dalam detik
+
             document.getElementById('timer').textContent = formatTime(totalTime);
+
             timer = setInterval(() => {
                 totalTime--;
                 document.getElementById('timer').textContent = formatTime(totalTime);
@@ -355,8 +358,8 @@
                 Swal.fire({
                     title: 'Ada soal yang belum terisi',
                     text: 'Semua soal harus terisi sebelum mengirimkan ujian.',
-                    icon: 'warning',
-                    confirmButtonText: 'Ok'
+                    icon: 'error',
+                    confirmButtonText: 'OK'
                 });
             } else {
                 document.getElementById('quizForm').submit();

@@ -22,11 +22,13 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $fillable = [
         'name',
         'email',
+        'question_set_id',
         'password',
         'email_verification_token',
         'telepon',
         'instansi',
         'role',
+        'status',
     ];
 
     /**
@@ -53,5 +55,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function answers()
     {
         return $this->hasMany(UserAnswer::class);
+    }
+
+    public function questionSet()
+    {
+        return $this->belongsTo(QuestionSet::class, 'question_set_id');
     }
 }

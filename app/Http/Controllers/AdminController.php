@@ -177,11 +177,10 @@ class AdminController extends Controller
     public function dataPeserta()
     {
         $results = DB::table('users')
-            ->select('name', 'email', 'telepon', 'instansi', 'role')
+            ->select('name', 'email', 'telepon', 'instansi', 'role', 'status')
             ->orderBy('name')
             ->paginate(50);
 
         return view('admin.user', compact('results'));
     }
 }
-

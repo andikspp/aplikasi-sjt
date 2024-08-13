@@ -14,38 +14,98 @@ class ExamController extends Controller
 {
     public function index()
     {
-        return view('user.ujian');
+        $user = Auth::user();
+
+        if ($user) {
+            $role = $user->role;
+
+            $questionSet = $user->questionSet;
+
+            if ($questionSet) {
+                $timeLimit = $questionSet->time_limit;
+                $startExam = $questionSet->start_exam;
+                $endExam = $questionSet->end_exam;
+
+                $now = now();
+                $statusMessage = null;
+
+                if ($user->status === 'not_started' && request()->query('start_exam')) {
+                    $user->status = 'on_going';
+                    $user->save();
+                }
+
+                if ($user->status === 'on_going' && request()->query('submit_exam')) {
+                    $user->status = 'submitted';
+                    $user->save();
+                }
+
+                if ($now < $startExam) {
+                    $statusMessage = 'Waktu ujian belum dimulai';
+                } elseif ($now > $endExam) {
+                    $statusMessage = 'Waktu ujian telah berakhir';
+                }
+
+                return view('user.ujian', [
+                    'role' => $role,
+                    'time_limit' => $timeLimit,
+                    'start_exam' => $startExam,
+                    'end_exam' => $endExam,
+                    'status' => $user->status,
+                    'statusMessage' => $statusMessage
+                ]);
+            } else {
+                return redirect()->back()->withErrors(['QuestionSet not found.']);
+            }
+        } else {
+            return redirect()->back()->withErrors(['User not found.']);
+        }
     }
 
     public function examPage()
     {
         $user = Auth::user();
 
-        session(['exam_started_at' => now()]);
-
+        // Cek apakah user memiliki paket soal yang ditetapkan
         if (!$user->question_set_id) {
             return redirect()->route('dashboard')->with('error', 'Anda belum ditetapkan paket soal.');
         }
 
-        // Cek apakah pengguna sudah pernah menyelesaikan ujian
-        $attempt = QuizAttempt::where('user_id', $user->id)->first();
+        // Cek status user
+        if ($user->status === 'not_started') {
+            $questionSet = QuestionSet::find($user->question_set_id);
 
-        if ($attempt) {
+            if (!$questionSet) {
+                return redirect()->route('dashboard')->with('error', 'Paket soal tidak ditemukan.');
+            }
+
+            // Jika statusnya 'not_started', atur status menjadi 'on_going' dan simpan waktu mulai ujian di sesi
+            $user->status = 'on_going';
+            $user->save();
+            session(['exam_started_at' => now()]);
+
+            $examStart = now();
+            $examEnd = $questionSet->end_exam; // Waktu berakhir dari tabel question_sets
+            session(['exam_ends_at' => $examEnd]);
+        } elseif ($user->status === 'submitted') {
             return redirect()->route('dashboard')->with('error', 'Anda sudah pernah menyelesaikan ujian.');
+        } elseif ($user->status !== 'on_going') {
+            return redirect()->route('dashboard')->with('error', 'Status ujian tidak valid.');
         }
 
         // Ambil paket soal berdasarkan question_set_id dan load relasi questions dan answers
         $questionSet = QuestionSet::with('questions.answers')->find($user->question_set_id);
+
+        if (!$questionSet) {
+            return redirect()->route('dashboard')->with('error', 'Paket soal tidak ditemukan.');
+        }
+
         $questions = $questionSet->questions->toArray(); // Ubah ke array untuk pengacakan
 
+        // Acak urutan soal jika belum diatur di sesi
         if (!session()->has('question_order')) {
-            // Acak urutan soal
             shuffle($questions);
-
-            // Simpan urutan soal yang sudah diacak di sesi
             session(['question_order' => $questions]);
         } else {
-            // Ambil urutan soal dari sesi
             $questions = session('question_order');
         }
 
@@ -67,9 +127,12 @@ class ExamController extends Controller
         return view('user.mulai-ujian', compact('questions', 'questionSet', 'userAnswers'));
     }
 
+
+
     public function submitExam(Request $request)
     {
         $user = auth()->user();
+
         $score = 0;
 
         $answers = $request->input('answers', []);
@@ -82,12 +145,16 @@ class ExamController extends Controller
 
         // Jika tidak ada jawaban, set score ke 0 dan simpan
         if (empty($answers)) {
+            $user->status = 'submitted';
+            $user->save();
             $quizAttempt = QuizAttempt::create([
                 'user_id' => $user->id,
                 'started_at' => $startedAt, // Asumsikan Anda menyimpan ini di session saat ujian dimulai
                 'ended_at' => now(),
                 'score' => 0,
             ]);
+
+            session()->forget('exam_started_at');
 
             return redirect()->route('dashboard')->with('success', 'Ujian telah selesai');
         }
@@ -99,6 +166,9 @@ class ExamController extends Controller
                 $score += $answer->score; // Sum the score of the selected answers
             }
         }
+
+        $user->status = 'submitted';
+        $user->save();
 
         // Store the quiz attempt
         $quizAttempt = QuizAttempt::create([

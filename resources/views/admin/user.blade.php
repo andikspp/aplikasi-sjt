@@ -83,49 +83,51 @@
     </nav>
 
     <div class="container mt-5">
-    <h2 class="text-center mb-4">Data Peserta</h2>
-    
-    @if($results instanceof \Illuminate\Pagination\LengthAwarePaginator)
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <thead>
-                    <tr>
-                        <th>Nama</th>
-                        <th>Email</th>
-                        <th>Telepon</th>
-                        <th>Instansi</th>
-                        <th>Role</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($results as $result)
-                        <tr>
-                            <td>{{ $result->name ?? 'N/A' }}</td>
-                            <td>{{ $result->email ?? 'N/A' }}</td>
-                            <td>{{ $result->telepon ?? 'N/A' }}</td>
-                            <td>{{ $result->instansi ?? 'N/A' }}</td>
-                            <td>{{ $result->role ?? 'N/A' }}</td> <!-- Placeholder for Paket Soal -->
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="6" class="text-center">No results found</td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+        <h2 class="text-center mb-4">Data Peserta</h2>
 
-        <!-- Pagination links -->
-        <div class="d-flex justify-content-center mt-4">
-            {{ $results->links() }}
-        </div>
-    @else
-        <div class="alert alert-warning">
-            Unexpected data type for results. Please check your controller.
-        </div>
-    @endif
-</div>
-</div>
+        @if ($results instanceof \Illuminate\Pagination\LengthAwarePaginator)
+            <div class="table-responsive">
+                <table class="table table-striped table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Nama</th>
+                            <th>Email</th>
+                            <th>Telepon</th>
+                            <th>Instansi</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($results as $result)
+                            <tr>
+                                <td>{{ $result->name ?? 'N/A' }}</td>
+                                <td>{{ $result->email ?? 'N/A' }}</td>
+                                <td>{{ $result->telepon ?? 'N/A' }}</td>
+                                <td>{{ $result->instansi ?? 'N/A' }}</td>
+                                <td>{{ $result->role ?? 'N/A' }}</td>
+                                <td>{{ $result->status }}</td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center">No results found</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination links -->
+            <div class="d-flex justify-content-center mt-4">
+                {{ $results->links() }}
+            </div>
+        @else
+            <div class="alert alert-warning">
+                Unexpected data type for results. Please check your controller.
+            </div>
+        @endif
+    </div>
+    </div>
 
     <!-- Footer -->
     <footer class="text-center text-lg-start mt-5">
