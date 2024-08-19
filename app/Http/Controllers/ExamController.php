@@ -73,6 +73,16 @@ class ExamController extends Controller
         // Cek status user
         if ($user->status === 'not_started') {
             $questionSet = QuestionSet::find($user->question_set_id);
+            $currentTime = now();
+            $examEnd = $questionSet->end_exam;
+
+            if ($currentTime->lt($questionSet->start_exam)) {
+                return redirect()->route('dashboard')->with('error', 'Maaf, ujian belum dimulai.');
+            }
+
+            if ($currentTime->gt($examEnd)) {
+                return redirect()->route('dashboard')->with('error', 'Maaf, ujian telah berakhir.');
+            }
 
             if (!$questionSet) {
                 return redirect()->route('dashboard')->with('error', 'Paket soal tidak ditemukan.');
@@ -81,11 +91,6 @@ class ExamController extends Controller
             // Jika statusnya 'not_started', atur status menjadi 'on_going' dan simpan waktu mulai ujian di sesi
             $user->status = 'on_going';
             $user->save();
-            session(['exam_started_at' => now()]);
-
-            $examStart = now();
-            $examEnd = $questionSet->end_exam; // Waktu berakhir dari tabel question_sets
-            session(['exam_ends_at' => $examEnd]);
         } elseif ($user->status === 'submitted') {
             return redirect()->route('dashboard')->with('error', 'Anda sudah pernah menyelesaikan ujian.');
         } elseif ($user->status !== 'on_going') {
@@ -95,9 +100,15 @@ class ExamController extends Controller
         // Ambil paket soal berdasarkan question_set_id dan load relasi questions dan answers
         $questionSet = QuestionSet::with('questions.answers')->find($user->question_set_id);
 
+        $currentTime = now();
+        $examStart = $questionSet->start_exam;
+        $examEnd = $questionSet->end_exam;
+
         if (!$questionSet) {
             return redirect()->route('dashboard')->with('error', 'Paket soal tidak ditemukan.');
         }
+
+
 
         $questions = $questionSet->questions->toArray(); // Ubah ke array untuk pengacakan
 
@@ -110,7 +121,7 @@ class ExamController extends Controller
         }
 
         // Ambil jawaban pengguna dari tabel user_answers
-        $userAnswers = UserAnswer::where('user_id', $user->id)->get()->keyBy('question_id');
+        // $userAnswers = UserAnswer::where('user_id', $user->id)->get()->keyBy('question_id');
 
         // Acak urutan jawaban di setiap soal
         foreach ($questions as &$question) {
@@ -121,10 +132,16 @@ class ExamController extends Controller
             }
         }
 
+        // Ambil jawaban yang sudah disimpan oleh user
+        $savedAnswers = DB::table('user_answers')
+            ->where('user_id', auth()->id())
+            ->pluck('answer_id', 'question_id')
+            ->toArray();
+
         // Menyimpan urutan soal yang sudah diacak di sesi
         session(['questions' => $questions]);
 
-        return view('user.mulai-ujian', compact('questions', 'questionSet', 'userAnswers'));
+        return view('user.mulai-ujian', compact('questions', 'questionSet', 'savedAnswers', 'examEnd'));
     }
 
 
@@ -135,28 +152,25 @@ class ExamController extends Controller
 
         $score = 0;
 
-        $answers = $request->input('answers', []);
+        $questionSet = QuestionSet::find($user->question_set_id);
 
-        $startedAt = session('exam_started_at');
-
-        if (!$startedAt) {
-            return redirect()->route('dashboard')->with('error', 'Waktu mulai ujian tidak ditemukan.');
+        if (!$questionSet) {
+            return redirect()->route('dashboard')->with('error', 'Set soal tidak ditemukan.');
         }
+
+        $answers = $request->input('answers', []);
 
         // Jika tidak ada jawaban, set score ke 0 dan simpan
         if (empty($answers)) {
             $user->status = 'submitted';
             $user->save();
             $quizAttempt = QuizAttempt::create([
-                'user_id' => $user->id,
-                'started_at' => $startedAt, // Asumsikan Anda menyimpan ini di session saat ujian dimulai
+                'user_id' => $user->id, // Asumsikan Anda menyimpan ini di session saat ujian dimulai
                 'ended_at' => now(),
                 'score' => 0,
             ]);
 
-            session()->forget('exam_started_at');
-
-            return redirect()->route('dashboard')->with('success', 'Ujian telah selesai');
+            return redirect()->route('dashboard')->with('success', 'Ujian telah selesai, terima kasih atas partisipasi anda.');
         }
 
         // Calculate score based on the user's answers
@@ -173,14 +187,11 @@ class ExamController extends Controller
         // Store the quiz attempt
         $quizAttempt = QuizAttempt::create([
             'user_id' => $user->id,
-            'started_at' => $startedAt, // Assuming you store this in session when the exam starts
             'ended_at' => now(),
             'score' => $score,
         ]);
 
-        session()->forget('exam_started_at');
-
-        return redirect()->route('dashboard')->with('success', 'Ujian telah selesai.');
+        return redirect()->route('dashboard')->with('success', 'Ujian telah selesai. Terima kasih atas partisipasi anda.');
     }
 
     public function saveAnswer(Request $request)
@@ -207,11 +218,9 @@ class ExamController extends Controller
     public function getQuestionId($answerId)
     {
         $answer = Answer::find($answerId);
-
         if (!$answer) {
             return response()->json(['message' => 'Answer not found'], 404);
         }
-
         return response()->json(['question_id' => $answer->question_id]);
     }
 

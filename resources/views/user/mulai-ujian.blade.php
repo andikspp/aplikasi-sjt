@@ -130,7 +130,8 @@
                                             <input class="form-check-input" type="radio"
                                                 name="answers[{{ $index + 1 }}]"
                                                 id="q{{ $index + 1 }}{{ $answer['id'] }}"
-                                                value="{{ $answer['id'] }}">
+                                                value="{{ $answer['id'] }}" {{-- Periksa apakah jawaban ini sudah dipilih dan tandai jika ya --}}
+                                                {{ isset($savedAnswers[$question['id']]) && $savedAnswers[$question['id']] == $answer['id'] ? 'checked' : '' }}>
                                             <label class="form-check-label"
                                                 for="q{{ $index + 1 }}{{ $answer['id'] }}">
                                                 {{ $answer['answer_text'] }}
@@ -244,7 +245,7 @@
         });
 
         function startExam() {
-            const examEndsAt = new Date(@json(session('exam_ends_at'))); // Ambil waktu akhir ujian dari sesi
+            const examEndsAt = new Date(@json($examEnd)); // Ambil waktu akhir ujian dari sesi
             let totalTime = Math.floor((examEndsAt - new Date()) / 1000); // Hitung waktu sisa dalam detik
 
             document.getElementById('timer').textContent = formatTime(totalTime);
@@ -416,22 +417,6 @@
                 // Simpan jawaban saat radio button dipilih
                 saveCurrentAnswer();
                 markAnswered();
-            });
-        });
-
-        document.getElementById('logout-btn').addEventListener('click', function(event) {
-            event.preventDefault();
-
-            Swal.fire({
-                title: 'Anda yakin ingin logout?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, logout!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('logout-form').submit();
-                }
             });
         });
 

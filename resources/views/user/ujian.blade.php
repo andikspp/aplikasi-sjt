@@ -100,7 +100,7 @@
                                 <a href="{{ route('examPage') }}" class="btn btn-primary"
                                     style="background-color: #005689;" id="submit-exam-btn">Lanjutkan Ujian</a>
                             @elseif ($status === 'submitted')
-                                <p class="card-text">Ujian sudah disubmit.</p>
+                                <p class="card-text">Ujian sudah disubmit. Terima kasih atas partisipasi anda.</p>
                             @endif
                         @endif
 

@@ -123,7 +123,6 @@ class AdminController extends Controller
                 'users.instansi as instansi',
                 'users.role',
                 'question_sets.name as question_set_name',
-                'quiz_attempts.started_at',
                 'quiz_attempts.ended_at',
                 'quiz_attempts.score'
             )

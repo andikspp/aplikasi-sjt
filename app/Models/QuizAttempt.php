@@ -11,7 +11,6 @@ class QuizAttempt extends Model
 
     protected $fillable = [
         'user_id',
-        'started_at',
         'ended_at',
         'score',
     ];

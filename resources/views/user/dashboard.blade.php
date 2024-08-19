@@ -173,10 +173,6 @@
                         @if ($quizAttempt)
                             <div class="info-item">
                                 <i class="fas fa-calendar-alt"></i>
-                                <p>Waktu Mulai Ujian: {{ $startedAt->format('d-m-Y, H:i:s') }} WIB</p>
-                            </div>
-                            <div class="info-item">
-                                <i class="fas fa-calendar-alt"></i>
                                 <p>Waktu Selesai Ujian: {{ $endedAt->format('d-m-Y, H:i:s') }} WIB</p>
                             </div>
                         @else

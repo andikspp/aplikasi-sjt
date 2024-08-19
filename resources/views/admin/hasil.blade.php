@@ -95,7 +95,6 @@
                         <th>Instansi</th>
                         <th>Role</th>
                         <th>Paket Soal</th>
-                        <th>Waktu Mulai</th>
                         <th>Waktu Selesai</th>
                         <th>Score</th>
                     </tr>
@@ -109,7 +108,6 @@
                             <td>{{ $result->instansi }}</td>
                             <td>{{ $result->role }}</td>
                             <td>{{ $result->question_set_name }}</td>
-                            <td>{{ \Carbon\Carbon::parse($result->started_at)->setTimezone('Asia/Jakarta') }}</td>
                             <td>{{ \Carbon\Carbon::parse($result->ended_at)->setTimezone('Asia/Jakarta') }}</td>
                             <td>{{ $result->score }}</td>
                         </tr>

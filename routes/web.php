@@ -41,12 +41,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/get-question-id/{answerId}', [ExamController::class, 'getQuestionId']);
     Route::post('/save-answer', [ExamController::class, 'saveAnswer'])->name('saveAnswer');
     Route::get('/get-user-answers', [ExamController::class, 'getUserAnswers']);
+    Route::get('/profil', [ProfileController::class, 'index'])->name('profil');
     Route::get('/get-question-order', function () {
         $questionOrder = session('question_order', []);
         return response()->json($questionOrder);
     });
-    Route::get('/exam/page/{questionIndex}', [ExamController::class, 'showPage'])->name('showPage');
-    Route::get('/profil', [ProfileController::class, 'index'])->name('profil');
 });
 
 Route::get('/verify-email/{token}', [EmailVerificationController::class, 'verify'])->name('verifyEmail');
