@@ -35,6 +35,17 @@
             transform: scale(1.05);
         }
 
+        .bg-custom {
+            background-color: #005689;
+            color: white;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .bg-custom:hover {
+            background-color: white;
+            color: #005689;
+        }
+
         footer {
             background-color: #005689;
             color: white;
@@ -84,49 +95,31 @@
 
     <div class="container mt-5">
         <h2 class="text-center mb-4">Data Peserta</h2>
-
-        @if ($results instanceof \Illuminate\Pagination\LengthAwarePaginator)
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Nama</th>
-                            <th>Email</th>
-                            <th>Telepon</th>
-                            <th>Instansi</th>
-                            <th>Role</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse ($results as $result)
-                            <tr>
-                                <td>{{ $result->name ?? 'N/A' }}</td>
-                                <td>{{ $result->email ?? 'N/A' }}</td>
-                                <td>{{ $result->telepon ?? 'N/A' }}</td>
-                                <td>{{ $result->instansi ?? 'N/A' }}</td>
-                                <td>{{ $result->role ?? 'N/A' }}</td>
-                                <td>{{ $result->status }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="6" class="text-center">No results found</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+        <div class="row">
+            <!-- Card for Guru -->
+            <div class="col-md-6 mb-4">
+                <a href="{{ route('data.guru') }}" class="card-link" style="text-decoration: none">
+                    <div class="card bg-custom">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Data Guru</h5>
+                            <p class="card-text">Klik untuk melihat data semua guru.</p>
+                        </div>
+                    </div>
+                </a>
             </div>
 
-            <!-- Pagination links -->
-            <div class="d-flex justify-content-center mt-4">
-                {{ $results->links() }}
+            <!-- Card for Kepala Sekolah -->
+            <div class="col-md-6 mb-4">
+                <a href="{{ route('data.kepala_sekolah') }}" class="card-link" style="text-decoration: none">
+                    <div class="card bg-custom">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Data Kepala Sekolah</h5>
+                            <p class="card-text">Klik untuk melihat data semua kepala sekolah.</p>
+                        </div>
+                    </div>
+                </a>
             </div>
-        @else
-            <div class="alert alert-warning">
-                Unexpected data type for results. Please check your controller.
-            </div>
-        @endif
-    </div>
+        </div>
     </div>
 
     <!-- Footer -->

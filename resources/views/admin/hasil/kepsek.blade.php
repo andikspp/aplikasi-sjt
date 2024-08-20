@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Hasil Ujian</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
@@ -33,6 +33,35 @@
 
         .navbar-nav .nav-item:hover {
             transform: scale(1.05);
+        }
+
+        .table th,
+        .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table th {
+            background-color: #005689;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .table td {
+            background-color: #f8f9fa;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #e9ecef;
+        }
+
+        .table-bordered {
+            border: 1px solid #dee2e6;
+        }
+
+        .table-bordered th,
+        .table-bordered td {
+            border: 1px solid #dee2e6;
         }
 
         footer {
@@ -82,56 +111,44 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-12">
-                <h3>Selamat Datang, {{ $admin->username }}</h3>
-                <div class="mt-4">
-                    <div class="row">
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card text-white bg-primary">
-                                <div class="card-header">Total Peserta</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $jumlahUser }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card text-white bg-success">
-                                <div class="card-header">Total Guru</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $jumlahGuru }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card text-white bg-warning">
-                                <div class="card-header">Total Kepala Sekolah</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $jumlahKepalaSekolah }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card text-white bg-info">
-                                <div class="card-header">Total Instansi</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $jumlahInstansi }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card text-white bg-danger">
-                                <div class="card-header">Total Peserta Submit</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $jumlahUjianSelesai }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <h2 class="text-center mb-4">Hasil Ujian Kepala Sekolah</h2>
+        <a href="#" class="btn btn-success mb-3">Export to Excel</a>
+        <div class="table-responsive">
+            <table class="table table-striped table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>Nama</th>
+                        <th>Email</th>
+                        <th>Telepon</th>
+                        <th>Instansi</th>
+                        <th>Role</th>
+                        <th>Paket Soal</th>
+                        <th>Waktu Selesai</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($results as $result)
+                        <tr>
+                            <td>
+                                <a href="{{ route('jawaban.peserta', ['userId' => $result->id]) }}">
+                                    {{ $result->name }}
+                                </a>
+                            </td>
+                            <td>{{ $result->email }}</td>
+                            <td>{{ $result->telepon }}</td>
+                            <td>{{ strtoupper($result->instansi) }}</td>
+                            <td>{{ ucwords($result->role) }}</td>
+                            <td>{{ $result->question_set_name }}</td>
+                            <td>{{ \Carbon\Carbon::parse($result->ended_at)->setTimezone('Asia/Jakarta')->format('d-m-Y H:i') }}
+                                WIB
+                            </td>
+                            <td>{{ $result->score }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -142,11 +159,11 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('logout-btn').addEventListener('click', function(event) {
-            event.preventDefault()
+            event.preventDefault();
 
             Swal.fire({
                 title: 'Anda yakin ingin logout?',

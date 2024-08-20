@@ -134,7 +134,6 @@
             <div class="col-md-12">
                 <h3>Selamat Datang, {{ $user->name }}</h3>
 
-                <!-- Example Content Section -->
                 {{-- <div class="card mt-4">
                     <div class="card-header">
                         Ujian Aktif
@@ -142,41 +141,47 @@
                     <div class="card-body">
                         <p>Tidak ada ujian yang aktif.</p>
                     </div>
-                </div> --}}
+                </div>  --}}
 
                 <!-- Another Content Section -->
-                <div class="card mt-4">
-                    <div class="card-header">
-                        Informasi Pribadi
+                <div class="card mt-4 shadow-sm">
+                    <div class="card-header text-white">
+                        <h5 class="mb-0">Informasi Pribadi</h5>
                     </div>
                     <div class="card-body">
-                        <div class="info-item">
-                            <i class="fas fa-user"></i>
-                            <p>Nama: {{ $user->name }} ({{ $user->role }})</p>
+                        <div class="info-item mb-3 d-flex align-items-center">
+                            <i class="fas fa-user fa-lg mr-3"></i>
+                            <p class="mb-0">Nama: <strong>{{ $user->name }}</strong> ({{ ucwords($user->role) }})
+                            </p>
                         </div>
-                        <div class="info-item">
-                            <i class="fas fa-envelope"></i>
-                            <p>Email: {{ $user->email }}</p>
+                        <div class="info-item mb-3 d-flex align-items-center">
+                            <i class="fas fa-envelope fa-lg mr-3"></i>
+                            <p class="mb-0">Email: <strong>{{ $user->email }}</strong></p>
                         </div>
-                        <div class="info-item">
-                            <i class="fas fa-phone"></i>
-                            <p>Nomor Telepon: {{ $user->telepon }}</p>
+                        <div class="info-item mb-3 d-flex align-items-center">
+                            <i class="fas fa-phone fa-lg mr-3"></i>
+                            <p class="mb-0">Nomor Telepon: <strong>{{ $user->telepon }}</strong></p>
+                        </div>
+                        <div class="info-item mb-3 d-flex align-items-center">
+                            <i class="fas fa-home fa-lg mr-3"></i>
+                            <p class="mb-0">Instansi: <strong>{{ strtoupper($user->instansi) }}</strong></p>
                         </div>
                     </div>
                 </div>
 
-                <div class="card mt-4">
-                    <div class="card-header">
-                        Riwayat Ujian
+                <div class="card mt-4 shadow-sm">
+                    <div class="card-header text-white">
+                        <h5 class="mb-0">Riwayat Ujian</h5>
                     </div>
                     <div class="card-body">
                         @if ($quizAttempt)
-                            <div class="info-item">
-                                <i class="fas fa-calendar-alt"></i>
-                                <p>Waktu Selesai Ujian: {{ $endedAt->format('d-m-Y, H:i:s') }} WIB</p>
+                            <div class="info-item d-flex align-items-center mb-3">
+                                <i class="fas fa-calendar-alt fa-lg mr-3"></i>
+                                <p class="mb-0">Waktu Selesai Ujian: <strong>{{ $endedAt->format('d-m-Y, H:i:s') }}
+                                        WIB</strong></p>
                             </div>
                         @else
-                            <p>Belum ada riwayat ujian.</p>
+                            <p class="text-center mb-0">Belum ada riwayat ujian.</p>
                         @endif
                     </div>
                 </div>

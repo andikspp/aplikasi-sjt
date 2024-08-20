@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
+use App\Models\UserAnswer;
 
 class AdminController extends Controller
 {
@@ -113,10 +114,16 @@ class AdminController extends Controller
 
     public function resultPage()
     {
+        return view('admin.hasil.index');
+    }
+
+    public function resultGuru()
+    {
         $results = DB::table('users')
             ->join('question_sets', 'users.question_set_id', '=', 'question_sets.id')
             ->join('quiz_attempts', 'users.id', '=', 'quiz_attempts.user_id')
             ->select(
+                'users.id',
                 'users.name',
                 'users.email',
                 'users.telepon',
@@ -126,9 +133,32 @@ class AdminController extends Controller
                 'quiz_attempts.ended_at',
                 'quiz_attempts.score'
             )
+            ->where('users.role', 'guru')
             ->get();
 
-        return view('admin.hasil', ['results' => $results]);
+        return view('admin.hasil.guru', ['results' => $results]);
+    }
+
+    public function resultKepsek()
+    {
+        $results = DB::table('users')
+            ->join('question_sets', 'users.question_set_id', '=', 'question_sets.id')
+            ->join('quiz_attempts', 'users.id', '=', 'quiz_attempts.user_id')
+            ->select(
+                'users.id',
+                'users.name',
+                'users.email',
+                'users.telepon',
+                'users.instansi as instansi',
+                'users.role',
+                'question_sets.name as question_set_name',
+                'quiz_attempts.ended_at',
+                'quiz_attempts.score'
+            )
+            ->where('users.role', 'kepala sekolah')
+            ->get();
+
+        return view('admin.hasil.kepsek', ['results' => $results]);
     }
 
     public function showQuestions($question_set_id)
@@ -180,6 +210,52 @@ class AdminController extends Controller
             ->orderBy('name')
             ->paginate(50);
 
-        return view('admin.user', compact('results'));
+        return view('admin.data_peserta.user', compact('results'));
+    }
+
+    public function dataGuru()
+    {
+        $results = DB::table('users')
+            ->select('name', 'email', 'telepon', 'instansi', 'role', 'status')
+            ->where('role', 'guru')
+            ->orderBy('name')
+            ->paginate(50);
+
+        return view('admin.data_peserta.guru', compact('results'));
+    }
+
+    public function dataKepsek()
+    {
+        $results = DB::table('users')
+            ->select('name', 'email', 'telepon', 'instansi', 'role', 'status')
+            ->where('role', 'kepala sekolah')
+            ->orderBy('name')
+            ->paginate(50);
+
+        return view('admin.data_peserta.kepsek', compact('results'));
+    }
+
+    public function jawabanPeserta($userId)
+    {
+        $userAnswers = UserAnswer::where('user_id', $userId)
+            ->with(['question', 'answer'])
+            ->get();
+
+        $answers = DB::table('user_answers')
+            ->join('questions', 'user_answers.question_id', '=', 'questions.id')
+            ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
+            ->join('users', 'user_answers.user_id', '=', 'users.id')
+            ->select(
+                'users.name as user_name',
+                'questions.question_text',
+                'answers.answer_text',
+                'answers.score'
+            )
+            ->where('user_answers.user_id', $userId)
+            ->get();
+
+        $userName = $answers->first()->user_name ?? 'Unknown';
+
+        return view('admin.detail-jawaban', compact('answers', 'userName'));
     }
 }

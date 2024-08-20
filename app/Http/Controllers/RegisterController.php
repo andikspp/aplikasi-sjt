@@ -43,7 +43,7 @@ class RegisterController extends Controller
             'role' => $request->role,
         ]);
 
-        $questionSets = QuestionSet::all();
+        $questionSets = QuestionSet::where('role', $request->role)->get();
 
         $randomQuestionSet = $questionSets->random();
 

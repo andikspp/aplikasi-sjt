@@ -125,7 +125,7 @@
     </nav>
 
     <div class="container mt-5">
-        <h2 class="text-center mb-4">Soal Paket: {{ $questionSet->name }}</h2>
+        <h2 class="text-center mb-4">{{ $questionSet->name }}</h2>
         <div class="tambahSoal mb-3 d-flex justify-content-end">
             <a href="{{ route('admin.soal.create') }}">
                 <button class="btn btn-custom">

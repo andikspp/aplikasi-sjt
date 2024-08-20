@@ -21,4 +21,9 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::get('/admin/paket-soal', [QuestionSetController::class, 'index'])->name('index.QuestionSet');
     Route::get('/admin/hasil', [AdminController::class, 'resultPage'])->name('hasil');
     Route::get('/admin/data-peserta', [AdminController::class, 'dataPeserta'])->name('data.peserta');
+    Route::get('/jawaban-peserta/{userId}', [AdminController::class, 'jawabanPeserta'])->name('jawaban.peserta');
+    Route::get('/admin/data-guru', [AdminController::class, 'dataGuru'])->name('data.guru');
+    Route::get('/admin/data-kepsek', [AdminController::class, 'dataKepsek'])->name('data.kepala_sekolah');
+    Route::get('/admin/hasil-guru', [AdminController::class, 'resultGuru'])->name('hasil.guru');
+    Route::get('/admin/hasil-kepsek', [AdminController::class, 'resultKepsek'])->name('hasil.kepala_sekolah');
 });

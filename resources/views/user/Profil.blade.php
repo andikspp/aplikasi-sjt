@@ -90,10 +90,13 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link" href="#">FAQ</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="#">Profil</a>
+                        <a class="nav-link" href="{{ route('profil') }}">Profil</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" id="logout-btn">Logout</a>
@@ -139,14 +142,14 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-3 text-center mb-3">
-                                <img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('assets/default-profile.png') }}" 
-                                    alt="Profile Picture" 
-                                    class="img-fluid rounded-circle" 
+                                <img src="{{ $user->profile_picture ? asset('storage/' . $user->profile_picture) : asset('assets/default-profile.png') }}"
+                                    alt="Profile Picture" class="img-fluid rounded-circle"
                                     style="max-width: 150px; max-height: 150px;">
                                 <form action="#" method="POST" enctype="multipart/form-data" class="mt-2">
                                     @csrf
                                     <div class="mb-2">
-                                        <input type="file" name="profile_picture" id="profile_picture" class="form-control form-control-sm">
+                                        <input type="file" name="profile_picture" id="profile_picture"
+                                            class="form-control form-control-sm">
                                     </div>
                                     <button type="submit" class="btn btn-sm btn-custom">Update Foto</button>
                                 </form>
@@ -154,7 +157,7 @@
                             <div class="col-md-9">
                                 <div class="info-item">
                                     <i class="fas fa-user"></i>
-                                    <p>Nama: {{ $user->name }} ({{ $user->role }})</p>
+                                    <p>Nama: {{ $user->name }} ({{ ucwords($user->role) }})</p>
                                 </div>
                                 <div class="info-item">
                                     <i class="fas fa-envelope"></i>
@@ -164,70 +167,74 @@
                                     <i class="fas fa-phone"></i>
                                     <p>Nomor Telepon: {{ $user->telepon }}</p>
                                 </div>
+                                <div class="info-item">
+                                    <i class="fas fa-home"></i>
+                                    <p>Instansi: {{ strtoupper($user->instansi) }}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-                   <!-- Footer -->
-                <footer class="text-center text-lg-start mt-5">
-                    <div class="text-center p-3">
-                        &copy; 2024 Guru PAUD Dikmas
-                    </div>
-                </footer>
+        <!-- Footer -->
+        <footer class="text-center text-lg-start mt-5">
+            <div class="text-center p-3">
+                &copy; 2024 Guru PAUD Dikmas
+            </div>
+        </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
-    <script>
-        document.getElementById('start-exam-btn').addEventListener('click', function(event) {
-            event.preventDefault();
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
+        <script>
+            document.getElementById('start-exam-btn').addEventListener('click', function(event) {
+                event.preventDefault();
 
-            Swal.fire({
-                title: 'Anda yakin ingin memulai ujian?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, mulai!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = "{{ route('examPage') }}";
-                }
+                Swal.fire({
+                    title: 'Anda yakin ingin memulai ujian?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, mulai!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('examPage') }}";
+                    }
+                });
             });
-        });
 
-        document.getElementById('logout-btn').addEventListener('click', function(event) {
-            event.preventDefault();
+            document.getElementById('logout-btn').addEventListener('click', function(event) {
+                event.preventDefault();
 
-            Swal.fire({
-                title: 'Anda yakin ingin logout?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, logout!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('logout-form').submit();
-                }
+                Swal.fire({
+                    title: 'Anda yakin ingin logout?',
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Ya, logout!',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        document.getElementById('logout-form').submit();
+                    }
+                });
             });
-        });
 
-        @if (session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Maaf',
-                text: '{{ session('error') }}',
-            });
-        @endif
+            @if (session('error'))
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Maaf',
+                    text: '{{ session('error') }}',
+                });
+            @endif
 
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil',
-                text: '{{ session('success') }}',
-            });
-        @endif
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+            @if (session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Berhasil',
+                    text: '{{ session('success') }}',
+                });
+            @endif
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 

@@ -7,6 +7,8 @@
     <title>Soal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
     <style>
         .navbar {
             background-color: #005689;
@@ -48,6 +50,12 @@
         .btn-custom:hover {
             background-color: #012a41;
             color: white;
+        }
+
+        .bg-custom {
+            background-color: #005689;
+            color: white;
+            ;
         }
     </style>
 </head>
@@ -96,7 +104,7 @@
     <div class="container mt-5">
         <div class="row align-items-center">
             <div class="col">
-                <h3>Pilih paket soal yang ingin dilihat!</h3>
+                <h3>Paket Soal</h3>
             </div>
             <div class="col-auto">
                 <a href="{{ route('create.QuestionSet') }}" class="btn btn-custom">Tambah Paket Soal</a>
@@ -107,12 +115,28 @@
             @foreach ($questionSets as $set)
                 <div class="col-md-4 mb-4">
                     <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $set->name }}</h5>
-                            <div class="d-flex justify-content-between">
-                                <a href="{{ route('admin.detail-soal', ['question_set_id' => $set->id]) }}"
-                                    class="btn btn-custom">Lihat Soal</a>
-                                <button class="btn btn-danger delete-set" data-id="{{ $set->id }}">Hapus</button>
+                        <div class="card border-light shadow-sm rounded-lg mb-4">
+                            <div class="card-body">
+                                <h5 class="card-title d-flex justify-content-between align-items-center">
+                                    {{ $set->name }}
+                                    <span class="badge bg-custom">{{ ucwords($set->role) }}</span>
+                                </h5>
+                                <p class="card-text text-muted mb-3">
+                                    <i class="bi bi-calendar-event"></i> Mulai Ujian:
+                                    {{ \Carbon\Carbon::parse($set->start_exam)->format('d-m-Y H:i') }} WIB<br>
+                                    <i class="bi bi-calendar-check"></i> Selesai Ujian:
+                                    {{ \Carbon\Carbon::parse($set->end_exam)->format('d-m-Y H:i') }} WIB<br>
+                                    <i class="bi bi-file-text"></i> Jumlah Soal: {{ $set->questions->count() }}
+                                </p>
+                                <div class="d-flex justify-content-between">
+                                    <a href="{{ route('admin.detail-soal', ['question_set_id' => $set->id]) }}"
+                                        class="btn btn-custom">
+                                        <i class="bi bi-eye"></i> Lihat Soal
+                                    </a>
+                                    <button class="btn btn-danger delete-set" data-id="{{ $set->id }}">
+                                        <i class="bi bi-trash"></i> Hapus
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>

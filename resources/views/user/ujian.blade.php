@@ -7,6 +7,8 @@
     <title>Ujian Aktif</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <style>
         .navbar-custom {
             background-color: #005689;
@@ -33,6 +35,26 @@
 
         .navbar-nav .nav-item:hover {
             transform: scale(1.05);
+        }
+
+        .card {
+            border-radius: 10px;
+            /* Membuat sudut kartu lebih membulat */
+        }
+
+        .btn-primary {
+            border-radius: 25px;
+            /* Membuat sudut tombol lebih membulat */
+        }
+
+        .btn-warning {
+            border-radius: 25px;
+            /* Membuat sudut tombol lebih membulat */
+        }
+
+        .alert-info {
+            border-radius: 5px;
+            /* Membuat sudut alert lebih membulat */
         }
 
         footer {
@@ -82,30 +104,49 @@
         <div class="row">
             {{-- @foreach ($ujianAktif as $ujian) --}}
             <div class="col-md-12">
-                <div class="card mb-4">
+                <div class="card mb-4 shadow-sm">
                     <div class="card-body text-center">
-                        <h5 class="card-title">Situasional Judgement Test ({{ $role }})</h5>
-                        <p class="card-text">Tanggal Mulai: {{ $start_exam }}</p>
-                        <p class="card-text">Tanggal Akhir: {{ $end_exam }}</p>
-                        <p class="card-text">Waktu: {{ $time_limit }} Menit</p>
-                        <p class="card-text">Status: {{ ucfirst($status) }}</p>
+                        <h5 class="card-title mb-3">
+                            <i class="fas fa-clipboard-list mr-2"></i> Situasional Judgement Test ({{ ucwords($role) }})
+                        </h5>
+                        <p class="card-text text-muted mb-2">
+                            <i class="fas fa-calendar-day mr-2"></i> Tanggal Mulai:
+                            <strong>{{ \Carbon\Carbon::parse($start_exam)->format('d-m-Y H:i') }} WIB</strong>
+                        </p>
+                        <p class="card-text text-muted mb-2">
+                            <i class="fas fa-calendar-alt mr-2"></i> Tanggal Akhir:
+                            <strong>{{ \Carbon\Carbon::parse($end_exam)->format('d-m-Y H:i') }} WIB</strong>
+                        </p>
+                        <p class="card-text text-muted mb-4">
+                            <i class="fas fa-info-circle mr-2"></i> Status:
+                            <strong>{{ ucwords(str_replace('_', ' ', $status)) }}</strong>
+                        </p>
 
                         @if ($statusMessage)
-                            <p class="card-text">{{ $statusMessage }}</p>
+                            <div class="alert alert-info mb-4" role="alert">
+                                <i class="fas fa-info-circle mr-2"></i>{{ $statusMessage }}
+                            </div>
                         @else
                             @if ($status === 'not_started')
-                                <a href="{{ route('examPage') }}" class="btn btn-primary"
-                                    style="background-color: #005689;" id="start-exam-btn">Mulai Ujian</a>
+                                <a href="{{ route('examPage') }}" class="btn btn-primary btn-lg"
+                                    style="background-color: #005689; border-color: #004a6b;" id="start-exam-btn">
+                                    <i class="fas fa-play mr-2"></i>Mulai Ujian
+                                </a>
                             @elseif ($status === 'on_going')
-                                <a href="{{ route('examPage') }}" class="btn btn-primary"
-                                    style="background-color: #005689;" id="submit-exam-btn">Lanjutkan Ujian</a>
+                                <a href="{{ route('examPage') }}" class="btn btn-warning btn-lg"
+                                    style="background-color: #f1c40f; border-color: #d4ac0d;" id="submit-exam-btn">
+                                    <i class="fas fa-arrow-right mr-2"></i>Lanjutkan Ujian
+                                </a>
                             @elseif ($status === 'submitted')
-                                <p class="card-text">Ujian sudah disubmit. Terima kasih atas partisipasi anda.</p>
+                                <p class="card-text text-success mt-3">
+                                    <i class="fas fa-check-circle mr-2"></i>Ujian sudah disubmit. Terima kasih atas
+                                    partisipasi anda.
+                                </p>
                             @endif
                         @endif
-
                     </div>
                 </div>
+
             </div>
             {{-- @endforeach --}}
         </div>

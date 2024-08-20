@@ -35,6 +35,35 @@
             transform: scale(1.05);
         }
 
+        .table th,
+        .table td {
+            vertical-align: middle;
+            text-align: center;
+        }
+
+        .table th {
+            background-color: #005689;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        .table td {
+            background-color: #f8f9fa;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #e9ecef;
+        }
+
+        .table-bordered {
+            border: 1px solid #dee2e6;
+        }
+
+        .table-bordered th,
+        .table-bordered td {
+            border: 1px solid #dee2e6;
+        }
+
         footer {
             background-color: #005689;
             color: white;
@@ -43,7 +72,7 @@
 </head>
 
 <body>
-    <!-- Navbar -->
+    {{-- navbar --}}
     <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ route('admin.dashboard') }}">
@@ -83,38 +112,31 @@
     </nav>
 
     <div class="container mt-5">
-        <h2 class="text-center mb-4">Hasil Ujian</h2>
-        <a href="#" class="btn btn-success mb-3">Export to Excel</a>
-        <div class="table-responsive">
-            <table class="table table-striped table-bordered">
-                <thead>
+        <h2 class="text-center">Detail Jawaban {{ $userName }}</h2>
+        <table class="table table-striped table-bordered table-hover mt-4">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Nomor</th>
+                    <th>Pertanyaan</th>
+                    <th>Jawaban</th>
+                    <th>Skor</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse ($answers as $index => $answer)
                     <tr>
-                        <th>Nama</th>
-                        <th>Email</th>
-                        <th>Telepon</th>
-                        <th>Instansi</th>
-                        <th>Role</th>
-                        <th>Paket Soal</th>
-                        <th>Waktu Selesai</th>
-                        <th>Score</th>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $answer->question_text }}</td>
+                        <td>{{ $answer->answer_text }}</td>
+                        <td>{{ $answer->score }}</td>
                     </tr>
-                </thead>
-                <tbody>
-                    @foreach ($results as $result)
-                        <tr>
-                            <td>{{ $result->name }}</td>
-                            <td>{{ $result->email }}</td>
-                            <td>{{ $result->telepon }}</td>
-                            <td>{{ $result->instansi }}</td>
-                            <td>{{ $result->role }}</td>
-                            <td>{{ $result->question_set_name }}</td>
-                            <td>{{ \Carbon\Carbon::parse($result->ended_at)->setTimezone('Asia/Jakarta') }}</td>
-                            <td>{{ $result->score }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
+                @empty
+                    <tr>
+                        <td colspan="4" class="text-center">Belum ada jawaban.</td>
+                    </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 
     <!-- Footer -->
@@ -126,23 +148,4 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById('logout-btn').addEventListener('click', function(event) {
-            event.preventDefault();
-
-            Swal.fire({
-                title: 'Anda yakin ingin logout?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, logout!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('logout-form').submit();
-                }
-            });
-        });
-    </script>
 </body>
-
-</html>

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+    <title>Hasil Ujian</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.min.css" rel="stylesheet">
     <style>
@@ -33,6 +33,17 @@
 
         .navbar-nav .nav-item:hover {
             transform: scale(1.05);
+        }
+
+        .bg-custom {
+            background-color: #005689;
+            color: white;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .bg-custom:hover {
+            background-color: white;
+            color: #005689;
         }
 
         footer {
@@ -82,55 +93,31 @@
         </div>
     </nav>
 
-    <!-- Main Content -->
     <div class="container mt-5">
+        <h2 class="text-center mb-4">Hasil Ujian</h2>
         <div class="row">
-            <div class="col-md-12">
-                <h3>Selamat Datang, {{ $admin->username }}</h3>
-                <div class="mt-4">
-                    <div class="row">
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card text-white bg-primary">
-                                <div class="card-header">Total Peserta</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $jumlahUser }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card text-white bg-success">
-                                <div class="card-header">Total Guru</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $jumlahGuru }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card text-white bg-warning">
-                                <div class="card-header">Total Kepala Sekolah</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $jumlahKepalaSekolah }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card text-white bg-info">
-                                <div class="card-header">Total Instansi</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $jumlahInstansi }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card text-white bg-danger">
-                                <div class="card-header">Total Peserta Submit</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $jumlahUjianSelesai }}</h5>
-                                </div>
-                            </div>
+            <!-- Card for Guru -->
+            <div class="col-md-6 mb-4">
+                <a href="{{ route('hasil.guru') }}" class="card-link" style="text-decoration: none">
+                    <div class="card bg-custom">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Data Hasil Ujian Guru</h5>
+                            <p class="card-text">Klik untuk melihat data ujian semua guru.</p>
                         </div>
                     </div>
-                </div>
+                </a>
+            </div>
+
+            <!-- Card for Kepala Sekolah -->
+            <div class="col-md-6 mb-4">
+                <a href="{{ route('hasil.kepala_sekolah') }}" class="card-link" style="text-decoration: none">
+                    <div class="card bg-custom">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">Data Hasil Ujian Kepala Sekolah</h5>
+                            <p class="card-text">Klik untuk melihat data ujian semua kepala sekolah.</p>
+                        </div>
+                    </div>
+                </a>
             </div>
         </div>
     </div>
@@ -142,11 +129,11 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.getElementById('logout-btn').addEventListener('click', function(event) {
-            event.preventDefault()
+            event.preventDefault();
 
             Swal.fire({
                 title: 'Anda yakin ingin logout?',

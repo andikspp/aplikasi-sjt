@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('question_sets', function (Blueprint $table) {
-            $table->enum('role', ['guru', 'kepala_sekolah'])->default('guru')->after('end_exam');
+            $table->dropColumn('role');
         });
     }
 
@@ -22,7 +22,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('question_sets', function (Blueprint $table) {
-            $table->dropColumn('role');
+            $table->enum('role', ['guru', 'kepala_sekolah'])->default('guru')->after('end_exam');
         });
     }
 };
