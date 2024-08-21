@@ -53,6 +53,9 @@
                                         class="btn btn-custom">
                                         <i class="bi bi-eye"></i> Lihat Soal
                                     </a>
+                                    <a href="{{ route('admin.edit-soal', ['question_set_id' => $set->id]) }}" class="btn btn-warning text-white">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
                                     <button class="btn btn-danger delete-set" data-id="{{ $set->id }}">
                                         <i class="bi bi-trash"></i> Hapus
                                     </button>
