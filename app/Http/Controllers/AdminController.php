@@ -259,17 +259,11 @@ class AdminController extends Controller
         return view('admin.hasil.detail-jawaban', compact('answers', 'userName'));
     }
 
-    public function editSoal($question_set_id)
-{
-    $questionSet = QuestionSet::findOrFail($question_set_id);
-    $question = $questionSet->questions; // Mengambil semua pertanyaan terkait paket soal
+    public function editPaketSoal($question_set_id)
+    {
+        $questionSet = QuestionSet::findOrFail($question_set_id);
+        $question = $questionSet->questions;
 
-    // Pastikan Anda memeriksa apakah $questions memiliki elemen sebelum mengaksesnya
-    if ($question->isEmpty()) {
-        // Tangani kasus ketika tidak ada pertanyaan
-        return redirect()->route('admin.soal.index')->with('error', 'Tidak ada pertanyaan untuk paket soal ini.');
+        return view('admin.paket_soal.edit', compact('questionSet', 'question'));
     }
-
-    return view('admin.soal.edit-soal', compact('questionSet', 'question'));
-}
 }

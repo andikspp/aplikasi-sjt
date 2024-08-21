@@ -53,7 +53,8 @@
                                         class="btn btn-custom">
                                         <i class="bi bi-eye"></i> Lihat Soal
                                     </a>
-                                    <a href="{{ route('admin.edit-soal', ['question_set_id' => $set->id]) }}" class="btn btn-warning text-white">
+                                    <a href="{{ route('admin.editPaketSoal', ['question_set_id' => $set->id]) }}"
+                                        class="btn btn-warning text-white">
                                         <i class="bi bi-pencil"></i> Edit
                                     </a>
                                     <button class="btn btn-danger delete-set" data-id="{{ $set->id }}">
@@ -68,6 +69,7 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Delete question set functionality
