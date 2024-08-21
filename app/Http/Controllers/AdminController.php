@@ -256,6 +256,6 @@ class AdminController extends Controller
 
         $userName = $answers->first()->user_name ?? 'Unknown';
 
-        return view('admin.detail-jawaban', compact('answers', 'userName'));
+        return view('admin.hasil.detail-jawaban', compact('answers', 'userName'));
     }
 }
