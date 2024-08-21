@@ -52,7 +52,91 @@
                         </div>
                     </div>
                 </div>
+                <div class="mt-5">
+                    <canvas id="resultsChart"></canvas>
+                </div>
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        const ctx = document.getElementById('resultsChart').getContext('2d');
+        const resultsChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Total Peserta', 'Total Guru', 'Total Kepala Sekolah', 'Total Instansi', 'Total Peserta Submit'], // Added Total Peserta Submit
+                datasets: [{
+                    label: 'Jumlah',
+                    data: [{{ $jumlahUser }}, {{ $jumlahGuru }}, {{ $jumlahKepalaSekolah }}, {{ $jumlahInstansi }}, {{ $jumlahUjianSelesai }}], // Added jumlahUjianSelesai
+                    backgroundColor: [
+                        'rgba(54, 162, 235, 0.8)',
+                        'rgba(75, 192, 192, 0.8)',
+                        'rgba(255, 206, 86, 0.8)',
+                        'rgba(255, 99, 132, 0.8)',
+                        'rgba(255, 159, 64, 0.8)' // New color for Total Peserta Submit
+                    ],
+                    borderColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 159, 64, 1)' // New border color for Total Peserta Submit
+                    ],
+                    borderWidth: 2,
+                    borderRadius: 5, // Rounded corners
+                    hoverBackgroundColor: [
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(255, 159, 64, 1)' // New hover color for Total Peserta Submit
+                    ],
+                    hoverBorderColor: [
+                        'rgba(0, 0, 0, 1)',
+                        'rgba(0, 0, 0, 1)',
+                        'rgba(0, 0, 0, 1)',
+                        'rgba(0, 0, 0, 1)',
+                        'rgba(0, 0, 0, 1)' // New hover border color for Total Peserta Submit
+                    ],
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Jumlah',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Kategori',
+                            font: {
+                                size: 16
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 @endsection
