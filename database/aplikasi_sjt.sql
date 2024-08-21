@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 20, 2024 at 09:05 AM
+-- Generation Time: Aug 21, 2024 at 05:14 AM
 -- Server version: 10.4.28-MariaDB
 -- PHP Version: 8.2.4
 
@@ -361,7 +361,7 @@ CREATE TABLE `question_sets` (
 --
 
 INSERT INTO `question_sets` (`id`, `name`, `start_exam`, `end_exam`, `role`, `time_limit`, `created_at`, `updated_at`) VALUES
-(7, 'Paket A', '2024-08-20 13:00:00', '2024-08-20 14:00:00', 'Kepala Sekolah', 60, '2024-07-25 01:09:31', '2024-07-25 01:09:31'),
+(7, 'Paket A', '2024-08-21 09:00:00', '2024-08-21 10:10:00', 'Kepala Sekolah', 60, '2024-07-25 01:09:31', '2024-07-25 01:09:31'),
 (9, 'Paket B', '2024-08-20 13:00:05', '2024-08-20 14:00:08', 'Guru', 60, '2024-07-25 01:55:53', '2024-07-25 01:55:53'),
 (21, 'Paket Guru 1', '2024-08-20 09:10:00', '2024-08-20 10:10:00', 'Guru', 60, '2024-08-11 20:20:30', '2024-08-11 20:20:30');
 
@@ -385,11 +385,7 @@ CREATE TABLE `quiz_attempts` (
 --
 
 INSERT INTO `quiz_attempts` (`id`, `user_id`, `ended_at`, `score`, `created_at`, `updated_at`) VALUES
-(87, 25, '2024-08-20 02:17:33', 3, '2024-08-20 02:17:33', '2024-08-20 02:17:33'),
-(88, 24, '2024-08-20 03:04:08', 114, '2024-08-20 03:04:08', '2024-08-20 03:04:08'),
-(89, 26, '2024-08-20 06:04:17', 4, '2024-08-20 06:04:17', '2024-08-20 06:04:17'),
-(90, 27, '2024-08-20 06:15:41', 114, '2024-08-20 06:15:41', '2024-08-20 06:15:41'),
-(91, 28, '2024-08-20 06:46:11', 4, '2024-08-20 06:46:11', '2024-08-20 06:46:11');
+(92, 24, '2024-08-21 03:01:06', 114, '2024-08-21 03:01:06', '2024-08-21 03:01:06');
 
 -- --------------------------------------------------------
 
@@ -419,11 +415,10 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `email`, `question_set_id`, `email_verification_token`, `email_verified_at`, `password`, `remember_token`, `created_at`, `updated_at`, `telepon`, `instansi`, `role`, `status`) VALUES
-(24, 'Andhika Pratama Putra', 'andhika@gmail.com', 7, NULL, '2024-08-20 02:00:39', '$2y$12$Pzi2Z/v/638RN0iuX3up1uq160rTd1pauCkH/1HFvZdswVYJ8UBl6', NULL, '2024-08-20 02:00:27', '2024-08-20 03:04:08', '082294317043', 'PAUD Kartika', 'kepala sekolah', 'submitted'),
-(25, 'Entus Azi Bachtiar', 'entus@gmail.com', 21, NULL, '2024-08-20 02:01:59', '$2y$12$L3XKesW5mHI8BXlIFDatoepUZnxZdrJgsRJfbIqdzxvGrC9G93shS', NULL, '2024-08-20 02:01:42', '2024-08-20 02:17:33', '0821299487632', 'PAUD Wijaya', 'guru', 'submitted'),
-(26, 'Muhammad Luthfi Ramadhan', 'lutfi@gmail.com', 9, NULL, '2024-08-20 06:03:01', '$2y$12$TjyLZvr5C4s/VxQ7v4o.WOPxMye30bL0kAAHEFywyAqq4P3UW5cMO', NULL, '2024-08-20 06:02:47', '2024-08-20 06:04:17', '082132453223', 'PAUD Terpadu', 'guru', 'submitted'),
-(27, 'Alfan Fathoni', 'alfan@gmail.com', 7, NULL, '2024-08-20 06:10:49', '$2y$12$UC5qjPGT/QPdietuMwDiou6zkt3BwOPJ3dn9VGlCHIjYZg/7RScAe', NULL, '2024-08-20 06:10:15', '2024-08-20 06:15:41', '082213454434', 'PAUD Teladan', 'kepala sekolah', 'submitted'),
-(28, 'Heni', 'heni@gmail.com', 9, NULL, '2024-08-20 06:39:15', '$2y$12$YCVtiQRaQSwqyBh8KUfFdeDePtzp18HW05pypQR0nYrbXWmw9.4MG', NULL, '2024-08-20 06:39:01', '2024-08-20 06:46:11', '081222334422', 'paud kartika', 'guru', 'submitted');
+(24, 'Andhika Pratama Putra', 'andhika@gmail.com', 7, NULL, '2024-08-20 02:00:39', '$2y$12$Pzi2Z/v/638RN0iuX3up1uq160rTd1pauCkH/1HFvZdswVYJ8UBl6', NULL, '2024-08-20 02:00:27', '2024-08-21 03:01:06', '082294317043', 'PAUD Kartika', 'kepala sekolah', 'submitted'),
+(25, 'Entus Azi Bachtiar', 'entus@gmail.com', 21, NULL, '2024-08-20 02:01:59', '$2y$12$L3XKesW5mHI8BXlIFDatoepUZnxZdrJgsRJfbIqdzxvGrC9G93shS', NULL, '2024-08-20 02:01:42', '2024-08-20 02:17:33', '0821299487632', 'PAUD Wijaya', 'guru', 'not_started'),
+(26, 'Muhammad Luthfi Ramadhan', 'lutfi@gmail.com', 9, NULL, '2024-08-20 06:03:01', '$2y$12$TjyLZvr5C4s/VxQ7v4o.WOPxMye30bL0kAAHEFywyAqq4P3UW5cMO', NULL, '2024-08-20 06:02:47', '2024-08-20 06:04:17', '082132453223', 'PAUD Terpadu', 'guru', 'not_started'),
+(27, 'Alfan Fathoni', 'alfan@gmail.com', 7, NULL, '2024-08-20 06:10:49', '$2y$12$UC5qjPGT/QPdietuMwDiou6zkt3BwOPJ3dn9VGlCHIjYZg/7RScAe', NULL, '2024-08-20 06:10:15', '2024-08-20 06:15:41', '082213454434', 'PAUD Teladan', 'kepala sekolah', 'not_started');
 
 -- --------------------------------------------------------
 
@@ -506,8 +501,7 @@ INSERT INTO `user_answers` (`id`, `user_id`, `question_id`, `answer_id`, `create
 (412, 27, 52, 210, '2024-08-20 06:15:18', '2024-08-20 06:15:18'),
 (413, 27, 41, 166, '2024-08-20 06:15:21', '2024-08-20 06:15:21'),
 (414, 27, 28, 114, '2024-08-20 06:15:35', '2024-08-20 06:15:35'),
-(415, 27, 38, 154, '2024-08-20 06:15:37', '2024-08-20 06:15:37'),
-(416, 28, 53, 214, '2024-08-20 06:46:08', '2024-08-20 06:46:08');
+(415, 27, 38, 154, '2024-08-20 06:15:37', '2024-08-20 06:15:37');
 
 --
 -- Indexes for dumped tables
@@ -642,13 +636,13 @@ ALTER TABLE `question_sets`
 -- AUTO_INCREMENT for table `quiz_attempts`
 --
 ALTER TABLE `quiz_attempts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=92;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=93;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT for table `user_answers`
