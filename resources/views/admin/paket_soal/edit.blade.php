@@ -1,6 +1,6 @@
 @extends('layout.admin.admin-layout')
 
-@section('title', 'Tambah Paket Soal')
+@section('title', 'Edit Paket Soal')
 
 @section('content')
     <style>
@@ -26,12 +26,14 @@
             </script>
         @endif
         <div class="form-container">
-            <h5 class="mb-4">Tambah Paket Soal</h5>
-            <form action="{{ route('store.QuestionSet') }}" method="POST">
+            <h5 class="mb-4">Edit Paket Soal</h5>
+            <form action="{{ route('admin.putPaketSoal', $questionSet->id) }}" method="POST">
                 @csrf
+                @method('PUT')
                 <div class="mb-3">
                     <label for="name" class="form-label">Nama Paket</label>
-                    <input type="text" class="form-control" id="name" name="name" required>
+                    <input type="text" class="form-control" id="name" name="name"
+                        value="{{ old('name', $questionSet->name) }}" required>
                 </div>
                 <div class="mb-3">
                     <label for="start_exam" class="form-label">Waktu Mulai Ujian</label>
@@ -45,18 +47,20 @@
                     <label class="form-label">Role</label>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" id="role_guru" name="role" value="Guru"
-                            required>
+                            {{ old('role', $questionSet->role) == 'Guru' ? 'checked' : '' }} required>
                         <label class="form-check-label" for="role_guru">Guru</label>
                     </div>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" id="role_kepala_sekolah" name="role"
-                            value="Kepala Sekolah" required>
+                            value="Kepala Sekolah"
+                            {{ old('role', $questionSet->role) == 'Kepala Sekolah' ? 'checked' : '' }} required>
                         <label class="form-check-label" for="role_kepala_sekolah">Kepala Sekolah</label>
                     </div>
                 </div>
                 <div class="mb-3">
                     <label for="time_limit" class="form-label">Durasi Ujian (Menit)</label>
-                    <input type="number" class="form-control" id="time_limit" name="time_limit" required>
+                    <input type="number" class="form-control" id="time_limit" name="time_limit"
+                        value="{{ old('time_limit', $questionSet->time_limit) }}" required>
                 </div>
                 <a href="{{ route('admin.soal') }}" class="btn btn-danger">
                     Kembali
@@ -65,4 +69,25 @@
             </form>
         </div>
     </div>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Maaf',
+                text: '{{ session('error') }}',
+            });
+        @endif
+
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil',
+                text: '{{ session('success') }}',
+            });
+        @endif
+    </script>
 @endsection

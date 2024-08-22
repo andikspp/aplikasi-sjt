@@ -19,7 +19,7 @@ class QuestionSetController extends Controller
             'time_limit' => 'required|integer',
             'start_exam' => 'required|date_format:Y-m-d\TH:i',
             'end_exam' => 'required|date_format:Y-m-d\TH:i|after:start_exam',
-            'role' => 'required|in:guru,kepala_sekolah',
+            'role' => 'required|in:Guru,Kepala Sekolah',
         ], [
             'name.unique' => 'Nama paket soal sudah terpakai.',
         ]);
@@ -39,5 +39,34 @@ class QuestionSetController extends Controller
     {
         $questionSets = QuestionSet::all();
         return view('admin.paket_soal.index', compact('questionSets'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        // Validasi input dari form
+        $request->validate([
+            'name' => 'required|string|max:255|unique:question_sets,name,' . $id,
+            'time_limit' => 'required|integer',
+            'start_exam' => 'required|date_format:Y-m-d\TH:i',
+            'end_exam' => 'required|date_format:Y-m-d\TH:i|after:start_exam',
+            'role' => 'required|in:guru,Kepala Sekolah',
+        ], [
+            'name.unique' => 'Nama paket soal sudah terpakai.',
+        ]);
+
+        // Cari QuestionSet berdasarkan ID
+        $questionSet = QuestionSet::findOrFail($id);
+
+        // Update data QuestionSet
+        $questionSet->update([
+            'name' => $request->name,
+            'time_limit' => $request->time_limit,
+            'start_exam' => $request->start_exam,
+            'end_exam' => $request->end_exam,
+            'role' => $request->role,
+        ]);
+
+        // Redirect kembali ke halaman list soal dengan pesan sukses
+        return redirect()->route('admin.soal')->with('success', 'Paket Soal berhasil diperbarui');
     }
 }
