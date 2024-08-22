@@ -89,7 +89,7 @@
                     }).then((result) => {
                         if (result.isConfirmed) {
                             // Send delete request
-                            fetch(`#`, {
+                            fetch(`/admin/delete/${setId}`, {
                                     method: 'POST',
                                     headers: {
                                         'Content-Type': 'application/json',

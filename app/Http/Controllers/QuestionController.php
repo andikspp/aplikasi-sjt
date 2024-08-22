@@ -24,6 +24,6 @@ class QuestionController extends Controller
 
         Question::create($request->all());
 
-        return redirect()->route('admin.questions.index')->with('success', 'Question created successfully.');
+        return redirect()->route('admin.detail-soal')->with('success', 'Soal Berhasil Ditambah');
     }
 }

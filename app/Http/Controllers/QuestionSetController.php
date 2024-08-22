@@ -69,4 +69,13 @@ class QuestionSetController extends Controller
         // Redirect kembali ke halaman list soal dengan pesan sukses
         return redirect()->route('admin.soal')->with('success', 'Paket Soal berhasil diperbarui');
     }
+
+    public function destroy($id)
+    {
+        $questionSet = QuestionSet::findOrFail($id);
+
+        $questionSet->delete();
+
+        return redirect()->route('admin.soal')->with('success', 'Paket Soal berhasil dihapus');
+    }
 }

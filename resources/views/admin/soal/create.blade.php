@@ -103,6 +103,7 @@
         </form>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
     <script>
         function goBack() {
             window.history.back();
@@ -119,7 +120,7 @@
         @if (session('success'))
             Swal.fire({
                 icon: 'success',
-                title: 'Berhasil',
+                title: 'Berhasil!',
                 text: '{{ session('success') }}',
             });
         @endif

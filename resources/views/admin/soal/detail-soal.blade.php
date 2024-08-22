@@ -90,7 +90,7 @@
                             @endif
                         @endforeach
                         <td>
-                            <a href="{{ route('admin.soal', $question->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="{{ route('admin.soal.edit', $question->id) }}" class="btn btn-warning btn-sm">Edit</a>
                             <form action="{{ route('admin.soal', $question->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')

@@ -168,6 +168,46 @@ class AdminController extends Controller
         return view('admin.soal.detail-soal', compact('questionSet', 'questions'));
     }
 
+    public function showEditForm($id)
+    {
+        $question = Question::with('answers')->findOrFail($id);
+
+        return view('admin.soal.edit-soal', compact('question'));
+    }
+
+
+    public function editQuestions(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'question_text' => 'required|string|max:255',
+            'question_set_id' => 'required|exists:question_sets,id',
+            'answers.*.answer_text' => 'required|string|max:255',
+            'answers.*.score' => 'required|integer|in:1,2,3,4',
+        ]);
+
+        $question = Question::findOrFail($id);
+
+        // Update the question text and question_set_id
+        $question->update([
+            'question_text' => $validatedData['question_text'],
+            'question_set_id' => $validatedData['question_set_id'],
+        ]);
+
+        // Update the answers
+        foreach ($validatedData['answers'] as $index => $answerData) {
+            $answer = Answer::find($request->input("answer_ids.$index"));
+            if ($answer) {
+                $answer->update([
+                    'answer_text' => $answerData['answer_text'],
+                    'score' => $answerData['score'],
+                ]);
+            }
+        }
+
+        return redirect()->route('admin.soal.edit', $question->id)->with('success', 'Soal berhasil diperbarui!');
+    }
+
+
     public function logout(Request $request)
     {
         Auth::guard('admin')->logout();
