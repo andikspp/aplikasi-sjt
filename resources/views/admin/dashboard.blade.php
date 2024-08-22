@@ -72,15 +72,15 @@
                         'rgba(54, 162, 235, 0.8)',
                         'rgba(75, 192, 192, 0.8)',
                         'rgba(255, 206, 86, 0.8)',
-                        'rgba(255, 99, 132, 0.8)',
-                        'rgba(255, 159, 64, 0.8)' // New color for Total Peserta Submit
+                        'rgba(0, 255, 255)',
+                        'rgba(255, 99, 132, 0.8)' // New color for Total Peserta Submit
                     ],
                     borderColor: [
                         'rgba(54, 162, 235, 1)',
                         'rgba(75, 192, 192, 1)',
                         'rgba(255, 206, 86, 1)',
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(255, 159, 64, 1)' // New border color for Total Peserta Submit
+                        'rgba(0, 255, 255)',
+                        'rgba(255, 99, 132, 0.8)' // New border color for Total Peserta Submit
                     ],
                     borderWidth: 2,
                     borderRadius: 5, // Rounded corners
@@ -88,8 +88,8 @@
                         'rgba(54, 162, 235, 1)',
                         'rgba(75, 192, 192, 1)',
                         'rgba(255, 206, 86, 1)',
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(255, 159, 64, 1)' // New hover color for Total Peserta Submit
+                        'rgba(0, 255, 255)',
+                        'rgba(255, 99, 132, 0.8)' // New hover color for Total Peserta Submit
                     ],
                     hoverBorderColor: [
                         'rgba(0, 0, 0, 1)',

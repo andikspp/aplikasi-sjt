@@ -36,6 +36,11 @@
 
     <div class="container mt-5">
         <h2 class="text-center mb-4">Data Peserta Guru</h2>
+        
+        <!-- Tambahkan tombol Export ke Excel -->
+        <div class="text-right mb-3">
+            <a href="#" class="btn btn-success">Export to Excel</a>
+        </div>
 
         @if ($results instanceof \Illuminate\Pagination\LengthAwarePaginator)
             <div class="table-responsive">
@@ -48,6 +53,7 @@
                             <th>Instansi</th>
                             <th>Role</th>
                             <th>Status</th>
+                            <th>Aksi</th> <!-- Tambahkan kolom Aksi -->
                         </tr>
                     </thead>
                     <tbody>
@@ -59,10 +65,18 @@
                                 <td>{{ strtoupper($result->instansi) ?? 'N/A' }}</td>
                                 <td>{{ ucwords($result->role) ?? 'N/A' }}</td>
                                 <td>{{ ucwords(str_replace('_', ' ', $result->status)) }}</td>
+                                <td>
+                                    <a href="#" class="btn btn-warning btn-sm">Edit</a>
+                                    <form action="#" method="POST" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Hapus</button>
+                                    </form>
+                                </td> <!-- Tambahkan tombol Edit dan Hapus -->
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="text-center">No results found</td>
+                                <td colspan="7" class="text-center">No results found</td>
                             </tr>
                         @endforelse
                     </tbody>
