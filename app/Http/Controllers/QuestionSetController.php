@@ -49,7 +49,7 @@ class QuestionSetController extends Controller
             'time_limit' => 'required|integer',
             'start_exam' => 'required|date_format:Y-m-d\TH:i',
             'end_exam' => 'required|date_format:Y-m-d\TH:i|after:start_exam',
-            'role' => 'required|in:guru,Kepala Sekolah',
+            'role' => 'required|in:Guru,Kepala Sekolah',
         ], [
             'name.unique' => 'Nama paket soal sudah terpakai.',
         ]);

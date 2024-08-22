@@ -256,7 +256,7 @@ class AdminController extends Controller
     public function dataGuru()
     {
         $results = DB::table('users')
-            ->select('name', 'email', 'telepon', 'instansi', 'role', 'status')
+            ->select('id', 'name', 'email', 'telepon', 'instansi', 'role', 'status') // Menambahkan 'id' ke dalam select
             ->where('role', 'guru')
             ->orderBy('name')
             ->paginate(50);
@@ -305,5 +305,41 @@ class AdminController extends Controller
         $question = $questionSet->questions;
 
         return view('admin.paket_soal.edit', compact('questionSet', 'question'));
+    }
+
+    public function editGuru($id)
+    {
+        $guru = User::where('role', 'guru')->findOrFail($id);
+
+        return view('admin.data_peserta.edit-guru', compact('guru'));
+    }
+
+
+    public function updateGuru(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'telepon' => 'required|string|max:15',
+            'instansi' => 'required|string|max:255',
+            'role' => [
+                'required',
+                'string',
+                'max:50',
+                'in:Guru,Kepala Sekolah'
+            ],
+            'status' => [
+                'required',
+                'string',
+                'max:50',
+                'in:not_started,on_going,submitted'
+            ],
+        ]);
+
+        $guru = User::where('role', 'guru')->findOrFail($id);
+
+        $guru->update($validatedData);
+
+        return redirect()->route('data.guru')->with('success', 'Data guru berhasil diperbarui!');
     }
 }

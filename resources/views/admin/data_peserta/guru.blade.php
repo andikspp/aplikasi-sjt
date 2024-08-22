@@ -36,7 +36,7 @@
 
     <div class="container mt-5">
         <h2 class="text-center mb-4">Data Peserta Guru</h2>
-        
+
         <!-- Tambahkan tombol Export ke Excel -->
         <div class="text-right mb-3">
             <a href="#" class="btn btn-success">Export to Excel</a>
@@ -66,13 +66,15 @@
                                 <td>{{ ucwords($result->role) ?? 'N/A' }}</td>
                                 <td>{{ ucwords(str_replace('_', ' ', $result->status)) }}</td>
                                 <td>
-                                    <a href="#" class="btn btn-warning btn-sm">Edit</a>
-                                    <form action="#" method="POST" style="display:inline;">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Hapus</button>
-                                    </form>
-                                </td> <!-- Tambahkan tombol Edit dan Hapus -->
+                                    <a href="{{ route('admin.edit.guru', $result->id) }}"
+                                        class="btn btn-warning btn-sm">Edit</a>
+                                    <!-- Jika Anda ingin mengabaikan fitur hapus, Anda bisa menghapus atau mengomentari form ini -->
+                                    <!-- <form action="#" method="POST" style="display:inline;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Hapus</button>
+                                                    </form> -->
+                                </td>
                             </tr>
                         @empty
                             <tr>
@@ -93,4 +95,24 @@
             </div>
         @endif
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
+    <script>
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Maaf',
+                text: '{{ session('error') }}',
+            });
+        @endif
+
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+            });
+        @endif
+    </script>
+
 @endsection

@@ -3,45 +3,136 @@
 @section('title', 'Edit Guru')
 
 @section('content')
+    <style>
+        .bg-custom {
+            background-color: #005689;
+            color: white;
+        }
+    </style>
     <div class="container mt-5">
         <h2 class="text-center mb-4">Edit Data Guru</h2>
 
-        <form action="{{ route('guru.update', $guru->id) }}" method="POST">
-            @csrf
-            @method('PUT')
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-custom text-white">
+                        <h5 class="card-title mb-0">Edit Form</h5>
+                    </div>
+                    <div class="card-body">
+                        <form action="{{ route('admin.update.guru', $guru->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
 
-            <div class="form-group">
-                <label for="name">Nama</label>
-                <input type="text" class="form-control" id="name" name="name" value="{{ $guru->name }}" required>
+                            <!-- Nama -->
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Nama</label>
+                                <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                    id="name" name="name" value="{{ old('name', $guru->name) }}" required>
+                                @error('name')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Email -->
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                    id="email" name="email" value="{{ old('email', $guru->email) }}" required>
+                                @error('email')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Telepon -->
+                            <div class="mb-3">
+                                <label for="telepon" class="form-label">Telepon</label>
+                                <input type="text" class="form-control @error('telepon') is-invalid @enderror"
+                                    id="telepon" name="telepon" value="{{ old('telepon', $guru->telepon) }}" required>
+                                @error('telepon')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Instansi -->
+                            <div class="mb-3">
+                                <label for="instansi" class="form-label">Instansi</label>
+                                <input type="text" class="form-control @error('instansi') is-invalid @enderror"
+                                    id="instansi" name="instansi" value="{{ old('instansi', $guru->instansi) }}" required>
+                                @error('instansi')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Role -->
+                            <div class="mb-3">
+                                <label for="role" class="form-label">Role</label>
+                                <select id="role" name="role"
+                                    class="form-select @error('role') is-invalid @enderror" required>
+                                    <option value="">Pilih Role</option>
+                                    <option value="Guru" {{ old('role', $guru->role) == 'Guru' ? 'selected' : '' }}>Guru
+                                    </option>
+                                    <option value="Kepala Sekolah"
+                                        {{ old('role', $guru->role) == 'Kepala Sekolah' ? 'selected' : '' }}>Kepala Sekolah
+                                    </option>
+                                </select>
+                                @error('role')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Status -->
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Status</label>
+                                <select id="status" name="status"
+                                    class="form-select @error('status') is-invalid @enderror" required>
+                                    <option value="">Pilih Status</option>
+                                    <option value="not_started"
+                                        {{ old('status', $guru->status) == 'not_started' ? 'selected' : '' }}>Not Started
+                                    </option>
+                                    <option value="on_going"
+                                        {{ old('status', $guru->status) == 'on_going' ? 'selected' : '' }}>On Going
+                                    </option>
+                                    <option value="submitted"
+                                        {{ old('status', $guru->status) == 'submitted' ? 'selected' : '' }}>Submitted
+                                    </option>
+                                </select>
+                                @error('status')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="d-flex justify-content-between">
+                                <button type="submit" class="btn btn-primary">Update</button>
+                                <button type="button" class="btn btn-danger" onclick="goBack()">Kembali</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
-
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" value="{{ $guru->email }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="telepon">Telepon</label>
-                <input type="text" class="form-control" id="telepon" name="telepon" value="{{ $guru->telepon }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="instansi">Instansi</label>
-                <input type="text" class="form-control" id="instansi" name="instansi" value="{{ $guru->instansi }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="role">Role</label>
-                <input type="text" class="form-control" id="role" name="role" value="{{ $guru->role }}" required>
-            </div>
-
-            <div class="form-group">
-                <label for="status">Status</label>
-                <input type="text" class="form-control" id="status" name="status" value="{{ $guru->status }}" required>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Update</button>
-            <a href="{{ route('guru.index') }}" class="btn btn-secondary">Kembali</a>
-        </form>
+        </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
+    <script>
+        function goBack() {
+            window.history.back();
+        }
+
+        @if (session('error'))
+            Swal.fire({
+                icon: 'error',
+                title: 'Maaf',
+                text: '{{ session('error') }}',
+            });
+        @endif
+
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+            });
+        @endif
+    </script>
 @endsection
