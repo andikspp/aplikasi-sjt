@@ -57,9 +57,16 @@
                                         class="btn btn-warning text-white">
                                         <i class="bi bi-pencil"></i> Edit
                                     </a>
-                                    <button class="btn btn-danger delete-set" data-id="{{ $set->id }}">
-                                        <i class="bi bi-trash"></i> Hapus
-                                    </button>
+                                    <button type="button" class="btn btn-danger btn-sm"
+                                        onclick="confirmDeletion({{ $set->id }})">Hapus</button>
+
+                                    <!-- Form untuk penghapusan, di-submit secara dinamis melalui JavaScript -->
+                                    <form id="delete-form-{{ $set->id }}"
+                                        action="{{ route('admin.deletePaketSoal', $set->id) }}" method="POST"
+                                        style="display: none;">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -71,57 +78,23 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Delete question set functionality
-            document.querySelectorAll('.delete-set').forEach(button => {
-                button.addEventListener('click', function() {
-                    const setId = this.getAttribute('data-id');
-
-                    Swal.fire({
-                        title: 'Anda yakin ingin menghapus paket soal ini?',
-                        text: "Tindakan ini tidak dapat dibatalkan!",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonColor: '#d33',
-                        cancelButtonColor: '#3085d6',
-                        confirmButtonText: 'Ya, hapus!',
-                        cancelButtonText: 'Batal'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            // Send delete request
-                            fetch(`/admin/delete/${setId}`, {
-                                    method: 'POST',
-                                    headers: {
-                                        'Content-Type': 'application/json',
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                    },
-                                    body: JSON.stringify({
-                                        id: setId
-                                    })
-                                })
-                                .then(response => response.json())
-                                .then(data => {
-                                    if (data.success) {
-                                        Swal.fire(
-                                            'Terhapus!',
-                                            'Paket soal telah dihapus.',
-                                            'success'
-                                        ).then(() => {
-                                            location.reload();
-                                        });
-                                    } else {
-                                        Swal.fire(
-                                            'Error!',
-                                            'Terjadi kesalahan saat menghapus paket soal.',
-                                            'error'
-                                        );
-                                    }
-                                });
-                        }
-                    });
-                });
+        function confirmDeletion(id) {
+            Swal.fire({
+                title: 'Anda yakin ingin menghapus paket soal ini?',
+                text: "Tindakan ini tidak dapat dibatalkan!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Submit form delete dengan ID yang sesuai
+                    document.getElementById('delete-form-' + id).submit();
+                }
             });
-        });
+        }
 
         @if (session('success'))
             Swal.fire({
