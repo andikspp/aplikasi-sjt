@@ -36,11 +36,13 @@
 
     <div class="container mt-5">
         <h2 class="text-center mb-4">Data Peserta Kepala Sekolah</h2>
-        
-        <!-- Export to Excel button -->
-        <div class="text-right mb-3">
-            <a href="#" class="btn btn-success">Export to Excel</a> <!-- Export button -->
-        </div>
+        <div class="d-flex justify-content-between mb-3">
+                <a href="#" class="btn btn-success mb-3">Export to Excel</a>
+                <form method="GET" action="#" class="mb-3" style="text-align: right;">
+                    <input type="text" name="search" placeholder="Search..." class="form-control mb-2" style="width: 150px; display: inline-block;" />
+                    <button type="submit" class="btn btn-primary mb-2" style="margin-left: 10px;">Cari</button>
+                </form>
+            </div>
 
         @if ($results instanceof \Illuminate\Pagination\LengthAwarePaginator)
             <div class="table-responsive">
