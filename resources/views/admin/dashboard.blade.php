@@ -64,39 +64,43 @@
         const resultsChart = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Total Peserta', 'Total Guru', 'Total Kepala Sekolah', 'Total Instansi', 'Total Peserta Submit'], // Added Total Peserta Submit
+                labels: ['Total Peserta', 'Total Guru', 'Total Kepala Sekolah', 'Total Instansi',
+                    'Total Peserta Submit'
+                ],
                 datasets: [{
                     label: 'Jumlah',
-                    data: [{{ $jumlahUser }}, {{ $jumlahGuru }}, {{ $jumlahKepalaSekolah }}, {{ $jumlahInstansi }}, {{ $jumlahUjianSelesai }}], // Added jumlahUjianSelesai
+                    data: [{{ $jumlahUser }}, {{ $jumlahGuru }}, {{ $jumlahKepalaSekolah }},
+                        {{ $jumlahInstansi }}, {{ $jumlahUjianSelesai }}
+                    ],
                     backgroundColor: [
                         'rgba(54, 162, 235, 0.8)',
                         'rgba(75, 192, 192, 0.8)',
                         'rgba(255, 206, 86, 0.8)',
                         'rgba(0, 255, 255)',
-                        'rgba(255, 99, 132, 0.8)' // New color for Total Peserta Submit
+                        'rgba(255, 99, 132, 0.8)'
                     ],
                     borderColor: [
                         'rgba(54, 162, 235, 1)',
                         'rgba(75, 192, 192, 1)',
                         'rgba(255, 206, 86, 1)',
                         'rgba(0, 255, 255)',
-                        'rgba(255, 99, 132, 0.8)' // New border color for Total Peserta Submit
+                        'rgba(255, 99, 132, 0.8)'
                     ],
                     borderWidth: 2,
-                    borderRadius: 5, // Rounded corners
+                    borderRadius: 5,
                     hoverBackgroundColor: [
                         'rgba(54, 162, 235, 1)',
                         'rgba(75, 192, 192, 1)',
                         'rgba(255, 206, 86, 1)',
                         'rgba(0, 255, 255)',
-                        'rgba(255, 99, 132, 0.8)' // New hover color for Total Peserta Submit
+                        'rgba(255, 99, 132, 0.8)'
                     ],
                     hoverBorderColor: [
                         'rgba(0, 0, 0, 1)',
                         'rgba(0, 0, 0, 1)',
                         'rgba(0, 0, 0, 1)',
                         'rgba(0, 0, 0, 1)',
-                        'rgba(0, 0, 0, 1)' // New hover border color for Total Peserta Submit
+                        'rgba(0, 0, 0, 1)'
                     ],
                 }]
             },
@@ -124,6 +128,11 @@
                             font: {
                                 size: 16
                             }
+                        },
+                        ticks: {
+                            callback: function(value) {
+                                return Math.floor(value); // Mengubah angka menjadi integer
+                            }
                         }
                     },
                     x: {
@@ -139,4 +148,5 @@
             }
         });
     </script>
+
 @endsection

@@ -52,6 +52,7 @@
                             <th>Telepon</th>
                             <th>Instansi</th>
                             <th>Role</th>
+                            <th>Paket Soal</th>
                             <th>Status</th>
                             <th>Aksi</th> <!-- Tambahkan kolom Aksi -->
                         </tr>
@@ -64,16 +65,21 @@
                                 <td>{{ $result->telepon ?? 'N/A' }}</td>
                                 <td>{{ strtoupper($result->instansi) ?? 'N/A' }}</td>
                                 <td>{{ ucwords($result->role) ?? 'N/A' }}</td>
+                                <td>{{ $result->question_set_name ?? 'N/A' }}</td>
                                 <td>{{ ucwords(str_replace('_', ' ', $result->status)) }}</td>
                                 <td>
                                     <a href="{{ route('admin.edit.guru', $result->id) }}"
                                         class="btn btn-warning btn-sm">Edit</a>
-                                    <!-- Jika Anda ingin mengabaikan fitur hapus, Anda bisa menghapus atau mengomentari form ini -->
-                                    <!-- <form action="#" method="POST" style="display:inline;">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?')">Hapus</button>
-                                                    </form> -->
+                                    <button type="button" class="btn btn-danger btn-sm"
+                                        onclick="confirmDeletion({{ $result->id }})">Hapus</button>
+
+                                    <!-- Form untuk penghapusan, di-submit secara dinamis melalui JavaScript -->
+                                    <form id="delete-form-{{ $result->id }}"
+                                        action="{{ route('admin.delete.guru', $result->id) }}" method="POST"
+                                        style="display: none;">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
                                 </td>
                             </tr>
                         @empty
@@ -98,6 +104,24 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
     <script>
+        function confirmDeletion(guruId) {
+            Swal.fire({
+                title: 'Apakah Anda yakin?',
+                text: "Anda tidak akan bisa mengembalikan data ini!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Jika dikonfirmasi, submit form secara dinamis
+                    document.getElementById('delete-form-' + guruId).submit();
+                }
+            })
+        }
+
         @if (session('error'))
             Swal.fire({
                 icon: 'error',

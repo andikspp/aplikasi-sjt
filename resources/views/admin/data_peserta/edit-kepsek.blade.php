@@ -1,6 +1,6 @@
 @extends('layout.admin.admin-layout')
 
-@section('title', 'Edit Guru')
+@section('title', 'Edit Kepala Sekolah')
 
 @section('content')
     <style>
@@ -10,7 +10,7 @@
         }
     </style>
     <div class="container mt-5">
-        <h2 class="text-center mb-4">Edit Data Guru</h2>
+        <h2 class="text-center mb-4">Edit Data Kepala Sekolah</h2>
 
         <div class="row justify-content-center">
             <div class="col-md-8">
@@ -19,7 +19,7 @@
                         <h5 class="card-title mb-0">Edit Form</h5>
                     </div>
                     <div class="card-body">
-                        <form action="{{ route('admin.update.guru', $guru->id) }}" method="POST">
+                        <form action="{{ route('admin.update.kepsek', $kepsek->id) }}" method="POST">
                             @csrf
                             @method('PUT')
 
@@ -27,7 +27,7 @@
                             <div class="mb-3">
                                 <label for="name" class="form-label">Nama</label>
                                 <input type="text" class="form-control @error('name') is-invalid @enderror"
-                                    id="name" name="name" value="{{ old('name', $guru->name) }}" required>
+                                    id="name" name="name" value="{{ old('name', $kepsek->name) }}" required>
                                 @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -37,7 +37,7 @@
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email</label>
                                 <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                    id="email" name="email" value="{{ old('email', $guru->email) }}" readonly>
+                                    id="email" name="email" value="{{ old('email', $kepsek->email) }}" readonly>
                                 @error('email')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -47,7 +47,7 @@
                             <div class="mb-3">
                                 <label for="telepon" class="form-label">Telepon</label>
                                 <input type="text" class="form-control @error('telepon') is-invalid @enderror"
-                                    id="telepon" name="telepon" value="{{ old('telepon', $guru->telepon) }}" required>
+                                    id="telepon" name="telepon" value="{{ old('telepon', $kepsek->telepon) }}" required>
                                 @error('telepon')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -57,7 +57,8 @@
                             <div class="mb-3">
                                 <label for="instansi" class="form-label">Instansi</label>
                                 <input type="text" class="form-control @error('instansi') is-invalid @enderror"
-                                    id="instansi" name="instansi" value="{{ old('instansi', $guru->instansi) }}" required>
+                                    id="instansi" name="instansi" value="{{ old('instansi', $kepsek->instansi) }}"
+                                    required>
                                 @error('instansi')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -69,10 +70,11 @@
                                 <select id="role" name="role"
                                     class="form-select @error('role') is-invalid @enderror" required>
                                     <option value="">Pilih Role</option>
-                                    <option value="Guru" {{ old('role', $guru->role) == 'Guru' ? 'selected' : '' }}>Guru
+                                    <option value="Guru" {{ old('role', $kepsek->role) == 'Guru' ? 'selected' : '' }}>Guru
                                     </option>
                                     <option value="Kepala Sekolah"
-                                        {{ old('role', $guru->role) == 'Kepala Sekolah' ? 'selected' : '' }}>Kepala Sekolah
+                                        {{ old('role', $kepsek->role) == 'Kepala Sekolah' ? 'selected' : '' }}>Kepala
+                                        Sekolah
                                     </option>
                                 </select>
                                 @error('role')
@@ -88,7 +90,7 @@
                                     <option value="">Pilih Paket Soal</option>
                                     @foreach ($questionSets as $id => $name)
                                         <option value="{{ $id }}"
-                                            {{ old('question_set_id', $guru->question_set_id) == $id ? 'selected' : '' }}>
+                                            {{ old('question_set_id', $kepsek->question_set_id) == $id ? 'selected' : '' }}>
                                             {{ $name }}
                                         </option>
                                     @endforeach
@@ -105,13 +107,13 @@
                                     class="form-select @error('status') is-invalid @enderror" required>
                                     <option value="">Pilih Status</option>
                                     <option value="not_started"
-                                        {{ old('status', $guru->status) == 'not_started' ? 'selected' : '' }}>Not Started
+                                        {{ old('status', $kepsek->status) == 'not_started' ? 'selected' : '' }}>Not Started
                                     </option>
                                     <option value="on_going"
-                                        {{ old('status', $guru->status) == 'on_going' ? 'selected' : '' }}>On Going
+                                        {{ old('status', $kepsek->status) == 'on_going' ? 'selected' : '' }}>On Going
                                     </option>
                                     <option value="submitted"
-                                        {{ old('status', $guru->status) == 'submitted' ? 'selected' : '' }}>Submitted
+                                        {{ old('status', $kepsek->status) == 'submitted' ? 'selected' : '' }}>Submitted
                                     </option>
                                 </select>
                                 @error('status')

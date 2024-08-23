@@ -256,9 +256,20 @@ class AdminController extends Controller
     public function dataGuru()
     {
         $results = DB::table('users')
-            ->select('id', 'name', 'email', 'telepon', 'instansi', 'role', 'status') // Menambahkan 'id' ke dalam select
-            ->where('role', 'guru')
-            ->orderBy('name')
+            ->leftJoin('question_sets', 'users.question_set_id', '=', 'question_sets.id')
+            ->select(
+                'users.id',
+                'users.name',
+                'users.email',
+                'users.telepon',
+                'users.instansi',
+                'users.role',
+                'users.status',
+                'users.question_set_id',
+                'question_sets.name as question_set_name'
+            )
+            ->where('users.role', 'guru')
+            ->orderBy('users.name')
             ->paginate(50);
 
         return view('admin.data_peserta.guru', compact('results'));
@@ -267,9 +278,20 @@ class AdminController extends Controller
     public function dataKepsek()
     {
         $results = DB::table('users')
-            ->select('name', 'email', 'telepon', 'instansi', 'role', 'status')
-            ->where('role', 'kepala sekolah')
-            ->orderBy('name')
+            ->leftJoin('question_sets', 'users.question_set_id', '=', 'question_sets.id')
+            ->select(
+                'users.id',
+                'users.name',
+                'users.email',
+                'users.telepon',
+                'users.instansi',
+                'users.role',
+                'users.status',
+                'users.question_set_id',
+                'question_sets.name as question_set_name'
+            )
+            ->where('users.role', 'Kepala Sekolah')
+            ->orderBy('users.name')
             ->paginate(50);
 
         return view('admin.data_peserta.kepsek', compact('results'));
@@ -311,7 +333,11 @@ class AdminController extends Controller
     {
         $guru = User::where('role', 'guru')->findOrFail($id);
 
-        return view('admin.data_peserta.edit-guru', compact('guru'));
+        $questionSets = DB::table('question_sets')
+            ->where('role', 'Guru')
+            ->pluck('name', 'id');
+
+        return view('admin.data_peserta.edit-guru', compact('guru', 'questionSets'));
     }
 
 
@@ -334,6 +360,7 @@ class AdminController extends Controller
                 'max:50',
                 'in:not_started,on_going,submitted'
             ],
+            'question_set_id' => 'nullable|exists:question_sets,id',
         ]);
 
         $guru = User::where('role', 'guru')->findOrFail($id);
@@ -341,5 +368,71 @@ class AdminController extends Controller
         $guru->update($validatedData);
 
         return redirect()->route('data.guru')->with('success', 'Data guru berhasil diperbarui!');
+    }
+
+    public function editKepsek($id)
+    {
+        $kepsek = User::where('role', 'Kepala Sekolah')->findOrFail($id);
+
+        $questionSets = DB::table('question_sets')
+            ->where('role', 'Kepala Sekolah')
+            ->pluck('name', 'id');
+
+        return view('admin.data_peserta.edit-kepsek', compact('kepsek', 'questionSets'));
+    }
+
+    public function updateKepsek(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'telepon' => 'required|string|max:15',
+            'instansi' => 'required|string|max:255',
+            'role' => [
+                'required',
+                'string',
+                'max:50',
+                'in:Guru,Kepala Sekolah'
+            ],
+            'status' => [
+                'required',
+                'string',
+                'max:50',
+                'in:not_started,on_going,submitted'
+            ],
+            'question_set_id' => 'nullable|exists:question_sets,id',
+        ]);
+
+        $kepsek = User::where('role', 'Kepala Sekolah')->findOrFail($id);
+
+        $kepsek->update($validatedData);
+
+        return redirect()->route('data.kepala_sekolah')->with('success', 'Data Kepala Sekolah berhasil diperbarui!');
+    }
+
+    public function destroyGuru($id)
+    {
+        $guru = User::find($id);
+
+        if (!$guru) {
+            return redirect()->route('admin.data.guru')->with('error', 'Data guru tidak ditemukan.');
+        }
+
+        $guru->delete();
+
+        return redirect()->route('data.guru')->with('success', 'Data guru berhasil dihapus.');
+    }
+
+    public function destroyKepsek($id)
+    {
+        $kepsek = User::find($id);
+
+        if (!$kepsek) {
+            return redirect()->route('admin.data.guru')->with('error', 'Data guru tidak ditemukan.');
+        }
+
+        $kepsek->delete();
+
+        return redirect()->route('data.kepala_sekolah')->with('success', 'Data Kepala Sekolah berhasil dihapus.');
     }
 }
