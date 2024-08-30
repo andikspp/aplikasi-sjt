@@ -33,16 +33,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Email -->
-                            <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control @error('email') is-invalid @enderror"
-                                    id="email" name="email" value="{{ old('email', $kepsek->email) }}" readonly>
-                                @error('email')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
                             <!-- Telepon -->
                             <div class="mb-3">
                                 <label for="telepon" class="form-label">Telepon</label>
@@ -123,7 +113,7 @@
 
                             <!-- Submit Button -->
                             <div class="d-flex justify-content-between">
-                                <button type="submit" class="btn btn-primary">Update</button>
+                                <button type="submit" class="btn btn-success">Update</button>
                                 <button type="button" class="btn btn-danger" onclick="goBack()">Kembali</button>
                             </div>
                         </form>

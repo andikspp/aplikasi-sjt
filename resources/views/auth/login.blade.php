@@ -46,10 +46,10 @@
                         <form action="{{ route('login') }}" method="POST">
                             @csrf
                             <div class="mb-3">
-                                <label for="email" class="form-label">Email</label>
-                                <input type="email" class="form-control" id="email" name="email" required
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control" id="username" name="username" required
                                     autofocus>
-                                @error('email')
+                                @error('username')
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
@@ -60,13 +60,10 @@
                                     <span class="text-danger">{{ $message }}</span>
                                 @enderror
                             </div>
-                            <div class="mb-3">
-                                <a href="{{ route('register') }}" id="register">
-                                    Daftar Akun </a>
-                            </div>
                             <button type="submit" class="btn btn-primary w-100 mt-3"
                                 style="background-color: #005689">Login</button>
                         </form>
+
                     </div>
                 </div>
             </div>

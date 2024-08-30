@@ -18,12 +18,11 @@ class RegisterController extends Controller
         return view('auth.register');
     }
 
-    public function register(Request $request)
+    public function registerKepsek(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
+            'username' => 'required|string|max:255|unique:users',
             'telepon' => 'required|string|max:15',
             'instansi' => 'required|string|max:255',
             'role' => 'required|in:Guru,Kepala Sekolah',
@@ -33,11 +32,12 @@ class RegisterController extends Controller
             return redirect()->back()->withErrors($validator)->withInput();
         }
 
+        $passwordKs = 'sjtks123#';
+
         $user = User::create([
             'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'email_verification_token' => Str::random(32),
+            'username' => $request->username,
+            'password' => Hash::make($passwordKs),
             'telepon' => $request->telepon,
             'instansi' => $request->instansi,
             'role' => $request->role,
@@ -51,8 +51,42 @@ class RegisterController extends Controller
 
         $user->save();
 
-        Mail::to($user->email)->send(new EmailVerificationMail($user));
+        return redirect()->route('data.kepala_sekolah')->with('success', 'Pengguna berhasil ditambahkan');
+    }
 
-        return redirect()->route('login')->with('success', 'Registrasi berhasil. Silakan cek email Anda untuk verifikasi.');
+    public function registerGuru(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'username' => 'required|string|max:255|unique:users',
+            'telepon' => 'required|string|max:15',
+            'instansi' => 'required|string|max:255',
+            'role' => 'required|in:Guru,Kepala Sekolah',
+        ]);
+
+        if ($validator->fails()) {
+            return redirect()->back()->withErrors($validator)->withInput();
+        }
+
+        $passwordGuru = 'sjtguru123#';
+
+        $user = User::create([
+            'name' => $request->name,
+            'username' => $request->username,
+            'password' => Hash::make($passwordGuru),
+            'telepon' => $request->telepon,
+            'instansi' => $request->instansi,
+            'role' => $request->role,
+        ]);
+
+        $questionSets = QuestionSet::where('role', $request->role)->get();
+
+        $randomQuestionSet = $questionSets->random();
+
+        $user->question_set_id = $randomQuestionSet->id;
+
+        $user->save();
+
+        return redirect()->route('data.guru')->with('success', 'Data berhasil ditambahkan');
     }
 }

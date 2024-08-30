@@ -4,35 +4,33 @@
 
 @section('content')
     <style>
-        .table-custom {
-            border-collapse: collapse;
-            width: 100%;
+        .table th,
+        .table td {
+            vertical-align: middle;
+            text-align: center;
         }
 
-        .table-custom th,
-        .table-custom td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-
-        .table-custom th {
-            background-color: #f2f2f2;
-            color: #333;
+        .table th {
+            background-color: #005689;
+            color: #fff;
             font-weight: bold;
         }
 
-        .table-custom tr:nth-child(even) {
-            background-color: #f9f9f9;
+        .table td {
+            background-color: #f8f9fa;
         }
 
-        .table-custom tr:hover {
-            background-color: #eaeaea;
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #e9ecef;
         }
 
-        .table-custom td a,
-        .table-custom td form button {
-            margin-right: 5px;
+        .table-bordered {
+            border: 1px solid #dee2e6;
+        }
+
+        .table-bordered th,
+        .table-bordered td {
+            border: 1px solid #dee2e6;
         }
 
         .btn-custom {
@@ -55,9 +53,10 @@
                 </button>
             </a>
         </div>
-        <table class="table table-custom">
-            <thead>
+        <table class="table table-striped table-bordered table-hover">
+            <thead class="thead-dark">
                 <tr>
+                    <th>No.</th>
                     <th>Pertanyaan</th>
                     <th>Jawaban 1</th>
                     <th>Bobot 1</th>
@@ -73,6 +72,7 @@
             <tbody>
                 @foreach ($questions as $question)
                     <tr>
+                        <td>{{ $loop->iteration + $questions->firstItem() - 1 }}</td>
                         <td>{{ $question->question_text }}</td>
                         @foreach ($question->answers as $index => $answer)
                             @if ($index == 0)
@@ -91,16 +91,51 @@
                         @endforeach
                         <td>
                             <a href="{{ route('admin.soal.edit', $question->id) }}" class="btn btn-warning btn-sm">Edit</a>
-                            <form action="{{ route('admin.soal', $question->id) }}" method="POST" style="display:inline;">
+                            <form id="delete-form-{{ $question->id }}" action="{{ route('hapus.soal', $question->id) }}"
+                                method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                <button type="button" class="btn btn-danger btn-sm"
+                                    onclick="confirmDelete({{ $question->id }})">Hapus</button>
                             </form>
                         </td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
+
+        <div class="d-flex justify-content-center">
+            {{ $questions->links('pagination.pagination') }}
+        </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Konfirmasi Penghapusan',
+                text: 'Anda yakin ingin menghapus soal ini?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Ya, hapus!',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Jika dikonfirmasi, kirimkan formulir
+                    document.getElementById('delete-form-' + id).submit();
+                }
+            });
+        }
+
+        @if (session('success'))
+            Swal.fire({
+                icon: 'success',
+                title: 'Berhasil!',
+                text: '{{ session('success') }}',
+            });
+        @endif
+    </script>
 
 @endsection

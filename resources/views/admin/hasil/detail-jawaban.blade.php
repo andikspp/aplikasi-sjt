@@ -113,6 +113,9 @@
 
     <div class="container mt-5">
         <h2 class="text-center">Detail Jawaban {{ $userName }}</h2>
+        <a href="{{ route('grafik.individu', ['userId' => $userId]) }}" class="btn btn-primary">
+            Lihat Grafik
+        </a>
         <table class="table table-striped table-bordered table-hover mt-4">
             <thead class="thead-dark">
                 <tr>
@@ -125,7 +128,7 @@
             <tbody>
                 @forelse ($answers as $index => $answer)
                     <tr>
-                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $loop->iteration + $answers->firstItem() - 1 }}</td>
                         <td>{{ $answer->question_text }}</td>
                         <td>{{ $answer->answer_text }}</td>
                         <td>{{ $answer->score }}</td>
@@ -137,6 +140,10 @@
                 @endforelse
             </tbody>
         </table>
+
+        <div class="d-flex justify-content-center">
+            {{ $answers->links('pagination.pagination') }}
+        </div>
     </div>
 
     <!-- Footer -->

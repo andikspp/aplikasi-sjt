@@ -82,7 +82,7 @@
                         </div>
                         <div class="info-item mb-3 d-flex align-items-center">
                             <i class="fas fa-envelope fa-lg mr-3"></i>
-                            <p class="mb-0">Email: <strong>{{ $user->email }}</strong></p>
+                            <p class="mb-0">Username: <strong>{{ $user->username }}</strong></p>
                         </div>
                         <div class="info-item mb-3 d-flex align-items-center">
                             <i class="fas fa-phone fa-lg mr-3"></i>

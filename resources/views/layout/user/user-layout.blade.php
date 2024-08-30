@@ -36,6 +36,11 @@
             transform: scale(1.05);
         }
 
+        .navbar-nav .nav-link.active {
+            text-decoration: underline;
+            text-decoration-color: white;
+        }
+
         footer {
             background-color: #005689;
             color: white;
@@ -57,14 +62,12 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('dashboard') }}">Dashboard</a>
+                        <a class="nav-link {{ Request::routeIs('dashboard') ? 'active' : '' }}"
+                            href="{{ route('dashboard') }}">Dashboard</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">FAQ</a>
-                    </li>
-                    <li class="nav-item">
+                    {{-- <li class="nav-item">
                         <a class="nav-link" href="{{ route('profil') }}">Profile</a>
-                    </li>
+                    </li> --}}
                     <li class="nav-item">
                         <a class="nav-link" href="#" id="logout-btn">Logout</a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">

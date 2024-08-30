@@ -37,4 +37,12 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::put('/admin/kepsek/update/{id}', [AdminController::class, 'updateKepsek'])->name('admin.update.kepsek');
     Route::delete('/admin/guru/delete/{id}', [AdminController::class, 'destroyGuru'])->name('admin.delete.guru');
     Route::delete('/admin/kepsek/delete/{id}', [AdminController::class, 'destroyKepsek'])->name('admin.delete.kepsek');
+    Route::get('/admin/kepsek/create', [AdminController::class, 'tambahKepsek'])->name('admin.tambah.kepsek');
+    Route::get('/admin/guru/create', [AdminController::class, 'tambahGuru'])->name('admin.tambah.guru');
+    Route::delete('/admin/soal/{id}', [AdminController::class, 'hapusSoal'])->name('hapus.soal');
+    Route::delete('/admin/hasil/kepsek/delete/{id}', [AdminController::class, 'hapusHasilKepsek'])->name('hapus.hasil.kepsek');
+    Route::delete('/admin/hasil/guru/delete/{id}', [AdminController::class, 'hapusHasilGuru'])->name('hapus.hasil.guru');
+    Route::get('/admin/grafik-individu/guru/{userId}', [AdminController::class, 'grafikIndividu'])->name('grafik.individu');
+    Route::get('/admin/grafik-kepsek', [AdminController::class, 'grafikKepsek'])->name('grafik.kepsek');
+    Route::get('/admin/grafik-guru', [AdminController::class, 'grafikGuru'])->name('grafik.guru');
 });

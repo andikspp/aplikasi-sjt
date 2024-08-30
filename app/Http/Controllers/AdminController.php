@@ -125,7 +125,7 @@ class AdminController extends Controller
             ->select(
                 'users.id',
                 'users.name',
-                'users.email',
+                'users.username',
                 'users.telepon',
                 'users.instansi as instansi',
                 'users.role',
@@ -134,7 +134,7 @@ class AdminController extends Controller
                 'quiz_attempts.score'
             )
             ->where('users.role', 'guru')
-            ->get();
+            ->paginate(10);
 
         return view('admin.hasil.guru', ['results' => $results]);
     }
@@ -147,7 +147,7 @@ class AdminController extends Controller
             ->select(
                 'users.id',
                 'users.name',
-                'users.email',
+                'users.username',
                 'users.telepon',
                 'users.instansi as instansi',
                 'users.role',
@@ -156,7 +156,7 @@ class AdminController extends Controller
                 'quiz_attempts.score'
             )
             ->where('users.role', 'kepala sekolah')
-            ->get();
+            ->paginate(10);
 
         return view('admin.hasil.kepsek', ['results' => $results]);
     }
@@ -164,7 +164,7 @@ class AdminController extends Controller
     public function showQuestions($question_set_id)
     {
         $questionSet = QuestionSet::findOrFail($question_set_id);
-        $questions = $questionSet->questions()->with('answers')->get();
+        $questions = $questionSet->questions()->with('answers')->paginate(10);
         return view('admin.soal.detail-soal', compact('questionSet', 'questions'));
     }
 
@@ -246,21 +246,25 @@ class AdminController extends Controller
     public function dataPeserta()
     {
         $results = DB::table('users')
-            ->select('name', 'email', 'telepon', 'instansi', 'role', 'status')
+            ->select('name', 'username', 'telepon', 'instansi', 'role', 'status')
             ->orderBy('name')
             ->paginate(50);
 
         return view('admin.data_peserta.user', compact('results'));
     }
 
-    public function dataGuru()
+    public function dataGuru(Request $request)
     {
-        $results = DB::table('users')
+        $search = $request->input('search');
+
+        $statusFilter = $request->input('status');
+
+        $query = DB::table('users')
             ->leftJoin('question_sets', 'users.question_set_id', '=', 'question_sets.id')
             ->select(
                 'users.id',
                 'users.name',
-                'users.email',
+                'users.username',
                 'users.telepon',
                 'users.instansi',
                 'users.role',
@@ -268,21 +272,37 @@ class AdminController extends Controller
                 'users.question_set_id',
                 'question_sets.name as question_set_name'
             )
-            ->where('users.role', 'guru')
-            ->orderBy('users.name')
-            ->paginate(50);
+            ->where('users.role', 'guru');
 
-        return view('admin.data_peserta.guru', compact('results'));
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('users.name', 'LIKE', "%{$search}%")
+                    ->orWhere('users.username', 'LIKE', "%{$search}%")
+                    ->orWhere('users.instansi', 'LIKE', "%{$search}%");
+            });
+        }
+
+        if ($statusFilter) {
+            $query->where('users.status', $statusFilter);
+        }
+
+        $results = $query->orderBy('users.name')->paginate(10);
+
+        return view('admin.data_peserta.guru', compact('results', 'search', 'statusFilter'));
     }
 
-    public function dataKepsek()
+    public function dataKepsek(Request $request)
     {
-        $results = DB::table('users')
+        $search = $request->input('search');
+
+        $statusFilter = $request->input('status');
+
+        $query = DB::table('users')
             ->leftJoin('question_sets', 'users.question_set_id', '=', 'question_sets.id')
             ->select(
                 'users.id',
                 'users.name',
-                'users.email',
+                'users.username',
                 'users.telepon',
                 'users.instansi',
                 'users.role',
@@ -290,11 +310,23 @@ class AdminController extends Controller
                 'users.question_set_id',
                 'question_sets.name as question_set_name'
             )
-            ->where('users.role', 'Kepala Sekolah')
-            ->orderBy('users.name')
-            ->paginate(50);
+            ->where('users.role', 'Kepala Sekolah');
 
-        return view('admin.data_peserta.kepsek', compact('results'));
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('users.name', 'LIKE', "%{$search}%")
+                    ->orWhere('users.username', 'LIKE', "%{$search}%")
+                    ->orWhere('users.instansi', 'LIKE', "%{$search}%");
+            });
+        }
+
+        if ($statusFilter) {
+            $query->where('users.status', $statusFilter);
+        }
+
+        $results = $query->orderBy('users.name')->paginate(10);
+
+        return view('admin.data_peserta.kepsek', compact('results', 'search', 'statusFilter'));
     }
 
     public function jawabanPeserta($userId)
@@ -314,11 +346,11 @@ class AdminController extends Controller
                 'answers.score'
             )
             ->where('user_answers.user_id', $userId)
-            ->get();
+            ->paginate(10);
 
         $userName = $answers->first()->user_name ?? 'Unknown';
 
-        return view('admin.hasil.detail-jawaban', compact('answers', 'userName'));
+        return view('admin.hasil.detail-jawaban', compact('answers', 'userName', 'userId'));
     }
 
     public function editPaketSoal($question_set_id)
@@ -345,7 +377,6 @@ class AdminController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
             'telepon' => 'required|string|max:15',
             'instansi' => 'required|string|max:255',
             'role' => [
@@ -385,7 +416,6 @@ class AdminController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
             'telepon' => 'required|string|max:15',
             'instansi' => 'required|string|max:255',
             'role' => [
@@ -434,5 +464,126 @@ class AdminController extends Controller
         $kepsek->delete();
 
         return redirect()->route('data.kepala_sekolah')->with('success', 'Data Kepala Sekolah berhasil dihapus.');
+    }
+
+    public function tambahKepsek()
+    {
+        $questionSets = QuestionSet::where('role', 'Kepala Sekolah')->pluck('name', 'id');
+
+        return view('admin.data_peserta.tambah-kepsek', compact('questionSets'));
+    }
+
+    public function tambahGuru()
+    {
+        $questionSets = QuestionSet::where('role', 'Guru')->pluck('name', 'id');
+
+        return view('admin.data_peserta.tambah-guru', compact('questionSets'));
+    }
+
+    public function hapusSoal($id)
+    {
+        $question = Question::find($id);
+
+        if (!$question) {
+            return redirect()->back()->withErrors('Soal tidak ditemukan.');
+        }
+
+        $question->delete();
+
+        return redirect()->route('admin.soal')->with('success', 'Soal berhasil dihapus.');
+    }
+
+    public function hapusHasilKepsek($userId)
+    {
+        DB::transaction(function () use ($userId) {
+            DB::table('quiz_attempts')->where('user_id', $userId)->delete();
+
+            DB::table('users')->where('id', $userId)->update(['status' => 'not_started']);
+
+            DB::table('user_answers')->where('user_id', $userId)->delete();
+        });
+
+
+        return redirect()->route('hasil.kepala_sekolah')->with('success', 'Data berhasil dihapus.');
+    }
+
+    public function hapusHasilGuru($userId)
+    {
+        DB::transaction(function () use ($userId) {
+            DB::table('quiz_attempts')->where('user_id', $userId)->delete();
+
+            DB::table('users')->where('id', $userId)->update(['status' => 'not_started']);
+
+            DB::table('user_answers')->where('user_id', $userId)->delete();
+        });
+
+
+        return redirect()->route('hasil.guru')->with('success', 'Data berhasil dihapus.');
+    }
+
+    public function grafikIndividu($userId)
+    {
+        $scores = DB::table('user_answers')
+            ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
+            ->join('users', 'user_answers.user_id', '=', 'users.id')
+            ->select(
+                'users.name',
+                DB::raw('answers.score, COUNT(*) as count')
+            )
+            ->where('user_answers.user_id', $userId)
+            ->groupBy('users.name', 'answers.score')
+            ->pluck('count', 'answers.score');
+
+
+        $scoreData = [
+            '4' => $scores->get(4, 0),
+            '3' => $scores->get(3, 0),
+            '2' => $scores->get(2, 0),
+            '1' => $scores->get(1, 0),
+        ];
+
+        $userName = DB::table('users')->where('id', $userId)->value('name');
+
+        return view('admin.hasil.grafik-individu-guru', compact('scoreData', 'userName'));
+    }
+
+    public function grafikKepsek()
+    {
+        $scores = DB::table('user_answers')
+            ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
+            ->join('users', 'user_answers.user_id', '=', 'users.id')
+            ->where('users.role', 'kepala sekolah')
+            ->select(DB::raw('answers.score, COUNT(*) as count'))
+            ->groupBy('answers.score')
+            ->pluck('count', 'answers.score');
+
+        $scoreData = [
+            '4' => $scores->get(4, 0),
+            '3' => $scores->get(3, 0),
+            '2' => $scores->get(2, 0),
+            '1' => $scores->get(1, 0),
+        ];
+
+        return view('admin.hasil.grafik-kepsek', compact('scoreData'));
+    }
+
+    public function grafikGuru()
+    {
+        $scores = DB::table('user_answers')
+            ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
+            ->join('users', 'user_answers.user_id', '=', 'users.id')
+            ->where('users.role', 'guru')
+            ->select(DB::raw('answers.score, COUNT(*) as count'))
+            ->groupBy('answers.score')
+            ->pluck('count', 'answers.score');
+
+        $scoreData = [
+            '4' => $scores->get(4, 0),
+            '3' => $scores->get(3, 0),
+            '2' => $scores->get(2, 0),
+            '1' => $scores->get(1, 0),
+        ];
+
+        return view('admin.hasil.grafik-guru', compact('scoreData'));
     }
 }

@@ -57,8 +57,10 @@
                                         class="btn btn-warning text-white">
                                         <i class="bi bi-pencil"></i> Edit
                                     </a>
-                                    <button type="button" class="btn btn-danger btn-sm"
-                                        onclick="confirmDeletion({{ $set->id }})">Hapus</button>
+                                    <button type="button" class="btn btn-danger"
+                                        onclick="confirmDeletion({{ $set->id }})">
+                                        <i class="bi bi-trash"></i> Hapus
+                                    </button>
 
                                     <!-- Form untuk penghapusan, di-submit secara dinamis melalui JavaScript -->
                                     <form id="delete-form-{{ $set->id }}"
@@ -78,20 +80,21 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
     <script>
-        function confirmDeletion(id) {
+        function confirmDeletion(questionId) {
+            event.preventDefault(); // Prevent the form from submitting immediately
             Swal.fire({
-                title: 'Anda yakin ingin menghapus paket soal ini?',
-                text: "Tindakan ini tidak dapat dibatalkan!",
+                title: 'Anda yakin?',
+                text: "Data akan dihapus secara permanen!",
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
                 confirmButtonText: 'Ya, hapus!',
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Submit form delete dengan ID yang sesuai
-                    document.getElementById('delete-form-' + id).submit();
+                    // If confirmed, submit the form
+                    document.getElementById('delete-form-' + questionId).submit();
                 }
             });
         }

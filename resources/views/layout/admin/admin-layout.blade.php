@@ -35,6 +35,11 @@
             transform: scale(1.05);
         }
 
+        .navbar-nav .nav-link.active {
+            text-decoration: underline;
+            text-decoration-color: white;
+        }
+
         footer {
             background-color: #005689;
             color: white;
@@ -56,16 +61,20 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                        <a class="nav-link {{ Request::routeIs('admin.dashboard') ? 'active' : '' }}"
+                            href="{{ route('admin.dashboard') }}">Dashboard</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.soal') }}">Paket Soal</a>
+                        <a class="nav-link {{ Request::routeIs('admin.soal') ? 'active' : '' }}"
+                            href="{{ route('admin.soal') }}">Paket Soal</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('hasil') }}">Hasil</a>
+                        <a class="nav-link {{ Request::routeIs('hasil') ? 'active' : '' }}"
+                            href="{{ route('hasil') }}">Hasil</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('data.peserta') }}">Data Peserta</a>
+                        <a class="nav-link {{ Request::routeIs('data.peserta') ? 'active' : '' }}"
+                            href="{{ route('data.peserta') }}">Data Peserta</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="#" id="logout-btn">Logout</a>
@@ -81,6 +90,7 @@
             </div>
         </div>
     </nav>
+
 
     <main>
         @yield('content')

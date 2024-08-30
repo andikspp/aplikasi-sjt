@@ -36,21 +36,30 @@
 
     <div class="container mt-5">
         <h2 class="text-center mb-4">Data Peserta Guru</h2>
+
         <div class="d-flex justify-content-between mb-3">
-                <a href="#" class="btn btn-success mb-3">Export to Excel</a>
-                <form method="GET" action="#" class="mb-3" style="text-align: right;">
-                    <input type="text" name="search" placeholder="Search..." class="form-control mb-2" style="width: 150px; display: inline-block;" />
-                    <button type="submit" class="btn btn-primary mb-2" style="margin-left: 10px;">Cari</button>
-                </form>
-            </div>
+            <a href="{{ route('admin.tambah.kepsek') }}" class="btn btn-success mb-3">Tambah Kepala Sekolah</a>
+            <form method="GET" action="{{ route('data.guru') }}" class="mb-3 d-flex align-items-center">
+                <input type="text" name="search" value="{{ $search }}" placeholder="Search..."
+                    class="form-control me-2" style="width: 150px;" />
+                <select name="status" class="form-control me-2" style="width: 150px;">
+                    <option value="">Status</option>
+                    <option value="not_started" {{ $statusFilter == 'not_started' ? 'selected' : '' }}>Not Started</option>
+                    <option value="on_going" {{ $statusFilter == 'on_going' ? 'selected' : '' }}>On Going</option>
+                    <option value="submitted" {{ $statusFilter == 'submitted' ? 'selected' : '' }}>Submitted</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Cari</button>
+            </form>
+        </div>
 
         @if ($results instanceof \Illuminate\Pagination\LengthAwarePaginator)
             <div class="table-responsive">
                 <table class="table table-striped table-bordered table-hover">
                     <thead class="thead-dark">
                         <tr>
+                            <th>No.</th>
                             <th>Nama</th>
-                            <th>Email</th>
+                            <th>Username</th>
                             <th>Telepon</th>
                             <th>Instansi</th>
                             <th>Role</th>
@@ -62,8 +71,9 @@
                     <tbody>
                         @forelse ($results as $result)
                             <tr>
+                                <td>{{ $loop->iteration + $results->firstItem() - 1 }}</td>
                                 <td>{{ $result->name ?? 'N/A' }}</td>
-                                <td>{{ $result->email ?? 'N/A' }}</td>
+                                <td>{{ $result->username ?? 'N/A' }}</td>
                                 <td>{{ $result->telepon ?? 'N/A' }}</td>
                                 <td>{{ strtoupper($result->instansi) ?? 'N/A' }}</td>
                                 <td>{{ ucwords($result->role) ?? 'N/A' }}</td>
@@ -91,11 +101,10 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
 
-            <!-- Pagination links -->
-            <div class="d-flex justify-content-center mt-4">
-                {{ $results->links() }}
+                <div class="d-flex justify-content-center">
+                    {{ $results->links('pagination.pagination') }}
+                </div>
             </div>
         @else
             <div class="alert alert-warning">
