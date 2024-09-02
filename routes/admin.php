@@ -3,6 +3,7 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\QuestionSetController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ExportController;
 
 Route::get('/admin/register', [AdminController::class, 'registerAdmin'])->name('register.admin');
 Route::post('/admin/register', [AdminController::class, 'register'])->name('admin.register');
@@ -45,4 +46,6 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::get('/admin/grafik-individu/guru/{userId}', [AdminController::class, 'grafikIndividu'])->name('grafik.individu');
     Route::get('/admin/grafik-kepsek', [AdminController::class, 'grafikKepsek'])->name('grafik.kepsek');
     Route::get('/admin/grafik-guru', [AdminController::class, 'grafikGuru'])->name('grafik.guru');
+    Route::get('/admin/hasil/kepsek/export', [ExportController::class, 'exportResultsKepsek'])->name('admin.results.kepsek');
+    Route::get('/admin/hasil/guru/export', [ExportController::class, 'exportGuruResults'])->name('admin.results.guru');
 });

@@ -37,7 +37,7 @@
     <div class="container mt-5">
         <h2 class="text-center mb-4">Hasil Ujian Kepala Sekolah</h2>
         <div class="d-flex justify-content-between mb-3">
-            <a href="#" class="btn btn-success mb-3">Export to Excel</a>
+            <a href="{{ route('admin.results.kepsek') }}" class="btn btn-success mb-3">Export to Excel</a>
             <a href="{{ route('grafik.kepsek') }}" class="btn btn-primary mb-3 me-auto ms-3">Lihat Grafik</a>
         </div>
         <div class="table-responsive">

@@ -24,7 +24,7 @@ use App\Http\Controllers\ProfileController;
 require base_path('routes/admin.php');
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('auth.login');
 });
 
 Route::get('/register', [RegisterController::class, 'index'])->name('register');
