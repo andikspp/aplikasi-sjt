@@ -5,6 +5,10 @@ use App\Http\Controllers\QuestionSetController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ExportController;
 
+Route::get('/admin', function () {
+    return view('admin.login');
+});
+
 Route::get('/admin/register', [AdminController::class, 'registerAdmin'])->name('register.admin');
 Route::post('/admin/register', [AdminController::class, 'register'])->name('admin.register');
 Route::get('/admin/login', [AdminController::class, 'loginAdmin'])->name('login.admin');

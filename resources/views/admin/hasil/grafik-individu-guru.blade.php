@@ -13,6 +13,7 @@
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
     <div class="container mt-5">
         <h2>Grafik Skor Jawaban {{ $userName }}</h2>
@@ -41,18 +42,21 @@
             options: {
                 responsive: true,
                 plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const total = context.dataset.data.reduce((acc, value) => acc + value, 0);
-                                const value = context.raw;
-                                const percentage = ((value / total) * 100).toFixed(2) + '%';
-                                return context.label + ': ' + value + ' (' + percentage + ')';
-                            }
+                    datalabels: {
+                        color: '#fff',
+                        formatter: (value, context) => {
+                            const total = context.chart.data.datasets[0].data.reduce((acc, val) => acc + val,
+                                0);
+                            const percentage = ((value / total) * 100).toFixed(2) + '%';
+                            return percentage;
+                        },
+                        font: {
+                            weight: 'bold',
                         }
                     }
                 }
-            }
+            },
+            plugins: [ChartDataLabels]
         });
     </script>
 @endsection
