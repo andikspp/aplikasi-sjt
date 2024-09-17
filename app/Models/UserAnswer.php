@@ -10,7 +10,7 @@ class UserAnswer extends Model
     use HasFactory;
 
     protected $table = 'user_answers';
-    protected $fillable = ['user_id', 'question_id', 'answer_id'];
+    protected $fillable = ['user_id', 'question_id', 'answer_id', 'kompetensi_id'];
 
     public function question()
     {
@@ -25,5 +25,10 @@ class UserAnswer extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function kompetensi()
+    {
+        return $this->belongsTo(Kompetensi::class, 'kompetensi_id');
     }
 }

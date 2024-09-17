@@ -20,6 +20,7 @@ class QuestionController extends Controller
         $request->validate([
             'question_text' => 'required|string|max:255',
             'question_set_id' => 'required|exists:question_sets,id',
+            'kompetensi_id' => 'required|exists:kompetensi,id',
         ]);
 
         Question::create($request->all());

@@ -122,6 +122,7 @@
                     <th>Nomor</th>
                     <th>Pertanyaan</th>
                     <th>Jawaban</th>
+                    <th>Kompetensi</th>
                     <th>Skor</th>
                 </tr>
             </thead>
@@ -131,6 +132,7 @@
                         <td>{{ $loop->iteration + $answers->firstItem() - 1 }}</td>
                         <td>{{ $answer->question_text }}</td>
                         <td>{{ $answer->answer_text }}</td>
+                        <td>{{ $answer->nama }}</td>
                         <td>{{ $answer->score }}</td>
                     </tr>
                 @empty

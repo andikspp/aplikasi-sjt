@@ -12,6 +12,7 @@ class Question extends Model
     protected $fillable = [
         'question_text',
         'question_set_id',
+        'kompetensi_id'
     ];
 
     public function answers()
@@ -22,5 +23,10 @@ class Question extends Model
     public function questionSet()
     {
         return $this->belongsTo(QuestionSet::class);
+    }
+
+    public function kompetensi()
+    {
+        return $this->belongsTo(Kompetensi::class);
     }
 }

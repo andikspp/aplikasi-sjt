@@ -8,6 +8,7 @@ use App\Models\QuestionSet;
 use Illuminate\Support\Facades\Auth;
 use App\Models\QuizAttempt;
 use App\Models\UserAnswer;
+use App\Models\Question;
 use Illuminate\Support\Facades\DB;
 
 class ExamController extends Controller
@@ -203,13 +204,22 @@ class ExamController extends Controller
             'answer_id' => 'required|exists:answers,id',
         ]);
 
+        $kompetensiId = Question::where('id', $request->question_id)->value('kompetensi_id');
+
+        if (is_null($kompetensiId)) {
+            return response()->json(['message' => 'Kompetensi ID not found for the selected question.'], 404);
+        }
+
         // Simpan jawaban ke database
         UserAnswer::updateOrCreate(
             [
                 'user_id' => $request->user_id,
                 'question_id' => $request->question_id,
             ],
-            ['answer_id' => $request->answer_id]
+            [
+                'answer_id' => $request->answer_id,
+                'kompetensi_id' => $kompetensiId,
+            ]
         );
 
         return response()->json(['message' => 'Answer saved successfully.']);

@@ -69,6 +69,7 @@ class AdminController extends Controller
     {
         // Validasi input
         $validatedData = $request->validate([
+            'kompetensi_id' => 'required|exists:kompetensi,id',
             'question_text' => 'required|string|max:255',
             'question_set_id' => 'required|exists:question_sets,id',
             'option_a' => 'required|string|max:255',
@@ -85,6 +86,7 @@ class AdminController extends Controller
         $question = Question::create([
             'question_text' => $validatedData['question_text'],
             'question_set_id' => $validatedData['question_set_id'],
+            'kompetensi_id' => $validatedData['kompetensi_id'],
         ]);
 
         // Menyimpan jawaban
@@ -164,7 +166,7 @@ class AdminController extends Controller
     public function showQuestions($question_set_id)
     {
         $questionSet = QuestionSet::findOrFail($question_set_id);
-        $questions = $questionSet->questions()->with('answers')->paginate(10);
+        $questions = $questionSet->questions()->with('answers', 'kompetensi')->paginate(10);
         return view('admin.soal.detail-soal', compact('questionSet', 'questions'));
     }
 
@@ -179,6 +181,7 @@ class AdminController extends Controller
     public function editQuestions(Request $request, $id)
     {
         $validatedData = $request->validate([
+            'kompetensi_id' => 'required|exists:kompetensi,id',
             'question_text' => 'required|string|max:255',
             'question_set_id' => 'required|exists:question_sets,id',
             'answers.*.answer_text' => 'required|string|max:255',
@@ -191,6 +194,7 @@ class AdminController extends Controller
         $question->update([
             'question_text' => $validatedData['question_text'],
             'question_set_id' => $validatedData['question_set_id'],
+            'kompetensi_id' => $validatedData['kompetensi_id'],
         ]);
 
         // Update the answers
@@ -332,18 +336,21 @@ class AdminController extends Controller
     public function jawabanPeserta($userId)
     {
         $userAnswers = UserAnswer::where('user_id', $userId)
-            ->with(['question', 'answer'])
+            ->with(['question.kompetensi', 'answer'])
             ->get();
 
+        // Jika Anda menggunakan query builder:
         $answers = DB::table('user_answers')
             ->join('questions', 'user_answers.question_id', '=', 'questions.id')
+            ->join('kompetensi', 'user_answers.kompetensi_id', '=', 'kompetensi.id')
             ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
             ->join('users', 'user_answers.user_id', '=', 'users.id')
             ->select(
                 'users.name as user_name',
                 'questions.question_text',
                 'answers.answer_text',
-                'answers.score'
+                'answers.score',
+                'kompetensi.nama as nama'
             )
             ->where('user_answers.user_id', $userId)
             ->paginate(10);
@@ -352,6 +359,7 @@ class AdminController extends Controller
 
         return view('admin.hasil.detail-jawaban', compact('answers', 'userName', 'userId'));
     }
+
 
     public function editPaketSoal($question_set_id)
     {
@@ -523,29 +531,40 @@ class AdminController extends Controller
 
     public function grafikIndividu($userId)
     {
-        $scores = DB::table('user_answers')
+        // Ambil data jawaban pengguna dengan kompetensi
+        $answers = DB::table('user_answers')
+            ->join('questions', 'user_answers.question_id', '=', 'questions.id')
             ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
+            ->join('kompetensi', 'questions.kompetensi_id', '=', 'kompetensi.id')
             ->join('users', 'user_answers.user_id', '=', 'users.id')
             ->select(
-                'users.name',
-                DB::raw('answers.score, COUNT(*) as count')
+                'users.name as user_name',
+                'kompetensi.nama as kompetensi_name',
+                'answers.score'
             )
             ->where('user_answers.user_id', $userId)
-            ->groupBy('users.name', 'answers.score')
-            ->pluck('count', 'answers.score');
+            ->get();
 
+        // Menghitung total skor per kompetensi
+        $scoreByCompetency = $answers->groupBy('kompetensi_name')->map(function ($items) {
+            return $items->sum('score');
+        });
 
+        // Data untuk grafik pie
         $scoreData = [
-            '4' => $scores->get(4, 0),
-            '3' => $scores->get(3, 0),
-            '2' => $scores->get(2, 0),
-            '1' => $scores->get(1, 0),
+            '4' => $answers->where('score', 4)->count(),
+            '3' => $answers->where('score', 3)->count(),
+            '2' => $answers->where('score', 2)->count(),
+            '1' => $answers->where('score', 1)->count(),
         ];
 
-        $userName = DB::table('users')->where('id', $userId)->value('name');
-
-        return view('admin.hasil.grafik-individu-guru', compact('scoreData', 'userName'));
+        return view('admin.hasil.grafik-individu-guru', [
+            'userName' => $answers->first()->user_name ?? 'Unknown',
+            'scoreData' => $scoreData,
+            'scoreByCompetency' => $scoreByCompetency
+        ]);
     }
+
 
     public function grafikKepsek()
     {

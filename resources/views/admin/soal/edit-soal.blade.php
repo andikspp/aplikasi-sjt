@@ -36,6 +36,21 @@
             </div>
 
             <div class="mb-3">
+                <label for="question_set_id" class="form-label">Kompetensi</label>
+                <select class="form-select" id="kompetensi_id" name="kompetensi_id" required>
+                    @php
+                        $kompetensi = App\Models\Kompetensi::all();
+                    @endphp
+                    @foreach ($kompetensi as $kompeten)
+                        <option value="{{ $kompeten->id }}"
+                            {{ $question->kompetensi_id == $kompeten->id ? 'selected' : '' }}>
+                            {{ $kompeten->nama }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="mb-3">
                 <label for="question_text" class="form-label">Pertanyaan</label>
                 <textarea class="form-control" id="question_text" name="question_text" rows="3" required>{{ old('question_text', $question->question_text) }}</textarea>
             </div>
@@ -43,7 +58,8 @@
                 <input type="hidden" name="answer_ids[{{ $index }}]" value="{{ $answer->id }}">
                 <div class="row mb-3">
                     <div class="col-md-8">
-                        <label for="answer_text_{{ $index }}" class="form-label">Jawaban {{ $index + 1 }}</label>
+                        <label for="answer_text_{{ $index }}" class="form-label">Jawaban
+                            {{ $index + 1 }}</label>
                         <input type="text" class="form-control" id="answer_text_{{ $index }}"
                             name="answers[{{ $index }}][answer_text]"
                             value="{{ old('answers.' . $index . '.answer_text', $answer->answer_text) }}" required>

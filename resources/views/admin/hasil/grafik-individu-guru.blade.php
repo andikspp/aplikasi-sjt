@@ -20,6 +20,11 @@
         <div class="chart-container">
             <canvas id="scorePieChart"></canvas>
         </div>
+
+        <h2 class="mt-5">Grafik Skor per Kompetensi</h2>
+        <div class="chart-container">
+            <canvas id="scoreBarChart"></canvas>
+        </div>
     </div>
 
     <script>
@@ -53,6 +58,43 @@
                         font: {
                             weight: 'bold',
                         }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+
+        // Bar Chart
+        const scoreByCompetency = @json($scoreByCompetency);
+        const ctxBar = document.getElementById('scoreBarChart').getContext('2d');
+        const barChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(scoreByCompetency),
+                datasets: [{
+                    label: 'Total Skor',
+                    data: Object.values(scoreByCompetency),
+                    backgroundColor: '#3e95cd',
+                    borderColor: '#1e88e5',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    datalabels: {
+                        color: '#fff',
+                        formatter: (value) => {
+                            return value;
+                        },
+                        font: {
+                            weight: 'bold',
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true
                     }
                 }
             },

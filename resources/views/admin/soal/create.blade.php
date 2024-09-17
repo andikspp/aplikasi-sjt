@@ -20,6 +20,18 @@
             </div>
 
             <div class="mb-3">
+                <label for="question_set_id" class="form-label">Kompetensi</label>
+                <select class="form-select" id="kompetensi_id" name="kompetensi_id" required>
+                    @php
+                        $kompetensi = App\Models\Kompetensi::all();
+                    @endphp
+                    @foreach ($kompetensi as $kompeten)
+                        <option value="{{ $kompeten->id }}">{{ $kompeten->nama }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="mb-3">
                 <label for="question_text" class="form-label">Pertanyaan</label>
                 <textarea class="form-control" id="question_text" name="question_text" rows="4" required></textarea>
             </div>
