@@ -47,7 +47,7 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::delete('/admin/soal/{id}', [AdminController::class, 'hapusSoal'])->name('hapus.soal');
     Route::delete('/admin/hasil/kepsek/delete/{id}', [AdminController::class, 'hapusHasilKepsek'])->name('hapus.hasil.kepsek');
     Route::delete('/admin/hasil/guru/delete/{id}', [AdminController::class, 'hapusHasilGuru'])->name('hapus.hasil.guru');
-    Route::get('/admin/grafik-individu/guru/{userId}', [AdminController::class, 'grafikIndividu'])->name('grafik.individu');
+    Route::get('/admin/grafik-individu/{userId}', [AdminController::class, 'grafikIndividu'])->name('grafik.individu');
     Route::get('/admin/grafik-kepsek', [AdminController::class, 'grafikKepsek'])->name('grafik.kepsek');
     Route::get('/admin/grafik-guru', [AdminController::class, 'grafikGuru'])->name('grafik.guru');
     Route::get('/admin/hasil/kepsek/export', [ExportController::class, 'exportResultsKepsek'])->name('admin.results.kepsek');
