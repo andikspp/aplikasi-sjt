@@ -49,7 +49,7 @@
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ route('admin.dashboard') }}">
                 <img src="{{ asset('assets/logo kemendikbudristek.png') }}" alt="Logo" style="max-width: 100px;">

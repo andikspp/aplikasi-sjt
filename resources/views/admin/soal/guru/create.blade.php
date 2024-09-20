@@ -4,14 +4,14 @@
 
 @section('content')
     <div class="container mt-5">
-        <h2 class="text-center mb-4">Tambah Soal</h2>
+        <h2 class="text-center mb-4">Tambah Soal Guru</h2>
         <form action="{{ route('admin.storeQuestion') }}" method="POST">
             @csrf
             <div class="mb-3">
                 <label for="question_set_id" class="form-label">Paket Soal</label>
                 <select class="form-select" id="question_set_id" name="question_set_id" required>
                     @php
-                        $questionSets = App\Models\QuestionSet::all();
+                        $questionSets = App\Models\QuestionSet::where('role', 'Guru')->get();
                     @endphp
                     @foreach ($questionSets as $set)
                         <option value="{{ $set->id }}">{{ $set->name }}</option>

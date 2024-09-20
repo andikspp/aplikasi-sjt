@@ -49,7 +49,9 @@
                                     <i class="bi bi-file-text"></i> Jumlah Soal: {{ $set->questions->count() }}
                                 </p>
                                 <div class="d-flex justify-content-between">
-                                    <a href="{{ route('admin.detail-soal', ['question_set_id' => $set->id]) }}"
+                                    <a href="{{ $set->role === 'Kepala Sekolah'
+                                        ? route('admin.ks.detail-soal', ['question_set_id' => $set->id])
+                                        : route('admin.guru.detail-soal', ['question_set_id' => $set->id]) }}"
                                         class="btn btn-custom">
                                         <i class="bi bi-eye"></i> Lihat Soal
                                     </a>

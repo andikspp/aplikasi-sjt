@@ -18,9 +18,11 @@ Route::post('/admin/logout', [AdminController::class, 'logout'])->name('admin.lo
 Route::middleware(['auth.admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
     Route::get('/admin/soal', [AdminController::class, 'soalPage'])->name('admin.soal');
-    Route::get('/admin/soal/create', [AdminController::class, 'soal'])->name('admin.soal.create');
+    Route::get('/admin/soal/ks/create', [AdminController::class, 'soalKs'])->name('admin.soal.ks.create');
+    Route::get('/admin/soal/guru/create', [AdminController::class, 'soalGuru'])->name('admin.soal.guru.create');
     Route::post('/admin/questions', [AdminController::class, 'storeQuestion'])->name('admin.storeQuestion');
-    Route::get('/admin/soal/{question_set_id}', [AdminController::class, 'showQuestions'])->name('admin.detail-soal');
+    Route::get('/admin/soal/ks/{question_set_id}', [AdminController::class, 'showQuestionsKs'])->name('admin.ks.detail-soal');
+    Route::get('/admin/soal/guru/{question_set_id}', [AdminController::class, 'showQuestionsGuru'])->name('admin.guru.detail-soal');
     Route::get('/admin/add-paket-soal', [QuestionSetController::class, 'create'])->name('create.QuestionSet');
     Route::post('/admin/paket-soal', [QuestionSetController::class, 'store'])->name('store.QuestionSet');
     Route::get('/admin/paket-soal', [QuestionSetController::class, 'index'])->name('index.QuestionSet');

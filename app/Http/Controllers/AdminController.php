@@ -60,9 +60,14 @@ class AdminController extends Controller
         return view('admin.soal.index', compact('questionSets'));
     }
 
-    public function soal()
+    public function soalKs()
     {
-        return view('admin.soal.create');
+        return view('admin.soal.kepala_sekolah.create');
+    }
+
+    public function soalGuru()
+    {
+        return view('admin.soal.guru.create');
     }
 
     public function storeQuestion(Request $request)
@@ -111,7 +116,17 @@ class AdminController extends Controller
             'score' => $validatedData['score_d'],
         ]);
 
-        return redirect()->route('admin.soal.create')->with('success', 'Soal berhasil disimpan!');
+        $questionSet = QuestionSet::find($validatedData['question_set_id']);
+        $ownerPaketSoal = $questionSet->role;
+
+        if ($ownerPaketSoal === 'Kepala Sekolah') {
+            $route = 'admin.ks.detail-soal';
+        } else {
+            $route = 'admin.guru.detail-soal';
+        }
+
+        return redirect()->route($route, ['question_set_id' => $validatedData['question_set_id']])
+            ->with('success', 'Soal berhasil disimpan!');
     }
 
     public function resultPage()
@@ -163,11 +178,18 @@ class AdminController extends Controller
         return view('admin.hasil.kepsek', ['results' => $results]);
     }
 
-    public function showQuestions($question_set_id)
+    public function showQuestionsKs($question_set_id)
     {
         $questionSet = QuestionSet::findOrFail($question_set_id);
         $questions = $questionSet->questions()->with('answers', 'kompetensi')->paginate(10);
-        return view('admin.soal.detail-soal', compact('questionSet', 'questions'));
+        return view('admin.soal.kepala_sekolah.detail-soal', compact('questionSet', 'questions'));
+    }
+
+    public function showQuestionsGuru($question_set_id)
+    {
+        $questionSet = QuestionSet::findOrFail($question_set_id);
+        $questions = $questionSet->questions()->with('answers', 'kompetensi')->paginate(10);
+        return view('admin.soal.guru.detail-soal', compact('questionSet', 'questions'));
     }
 
     public function showEditForm($id)
