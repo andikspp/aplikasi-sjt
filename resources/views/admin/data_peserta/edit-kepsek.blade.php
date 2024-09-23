@@ -59,13 +59,8 @@
                                 <label for="role" class="form-label">Role</label>
                                 <select id="role" name="role"
                                     class="form-select @error('role') is-invalid @enderror" required>
-                                    <option value="">Pilih Role</option>
-                                    <option value="Guru" {{ old('role', $kepsek->role) == 'Guru' ? 'selected' : '' }}>Guru
-                                    </option>
-                                    <option value="Kepala Sekolah"
-                                        {{ old('role', $kepsek->role) == 'Kepala Sekolah' ? 'selected' : '' }}>Kepala
-                                        Sekolah
-                                    </option>
+                                    <option value="Guru">Guru</option>
+                                    <option value="Kepala Sekolah" selected>Kepala Sekolah</option>
                                 </select>
                                 @error('role')
                                     <div class="invalid-feedback">{{ $message }}</div>

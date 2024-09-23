@@ -20,6 +20,10 @@
         <div class="chart-container">
             <canvas id="scorePieChart"></canvas>
         </div>
+
+        <div class="chart-container">
+            <canvas id="scoreBarChart"></canvas>
+        </div>
     </div>
 
     <script>
@@ -46,13 +50,50 @@
                         color: '#fff', // Warna teks label
                         formatter: (value, context) => {
                             const total = context.chart.data.datasets[0].data.reduce((acc, val) => acc + val,
-                            0);
+                                0);
                             const percentage = ((value / total) * 100).toFixed(2) + '%';
                             return percentage; // Menampilkan persentase
                         },
                         font: {
                             weight: 'bold', // Membuat teks label menjadi tebal
                         }
+                    }
+                }
+            },
+            plugins: [ChartDataLabels]
+        });
+
+        // Bar Chart
+        const scoreByCompetency = @json($scoreByCompetency);
+        const ctxBar = document.getElementById('scoreBarChart').getContext('2d');
+        const barChart = new Chart(ctxBar, {
+            type: 'bar',
+            data: {
+                labels: Object.keys(scoreByCompetency),
+                datasets: [{
+                    label: 'Total Skor berdasarkan Kompetensi',
+                    data: Object.values(scoreByCompetency),
+                    backgroundColor: '#3e95cd',
+                    borderColor: '#1e88e5',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    datalabels: {
+                        color: '#fff',
+                        formatter: (value) => {
+                            return value;
+                        },
+                        font: {
+                            weight: 'bold',
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true
                     }
                 }
             },

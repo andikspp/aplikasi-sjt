@@ -23,10 +23,24 @@
                 <label for="question_set_id" class="form-label">Kompetensi</label>
                 <select class="form-select" id="kompetensi_id" name="kompetensi_id" required>
                     @php
-                        $kompetensi = App\Models\Kompetensi::all();
+                        $kompetensi = App\Models\Kompetensi::where('role', 'Kepala Sekolah')->get();
                     @endphp
                     @foreach ($kompetensi as $kompeten)
                         <option value="{{ $kompeten->id }}">{{ $kompeten->nama }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="question_set_id" class="form-label">Indikator</label>
+                <select class="form-select" id="indikator_id" name="indikator_id" required>
+                    @php
+                        $indikator = App\Models\Indikator::whereHas('kompetensi', function ($query) {
+                            $query->where('role', 'Kepala Sekolah');
+                        })->get();
+                    @endphp
+                    @foreach ($indikator as $ind)
+                        <option value="{{ $ind->id }}">{{ $ind->nama }}</option>
                     @endforeach
                 </select>
             </div>

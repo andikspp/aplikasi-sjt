@@ -36,7 +36,8 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::get('/admin/edit/{question_set_id}', [AdminController::class, 'editPaketSoal'])->name('admin.editPaketSoal');
     Route::put('/admin/soal/{id}/edit', [QuestionSetController::class, 'update'])->name('admin.putPaketSoal');
     Route::delete('/admin/delete/{id}', [QuestionSetController::class, 'destroy'])->name('admin.deletePaketSoal');
-    Route::get('/admin/soal/edit/{id}', [AdminController::class, 'showEditForm'])->name('admin.soal.edit');
+    Route::get('/admin/soal/edit/ks/{id}', [AdminController::class, 'showEditFormKs'])->name('admin.soal.edit.ks');
+    Route::get('/admin/soal/edit/guru/{id}', [AdminController::class, 'showEditFormGuru'])->name('admin.soal.edit.guru');
     Route::put('/admin/soal/update/{id}', [AdminController::class, 'editQuestions'])->name('admin.soal.update');
     Route::get('/admin/guru/edit/{id}', [AdminController::class, 'editGuru'])->name('admin.edit.guru');
     Route::put('/admin/guru/update/{id}', [AdminController::class, 'updateGuru'])->name('admin.update.guru');

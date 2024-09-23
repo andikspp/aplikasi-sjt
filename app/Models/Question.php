@@ -12,7 +12,8 @@ class Question extends Model
     protected $fillable = [
         'question_text',
         'question_set_id',
-        'kompetensi_id'
+        'kompetensi_id',
+        'indikator_id'
     ];
 
     public function answers()
@@ -28,5 +29,10 @@ class Question extends Model
     public function kompetensi()
     {
         return $this->belongsTo(Kompetensi::class);
+    }
+
+    public function indikator()
+    {
+        return $this->belongsTo(Indikator::class, 'indikator_id');
     }
 }

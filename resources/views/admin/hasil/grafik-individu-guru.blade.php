@@ -21,7 +21,6 @@
             <canvas id="scorePieChart"></canvas>
         </div>
 
-        <h2 class="mt-5">Grafik Skor per Kompetensi</h2>
         <div class="chart-container">
             <canvas id="scoreBarChart"></canvas>
         </div>
@@ -72,7 +71,7 @@
             data: {
                 labels: Object.keys(scoreByCompetency),
                 datasets: [{
-                    label: 'Total Skor',
+                    label: 'Total Skor berdasarkan Kompetensi',
                     data: Object.values(scoreByCompetency),
                     backgroundColor: '#3e95cd',
                     borderColor: '#1e88e5',

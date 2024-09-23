@@ -74,6 +74,7 @@ class AdminController extends Controller
     {
         // Validasi input
         $validatedData = $request->validate([
+            'indikator_id' => 'required|exists:indikator,id',
             'kompetensi_id' => 'required|exists:kompetensi,id',
             'question_text' => 'required|string|max:255',
             'question_set_id' => 'required|exists:question_sets,id',
@@ -92,6 +93,7 @@ class AdminController extends Controller
             'question_text' => $validatedData['question_text'],
             'question_set_id' => $validatedData['question_set_id'],
             'kompetensi_id' => $validatedData['kompetensi_id'],
+            'indikator_id' => $validatedData['indikator_id'],
         ]);
 
         // Menyimpan jawaban
@@ -181,7 +183,7 @@ class AdminController extends Controller
     public function showQuestionsKs($question_set_id)
     {
         $questionSet = QuestionSet::findOrFail($question_set_id);
-        $questions = $questionSet->questions()->with('answers', 'kompetensi')->paginate(10);
+        $questions = $questionSet->questions()->with('answers', 'kompetensi', 'indikator')->paginate(10);
         return view('admin.soal.kepala_sekolah.detail-soal', compact('questionSet', 'questions'));
     }
 
@@ -192,17 +194,25 @@ class AdminController extends Controller
         return view('admin.soal.guru.detail-soal', compact('questionSet', 'questions'));
     }
 
-    public function showEditForm($id)
+    public function showEditFormKs($id)
     {
         $question = Question::with('answers')->findOrFail($id);
 
-        return view('admin.soal.edit-soal', compact('question'));
+        return view('admin.soal.kepala_sekolah.edit-soal', compact('question'));
+    }
+
+    public function showEditFormGuru($id)
+    {
+        $question = Question::with('answers')->findOrFail($id);
+
+        return view('admin.soal.guru.edit-soal', compact('question'));
     }
 
 
     public function editQuestions(Request $request, $id)
     {
         $validatedData = $request->validate([
+            'indikator_id' => 'required|exists:indikator,id',
             'kompetensi_id' => 'required|exists:kompetensi,id',
             'question_text' => 'required|string|max:255',
             'question_set_id' => 'required|exists:question_sets,id',
@@ -217,6 +227,7 @@ class AdminController extends Controller
             'question_text' => $validatedData['question_text'],
             'question_set_id' => $validatedData['question_set_id'],
             'kompetensi_id' => $validatedData['kompetensi_id'],
+            'indikator_id' => $validatedData['indikator_id'],
         ]);
 
         // Update the answers
@@ -230,7 +241,18 @@ class AdminController extends Controller
             }
         }
 
-        return redirect()->route('admin.soal.edit', $question->id)->with('success', 'Soal berhasil diperbarui!');
+        $questionSet = QuestionSet::find($validatedData['question_set_id']);
+
+        $ownerPaketSoal = $questionSet->role;
+
+        if ($ownerPaketSoal === 'Kepala Sekolah') {
+            $route = 'admin.ks.detail-soal';
+        } else {
+            $route = 'admin.guru.detail-soal';
+        }
+
+        return redirect()->route($route, ['question_set_id' => $validatedData['question_set_id']])
+            ->with('success', 'Soal berhasil diperbarui!');
     }
 
 
@@ -367,12 +389,14 @@ class AdminController extends Controller
             ->join('kompetensi', 'user_answers.kompetensi_id', '=', 'kompetensi.id')
             ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
             ->join('users', 'user_answers.user_id', '=', 'users.id')
+            ->leftJoin('indikator', 'questions.indikator_id', '=', 'indikator.id')
             ->select(
                 'users.name as user_name',
                 'questions.question_text',
                 'answers.answer_text',
                 'answers.score',
-                'kompetensi.nama as nama'
+                'kompetensi.nama as nama',
+                'indikator.nama as indikator_nama'
             )
             ->where('user_answers.user_id', $userId)
             ->paginate(10);
@@ -518,9 +542,17 @@ class AdminController extends Controller
             return redirect()->back()->withErrors('Soal tidak ditemukan.');
         }
 
+        $questionSet = $question->questionSet;
+
         $question->delete();
 
-        return redirect()->route('admin.soal')->with('success', 'Soal berhasil dihapus.');
+        if ($questionSet && $questionSet->role === 'Kepala Sekolah') {
+            return redirect()->route('admin.ks.detail-soal', $questionSet->id)
+                ->with('success', 'Soal berhasil dihapus.');
+        } else {
+            return redirect()->route('admin.guru.detail-soal', $questionSet->id)
+                ->with('success', 'Soal berhasil dihapus.');
+        }
     }
 
     public function hapusHasilKepsek($userId)
@@ -590,6 +622,7 @@ class AdminController extends Controller
 
     public function grafikKepsek()
     {
+        // Data for existing chart (Total scores for kepala sekolah)
         $scores = DB::table('user_answers')
             ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
             ->join('users', 'user_answers.user_id', '=', 'users.id')
@@ -605,8 +638,21 @@ class AdminController extends Controller
             '1' => $scores->get(1, 0),
         ];
 
-        return view('admin.hasil.grafik-kepsek', compact('scoreData'));
+        // Data for new chart (Scores grouped by kompetensi for kepala sekolah)
+        $scoreByCompetency = DB::table('user_answers')
+            ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
+            ->join('users', 'user_answers.user_id', '=', 'users.id')
+            ->join('questions', 'user_answers.question_id', '=', 'questions.id')
+            ->join('kompetensi', 'questions.kompetensi_id', '=', 'kompetensi.id')
+            ->where('users.role', 'kepala sekolah')
+            ->select(DB::raw('kompetensi.nama as kompetensi, SUM(answers.score) as total_score'))
+            ->groupBy('kompetensi.nama')
+            ->pluck('total_score', 'kompetensi');
+
+        // Pass both datasets to the view
+        return view('admin.hasil.grafik-kepsek', compact('scoreData', 'scoreByCompetency'));
     }
+
 
     public function grafikGuru()
     {
@@ -625,6 +671,17 @@ class AdminController extends Controller
             '1' => $scores->get(1, 0),
         ];
 
-        return view('admin.hasil.grafik-guru', compact('scoreData'));
+        // Data for new chart (Scores grouped by kompetensi for kepala sekolah)
+        $scoreByCompetency = DB::table('user_answers')
+            ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
+            ->join('users', 'user_answers.user_id', '=', 'users.id')
+            ->join('questions', 'user_answers.question_id', '=', 'questions.id')
+            ->join('kompetensi', 'questions.kompetensi_id', '=', 'kompetensi.id')
+            ->where('users.role', 'Guru')
+            ->select(DB::raw('kompetensi.nama as kompetensi, SUM(answers.score) as total_score'))
+            ->groupBy('kompetensi.nama')
+            ->pluck('total_score', 'kompetensi');
+
+        return view('admin.hasil.grafik-guru', compact('scoreData', 'scoreByCompetency'));
     }
 }

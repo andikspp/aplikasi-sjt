@@ -123,6 +123,7 @@
                     <th>Pertanyaan</th>
                     <th>Jawaban</th>
                     <th>Kompetensi</th>
+                    <th>Indikator</th>
                     <th>Skor</th>
                 </tr>
             </thead>
@@ -133,6 +134,7 @@
                         <td>{{ $answer->question_text }}</td>
                         <td>{{ $answer->answer_text }}</td>
                         <td>{{ $answer->nama }}</td>
+                        <td>{{ $answer->indikator_nama }}</td>
                         <td>{{ $answer->score }}</td>
                     </tr>
                 @empty

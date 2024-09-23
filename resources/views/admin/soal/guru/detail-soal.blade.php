@@ -67,6 +67,7 @@
                     <th>Jawaban 4</th>
                     <th>Bobot 4</th>
                     <th>Kompetensi</th>
+                    <th>Indikator</th>
                     <th>Aksi</th>
                 </tr>
             </thead>
@@ -91,8 +92,10 @@
                             @endif
                         @endforeach
                         <td>{{ $question->kompetensi ? $question->kompetensi->nama : '-' }}</td>
+                        <td>{{ $question->indikator ? $question->indikator->nama : '-' }}</td>
                         <td>
-                            <a href="{{ route('admin.soal.edit', $question->id) }}" class="btn btn-warning btn-sm">Edit</a>
+                            <a href="{{ route('admin.soal.edit.guru', $question->id) }}"
+                                class="btn btn-warning btn-sm">Edit</a>
                             <form id="delete-form-{{ $question->id }}" action="{{ route('hapus.soal', $question->id) }}"
                                 method="POST" style="display:inline;">
                                 @csrf

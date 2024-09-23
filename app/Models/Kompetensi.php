@@ -17,4 +17,9 @@ class Kompetensi extends Model
     {
         return $this->hasMany(Question::class);
     }
+
+    public function indikator()
+    {
+        return $this->hasMany(Indikator::class);
+    }
 }
