@@ -76,15 +76,15 @@ class AdminController extends Controller
         $validatedData = $request->validate([
             'indikator_id' => 'required|exists:indikator,id',
             'kompetensi_id' => 'required|exists:kompetensi,id',
-            'question_text' => 'required|string|max:255',
+            'question_text' => 'required|string|max:500',
             'question_set_id' => 'required|exists:question_sets,id',
-            'option_a' => 'required|string|max:255',
+            'option_a' => 'required|string|max:500',
             'score_a' => 'required|integer|in:1,2,3,4',
-            'option_b' => 'required|string|max:255',
+            'option_b' => 'required|string|max:500',
             'score_b' => 'required|integer|in:1,2,3,4',
-            'option_c' => 'required|string|max:255',
+            'option_c' => 'required|string|max:500',
             'score_c' => 'required|integer|in:1,2,3,4',
-            'option_d' => 'required|string|max:255',
+            'option_d' => 'required|string|max:500',
             'score_d' => 'required|integer|in:1,2,3,4',
         ]);
 
@@ -214,9 +214,9 @@ class AdminController extends Controller
         $validatedData = $request->validate([
             'indikator_id' => 'required|exists:indikator,id',
             'kompetensi_id' => 'required|exists:kompetensi,id',
-            'question_text' => 'required|string|max:255',
+            'question_text' => 'required|string|max:500',
             'question_set_id' => 'required|exists:question_sets,id',
-            'answers.*.answer_text' => 'required|string|max:255',
+            'answers.*.answer_text' => 'required|string|max:500',
             'answers.*.score' => 'required|integer|in:1,2,3,4',
         ]);
 
