@@ -42,6 +42,12 @@
             <form method="GET" action="{{ route('data.guru') }}" class="mb-3 d-flex align-items-center">
                 <input type="text" name="search" value="{{ $search }}" placeholder="Search..."
                     class="form-control me-2" style="width: 150px;" />
+                <!-- Filter Jenis PAUD -->
+                <select name="jenis_paud" class="form-control me-2" style="width: 150px;">
+                    <option value="">Jenis PAUD</option>
+                    <option value="mitra" {{ $jenisPaudFilter == 'mitra' ? 'selected' : '' }}>Mitra</option>
+                    <option value="pembelajar" {{ $jenisPaudFilter == 'pembelajar' ? 'selected' : '' }}>Pembelajar</option>
+                </select>
                 <select name="status" class="form-control me-2" style="width: 150px;">
                     <option value="">Status</option>
                     <option value="not_started" {{ $statusFilter == 'not_started' ? 'selected' : '' }}>Not Started</option>
@@ -62,6 +68,7 @@
                             <th>Username</th>
                             <th>Telepon</th>
                             <th>Instansi</th>
+                            <th>Jenis</th>
                             <th>Role</th>
                             <th>Paket Soal</th>
                             <th>Status</th>
@@ -76,6 +83,7 @@
                                 <td>{{ $result->username ?? 'N/A' }}</td>
                                 <td>{{ $result->telepon ?? 'N/A' }}</td>
                                 <td>{{ strtoupper($result->instansi) ?? 'N/A' }}</td>
+                                <td>{{ ucwords($result->jenis_paud) ?? 'N/A' }}</td>
                                 <td>{{ ucwords($result->role) ?? 'N/A' }}</td>
                                 <td>{{ $result->question_set_name ?? 'N/A' }}</td>
                                 <td>{{ ucwords(str_replace('_', ' ', $result->status)) }}</td>

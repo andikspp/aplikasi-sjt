@@ -49,6 +49,7 @@
                         <th>Username</th>
                         <th>Telepon</th>
                         <th>Instansi</th>
+                        <th>Jenis</th>
                         <th>Role</th>
                         <th>Paket Soal</th>
                         <th>Waktu Selesai</th>
@@ -68,6 +69,7 @@
                             <td>{{ $result->username }}</td>
                             <td>{{ $result->telepon }}</td>
                             <td>{{ strtoupper($result->instansi) }}</td>
+                            <td>{{ ucwords($result->jenis_paud) }}</td>
                             <td>{{ ucwords($result->role) }}</td>
                             <td>{{ $result->question_set_name }}</td>
                             <td>{{ \Carbon\Carbon::parse($result->ended_at)->setTimezone('Asia/Jakarta')->format('d-m-Y H:i') }}

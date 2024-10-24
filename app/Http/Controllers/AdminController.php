@@ -147,6 +147,7 @@ class AdminController extends Controller
                 'users.username',
                 'users.telepon',
                 'users.instansi as instansi',
+                'users.jenis_paud',
                 'users.role',
                 'question_sets.name as question_set_name',
                 'quiz_attempts.ended_at',
@@ -169,6 +170,7 @@ class AdminController extends Controller
                 'users.username',
                 'users.telepon',
                 'users.instansi as instansi',
+                'users.jenis_paud',
                 'users.role',
                 'question_sets.name as question_set_name',
                 'quiz_attempts.ended_at',
@@ -307,6 +309,8 @@ class AdminController extends Controller
 
         $statusFilter = $request->input('status');
 
+        $jenisPaudFilter = $request->input('jenis_paud');
+
         $query = DB::table('users')
             ->leftJoin('question_sets', 'users.question_set_id', '=', 'question_sets.id')
             ->select(
@@ -315,6 +319,7 @@ class AdminController extends Controller
                 'users.username',
                 'users.telepon',
                 'users.instansi',
+                'users.jenis_paud',
                 'users.role',
                 'users.status',
                 'users.question_set_id',
@@ -334,9 +339,13 @@ class AdminController extends Controller
             $query->where('users.status', $statusFilter);
         }
 
+        if ($jenisPaudFilter) {
+            $query->where('users.jenis_paud', $jenisPaudFilter);
+        }
+
         $results = $query->orderBy('users.name')->paginate(10);
 
-        return view('admin.data_peserta.guru', compact('results', 'search', 'statusFilter'));
+        return view('admin.data_peserta.guru', compact('results', 'search', 'statusFilter', 'jenisPaudFilter'));
     }
 
     public function dataKepsek(Request $request)
@@ -344,6 +353,8 @@ class AdminController extends Controller
         $search = $request->input('search');
 
         $statusFilter = $request->input('status');
+
+        $jenisPaudFilter = $request->input('jenis_paud');
 
         $query = DB::table('users')
             ->leftJoin('question_sets', 'users.question_set_id', '=', 'question_sets.id')
@@ -353,6 +364,7 @@ class AdminController extends Controller
                 'users.username',
                 'users.telepon',
                 'users.instansi',
+                'users.jenis_paud',
                 'users.role',
                 'users.status',
                 'users.question_set_id',
@@ -372,9 +384,14 @@ class AdminController extends Controller
             $query->where('users.status', $statusFilter);
         }
 
+        if ($jenisPaudFilter) {
+            $query->where('users.jenis_paud', $jenisPaudFilter);
+        }
+
+
         $results = $query->orderBy('users.name')->paginate(10);
 
-        return view('admin.data_peserta.kepsek', compact('results', 'search', 'statusFilter'));
+        return view('admin.data_peserta.kepsek', compact('results', 'search', 'statusFilter', 'jenisPaudFilter'));
     }
 
     public function jawabanPeserta($userId)
@@ -433,6 +450,11 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'telepon' => 'required|string|max:15',
             'instansi' => 'required|string|max:255',
+            'jenis_paud' => [
+                'required',
+                'string',
+                'in:mitra,pembelajar',
+            ],
             'role' => [
                 'required',
                 'string',
@@ -472,6 +494,11 @@ class AdminController extends Controller
             'name' => 'required|string|max:255',
             'telepon' => 'required|string|max:15',
             'instansi' => 'required|string|max:255',
+            'jenis_paud' => [
+                'required',
+                'string',
+                'in:mitra,pembelajar',
+            ],
             'role' => [
                 'required',
                 'string',

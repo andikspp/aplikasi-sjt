@@ -54,6 +54,24 @@
                                 @enderror
                             </div>
 
+                            <!--- Jenis Paud -->
+                            <div class="mb-3">
+                                <label for="jenis_paud" class="form-label">Jenis PAUD</label>
+                                <select class="form-control @error('jenis_paud') is-invalid @enderror" id="jenis_paud"
+                                    name="jenis_paud" required>
+                                    <option value="">-- Pilih Jenis PAUD --</option>
+                                    <option value="mitra"
+                                        {{ old('jenis_paud', $kepsek->jenis_paud) == 'mitra' ? 'selected' : '' }}>Mitra
+                                    </option>
+                                    <option value="pembelajar"
+                                        {{ old('jenis_paud', $kepsek->jenis_paud) == 'pembelajar' ? 'selected' : '' }}>
+                                        Pembelajar</option>
+                                </select>
+                                @error('jenis_paud')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <!-- Role -->
                             <div class="mb-3">
                                 <label for="role" class="form-label">Role</label>

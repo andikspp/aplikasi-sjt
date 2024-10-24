@@ -25,6 +25,7 @@ class RegisterController extends Controller
             'username' => 'required|string|max:255|unique:users',
             'telepon' => 'required|string|max:15',
             'instansi' => 'required|string|max:255',
+            'jenis_paud' => 'required|in:mitra,pembelajar',
             'role' => 'required|in:Guru,Kepala Sekolah',
         ]);
 
@@ -40,6 +41,7 @@ class RegisterController extends Controller
             'password' => Hash::make($passwordKs),
             'telepon' => $request->telepon,
             'instansi' => $request->instansi,
+            'jenis_paud' => $request->jenis_paud,
             'role' => $request->role,
         ]);
 
@@ -61,6 +63,7 @@ class RegisterController extends Controller
             'username' => 'required|string|max:255|unique:users',
             'telepon' => 'required|string|max:15',
             'instansi' => 'required|string|max:255',
+            'jenis_paud' => 'required|in:mitra,pembelajar',
             'role' => 'required|in:Guru,Kepala Sekolah',
         ]);
 
@@ -76,6 +79,7 @@ class RegisterController extends Controller
             'password' => Hash::make($passwordGuru),
             'telepon' => $request->telepon,
             'instansi' => $request->instansi,
+            'jenis_paud' => $request->jenis_paud,
             'role' => $request->role,
         ]);
 

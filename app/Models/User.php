@@ -26,6 +26,7 @@ class User extends Authenticatable
         'email_verification_token',
         'telepon',
         'instansi',
+        'jenis_paud',
         'role',
         'status',
     ];
