@@ -107,7 +107,7 @@
                                         WIB</strong></p>
                             </div>
                         @else
-                            <p class="text-center mb-0">Belum ada riwayat ujian.</p>
+                            <p class="text-center mb-0">Belum ada riwayat submit.</p>
                         @endif
                     </div>
                 </div>
