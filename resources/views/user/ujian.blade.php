@@ -33,7 +33,7 @@
                 <div class="card mb-4 shadow-sm">
                     <div class="card-body text-center">
                         <h5 class="card-title mb-3">
-                            <i class="fas fa-clipboard-list mr-2"></i> Situasional Judgement Test ({{ ucwords($role) }})
+                            <i class="fas fa-clipboard-list mr-2"></i> Pemaknaan Awal ({{ ucwords($role) }})
                         </h5>
                         <p class="card-text text-muted mb-2">
                             <i class="fas fa-calendar-day mr-2"></i> Tanggal Mulai:
@@ -56,16 +56,16 @@
                             @if ($status === 'not_started')
                                 <a href="{{ route('examPage') }}" class="btn btn-primary btn-lg"
                                     style="background-color: #005689; border-color: #004a6b;" id="start-exam-btn">
-                                    <i class="fas fa-play mr-2"></i>Mulai Ujian
+                                    <i class="fas fa-play mr-2"></i>Mulai
                                 </a>
                             @elseif ($status === 'on_going')
                                 <a href="{{ route('examPage') }}" class="btn btn-warning btn-lg"
                                     style="background-color: #f1c40f; border-color: #d4ac0d;" id="submit-exam-btn">
-                                    <i class="fas fa-arrow-right mr-2"></i>Lanjutkan Ujian
+                                    <i class="fas fa-arrow-right mr-2"></i>Lanjutkan
                                 </a>
                             @elseif ($status === 'submitted')
                                 <p class="card-text text-success mt-3">
-                                    <i class="fas fa-check-circle mr-2"></i>Ujian sudah disubmit. Terima kasih atas
+                                    <i class="fas fa-check-circle mr-2"></i>Hasil sudah disubmit. Terima kasih atas
                                     partisipasi anda.
                                 </p>
                             @endif
