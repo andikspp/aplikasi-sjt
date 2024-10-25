@@ -159,7 +159,8 @@
                             style="display: {{ $index === 0 ? 'block' : 'none' }};">
                             <div class="card-body">
                                 <h5 class="card-title">Soal {{ $index + 1 }}</h5><br>
-                                <h5 class="fw-bold">{{ $question['question_text'] }}</h5><br>
+                                <h5 class="fw-bold text-justify" style="text-align: justify;">
+                                    {{ $question['question_text'] }}</h5><br>
                                 <br>
                                 @if (isset($question['answers']))
                                     @foreach ($question['answers'] as $answer)
