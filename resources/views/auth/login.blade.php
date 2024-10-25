@@ -30,7 +30,7 @@
                         <img src="{{ asset('assets/logo kemendikbudristek.png') }}" alt="Logo"
                             class="img-fluid mb-3" style="max-width: 150px;">
                         <h3>Login</h3>
-                        <h4>Situational Judgement Test</h4>
+                        <h4>Pemaknaan Awal</h4>
                     </div>
                     <div class="card-body">
                         @if (session('error'))

@@ -90,20 +90,20 @@
                         </div>
                         <div class="info-item mb-3 d-flex align-items-center">
                             <i class="fas fa-home fa-lg mr-3"></i>
-                            <p class="mb-0">Instansi: <strong>{{ strtoupper($user->instansi) }}</strong></p>
+                            <p class="mb-0">Satuan PAUD: <strong>{{ strtoupper($user->instansi) }}</strong></p>
                         </div>
                     </div>
                 </div>
 
                 <div class="card mt-4 shadow-sm">
                     <div class="card-header text-white">
-                        <h5 class="mb-0">Riwayat Ujian</h5>
+                        <h5 class="mb-0">Riwayat</h5>
                     </div>
                     <div class="card-body">
                         @if ($quizAttempt)
                             <div class="info-item d-flex align-items-center mb-3">
                                 <i class="fas fa-calendar-alt fa-lg mr-3"></i>
-                                <p class="mb-0">Waktu Selesai Ujian: <strong>{{ $endedAt->format('d-m-Y, H:i:s') }}
+                                <p class="mb-0">Waktu Selesai Submit: <strong>{{ $endedAt->format('d-m-Y, H:i:s') }}
                                         WIB</strong></p>
                             </div>
                         @else
@@ -113,7 +113,7 @@
                 </div>
 
                 <div class="d-flex justify-content-end mt-4">
-                    <a href="{{ route('exam') }}"><button class="btn btn-custom">Mulai Ujian</button></a>
+                    <a href="{{ route('exam') }}"><button class="btn btn-custom">Mulai</button></a>
                 </div>
             </div>
         </div>

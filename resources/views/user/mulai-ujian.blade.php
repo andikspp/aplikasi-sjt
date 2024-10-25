@@ -114,6 +114,12 @@
             font-size: 1.2rem;
             color: #dc3545;
         }
+
+        @media (max-width: 576px) {
+            .question-card {
+                margin-bottom: 10px;
+            }
+        }
     </style>
 </head>
 
