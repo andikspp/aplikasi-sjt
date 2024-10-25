@@ -62,6 +62,24 @@
             /* Warna hitam untuk label opsi jawaban */
         }
 
+        .form-check-input {
+            width: 20px;
+            height: 20px;
+            border: 2px solid black;
+            /* Tebalkan border */
+        }
+
+        /* Optional: To make the checked circle also bold */
+        .form-check-input:checked {
+            background-color: black;
+            /* Isi lingkaran ketika dipilih */
+        }
+
+        .form-check-label {
+            margin-left: 10px;
+            /* Atur sesuai kebutuhan */
+        }
+
         .question-number {
             cursor: pointer;
         }
@@ -116,14 +134,16 @@
         @endif
         <div class="row">
             <div class="col-md-8">
-                <h2 class="text-center mb-4">Situational Judgement Test</h2>
+                {{-- <h2 class="text-center mb-4">Situational Judgement Test</h2> --}}
                 <form id="quizForm" action="{{ route('submitExam') }}" method="POST">
                     @csrf
                     @foreach ($questions as $index => $question)
                         <div class="card question-card question" id="question-{{ $index + 1 }}"
                             style="display: {{ $index === 0 ? 'block' : 'none' }};">
                             <div class="card-body">
-                                <h5 class="card-title">Soal {{ $index + 1 }}: {{ $question['question_text'] }}</h5>
+                                <h5 class="card-title">Soal {{ $index + 1 }}</h5><br>
+                                <h5 class="fw-bold">{{ $question['question_text'] }}</h5><br>
+                                <br>
                                 @if (isset($question['answers']))
                                     @foreach ($question['answers'] as $answer)
                                         <div class="form-check">
@@ -132,10 +152,10 @@
                                                 id="q{{ $index + 1 }}{{ $answer['id'] }}"
                                                 value="{{ $answer['id'] }}" {{-- Periksa apakah jawaban ini sudah dipilih dan tandai jika ya --}}
                                                 {{ isset($savedAnswers[$question['id']]) && $savedAnswers[$question['id']] == $answer['id'] ? 'checked' : '' }}>
-                                            <label class="form-check-label"
+                                            <h5 class="form-check-label fw-bold"
                                                 for="q{{ $index + 1 }}{{ $answer['id'] }}">
                                                 {{ $answer['answer_text'] }}
-                                            </label>
+                                            </h5>
                                         </div>
                                     @endforeach
                                 @else
