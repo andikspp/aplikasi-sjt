@@ -82,6 +82,17 @@
 
         .question-number {
             cursor: pointer;
+            width: calc(33.33% - 10px);
+            /* 33.33% lebar dikurangi margin */
+            height: 40px;
+            /* Tetap tinggi */
+            line-height: 40px;
+            /* Sentris vertikal */
+            font-size: 16px;
+            /* Ukuran teks */
+            margin: 5px;
+            /* Mengatur margin lebih kecil agar muat 3 kolom */
+            box-sizing: border-box;
         }
 
         .question-number.active {
