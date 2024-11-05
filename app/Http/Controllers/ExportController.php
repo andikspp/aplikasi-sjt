@@ -28,6 +28,22 @@ class ExportController extends Controller
             ->where('users.role', 'kepala sekolah')
             ->get();
 
+        $resultsWithCompetencyScores = $results->map(function ($result) {
+            $competencyScores = DB::table('user_answers')
+                ->join('questions', 'user_answers.question_id', '=', 'questions.id')
+                ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
+                ->join('kompetensi', 'questions.kompetensi_id', '=', 'kompetensi.id')
+                ->where('user_answers.user_id', $result->id)
+                ->select('kompetensi.nama as kompetensi_name', DB::raw('SUM(answers.score) as total_score'))
+                ->groupBy('kompetensi_name')
+                ->pluck('total_score', 'kompetensi_name')
+                ->toArray();
+
+            // Add competency scores as an additional attribute to the result
+            $result->competency_scores = $competencyScores;
+            return $result;
+        });
+
         return Excel::download(new ResultsExport($results), 'hasil_ujian_ks.xlsx');
     }
 
