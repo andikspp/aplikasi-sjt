@@ -27,6 +27,12 @@ class ResultsExport implements FromCollection, WithHeadings, WithMapping
 
     public function map($result): array
     {
+
+        $competencyScores = collect($result->competency_scores)
+            ->map(function ($score, $competency) {
+                return "$competency: $score";
+            })->join(', ');
+
         return [
             $result->name,
             $result->username,
@@ -36,6 +42,7 @@ class ResultsExport implements FromCollection, WithHeadings, WithMapping
             $result->question_set_name,
             $result->ended_at,
             $result->score,
+            $competencyScores,
         ];
     }
 
@@ -50,6 +57,7 @@ class ResultsExport implements FromCollection, WithHeadings, WithMapping
             'Paket Soal',
             'Waktu Selesai',
             'Score',
+            'Skor Kompetensi',
         ];
     }
 }
