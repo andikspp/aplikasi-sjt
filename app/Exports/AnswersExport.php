@@ -26,7 +26,7 @@ class AnswersExport implements FromCollection, WithHeadings, WithMapping
         return [
             $index++,  // Increment and use as the "Nomor" field
             $answer->question_text,
-            $answer->answer_text,
+            $answer->score,  // Use score instead of answer_text
             $answer->kompetensi_name,  // Kompetensi name
             $answer->score,
         ];
@@ -37,7 +37,7 @@ class AnswersExport implements FromCollection, WithHeadings, WithMapping
         return [
             'Nomor',
             'Pertanyaan',
-            'Jawaban',
+            'Skor Jawaban',  // Update heading to reflect 'score'
             'Kompetensi',
             'Skor',
         ];

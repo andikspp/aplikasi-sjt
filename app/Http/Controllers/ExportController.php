@@ -46,7 +46,7 @@ class ExportController extends Controller
                 ->join('questions', 'user_answers.question_id', '=', 'questions.id')
                 ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
                 ->where('user_answers.user_id', $result->id)
-                ->select('questions.id as question_id', 'answers.answer_text')
+                ->select('questions.id as question_id', 'answers.answer_text', 'answers.score') // Ambil score dari tabel answers
                 ->get();
 
             // Membuat array kosong untuk menyimpan jawaban berdasarkan soal
@@ -54,9 +54,12 @@ class ExportController extends Controller
 
             // Mengisi jawaban berdasarkan soal
             foreach ($questions as $question) {
-                // Temukan jawaban untuk soal yang sesuai
+                // Temukan jawaban untuk soal yang sesuai, termasuk skor
                 $answer = $userAnswers->firstWhere('question_id', $question->id);
-                $answersByQuestion[$question->question_text] = $answer ? $answer->answer_text : 'Belum Dijawab';
+                $answersByQuestion[$question->question_text] = [
+                    'answer_text' => $answer->answer_text ?? 'Belum Dijawab',
+                    'score' => $answer->score ?? 'Tidak Ada Skor'
+                ];
             }
 
             // Menambahkan jawaban berdasarkan soal ke dalam hasil
@@ -65,10 +68,8 @@ class ExportController extends Controller
         });
 
         // Ekspor hasil ujian guru ke Excel dengan nama file berdasarkan nama peserta
-        return Excel::download(new GuruAnswersExport($resultsWithAnswers, $questions), 'hasil_ujian_guru.xlsx');
+        return Excel::download(new GuruAnswersExport($resultsWithAnswers, $questions), 'hasil_ks.xlsx');
     }
-
-
 
     public function exportGuruResults()
     {
@@ -104,7 +105,7 @@ class ExportController extends Controller
                 ->join('questions', 'user_answers.question_id', '=', 'questions.id')
                 ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
                 ->where('user_answers.user_id', $result->id)
-                ->select('questions.id as question_id', 'answers.answer_text')
+                ->select('questions.id as question_id', 'answers.answer_text', 'answers.score') // Ambil score dari tabel answers
                 ->get();
 
             // Membuat array kosong untuk menyimpan jawaban berdasarkan soal
@@ -112,9 +113,12 @@ class ExportController extends Controller
 
             // Mengisi jawaban berdasarkan soal
             foreach ($questions as $question) {
-                // Temukan jawaban untuk soal yang sesuai
+                // Temukan jawaban untuk soal yang sesuai, termasuk skor
                 $answer = $userAnswers->firstWhere('question_id', $question->id);
-                $answersByQuestion[$question->question_text] = $answer ? $answer->answer_text : 'Belum Dijawab';
+                $answersByQuestion[$question->question_text] = [
+                    'answer_text' => $answer->answer_text ?? 'Belum Dijawab',
+                    'score' => $answer->score ?? 'Tidak Ada Skor'
+                ];
             }
 
             // Menambahkan jawaban berdasarkan soal ke dalam hasil
@@ -123,9 +127,8 @@ class ExportController extends Controller
         });
 
         // Ekspor hasil ujian guru ke Excel dengan nama file berdasarkan nama peserta
-        return Excel::download(new GuruAnswersExport($resultsWithAnswers, $questions), 'hasil_ujian_guru.xlsx');
+        return Excel::download(new GuruAnswersExport($resultsWithAnswers, $questions), 'hasil_guru.xlsx');
     }
-
 
 
 

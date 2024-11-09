@@ -36,9 +36,9 @@ class GuruAnswersExport implements FromCollection, WithHeadings, WithMapping
             $result->score,
         ];
 
-        // Menambahkan jawaban dari setiap soal berdasarkan soal yang ada
+        // Menambahkan skor jawaban dari setiap soal berdasarkan soal yang ada
         foreach ($this->questions as $question) {
-            $data[] = $result->answers_by_question[$question->question_text] ?? 'Belum Dijawab';
+            $data[] = $result->answers_by_question[$question->question_text]['score'] ?? 'Tidak Ada Skor';
         }
 
         return $data;
@@ -55,7 +55,7 @@ class GuruAnswersExport implements FromCollection, WithHeadings, WithMapping
             'Role',
             'Paket Soal',
             'Waktu Selesai',
-            'Score'
+            'Total Skor'
         ];
 
         // Menambahkan soal sebagai header di Excel
