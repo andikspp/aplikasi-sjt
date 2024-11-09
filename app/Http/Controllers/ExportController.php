@@ -7,11 +7,18 @@ use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use App\Exports\AnswersExport;
+use App\Exports\GuruAnswersExport;
 
 class ExportController extends Controller
 {
     public function exportResultsKepsek()
     {
+        // Ambil semua soal dari database
+        $questions = DB::table('questions')
+            ->select('id', 'question_text')
+            ->get();
+
+        // Ambil data pengguna dengan role 'guru'
         $results = DB::table('users')
             ->join('question_sets', 'users.question_set_id', '=', 'question_sets.id')
             ->join('quiz_attempts', 'users.id', '=', 'quiz_attempts.user_id')
@@ -29,27 +36,43 @@ class ExportController extends Controller
             ->where('users.role', 'kepala sekolah')
             ->get();
 
-        $resultsWithCompetencyScores = $results->map(function ($result) {
-            $competencyScores = DB::table('user_answers')
+        // Ambil data soal dan jawaban dari tabel user_answers
+        $resultsWithAnswers = $results->map(function ($result) use ($questions) {
+            // Ambil data soal dan jawaban dari tabel user_answers
+            $userAnswers = DB::table('user_answers')
                 ->join('questions', 'user_answers.question_id', '=', 'questions.id')
                 ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
-                ->join('kompetensi', 'questions.kompetensi_id', '=', 'kompetensi.id')
                 ->where('user_answers.user_id', $result->id)
-                ->select('kompetensi.nama as kompetensi_name', DB::raw('SUM(answers.score) as total_score'))
-                ->groupBy('kompetensi_name')
-                ->pluck('total_score', 'kompetensi_name')
-                ->toArray();
+                ->select('questions.id as question_id', 'answers.answer_text')
+                ->get();
 
-            // Add competency scores as an additional attribute to the result
-            $result->competency_scores = $competencyScores;
+            // Membuat array kosong untuk menyimpan jawaban berdasarkan soal
+            $answersByQuestion = [];
+
+            // Mengisi jawaban berdasarkan soal
+            foreach ($questions as $question) {
+                // Temukan jawaban untuk soal yang sesuai
+                $answer = $userAnswers->firstWhere('question_id', $question->id);
+                $answersByQuestion[$question->question_text] = $answer ? $answer->answer_text : 'Belum Dijawab';
+            }
+
+            // Menambahkan jawaban berdasarkan soal ke dalam hasil
+            $result->answers_by_question = $answersByQuestion;
             return $result;
         });
 
-        return Excel::download(new ResultsExport($results), 'hasil_ujian_ks.xlsx');
+        // Ekspor hasil ujian guru ke Excel dengan nama file berdasarkan nama peserta
+        return Excel::download(new GuruAnswersExport($resultsWithAnswers, $questions), 'hasil_ujian_guru.xlsx');
     }
 
     public function exportGuruResults()
     {
+        // Ambil semua soal dari database
+        $questions = DB::table('questions')
+            ->select('id', 'question_text')
+            ->get();
+
+        // Ambil data pengguna dengan role 'guru'
         $results = DB::table('users')
             ->join('question_sets', 'users.question_set_id', '=', 'question_sets.id')
             ->join('quiz_attempts', 'users.id', '=', 'quiz_attempts.user_id')
@@ -67,24 +90,37 @@ class ExportController extends Controller
             ->where('users.role', 'guru')
             ->get();
 
-        $resultsWithCompetencyScores = $results->map(function ($result) {
-            $competencyScores = DB::table('user_answers')
+        // Ambil data soal dan jawaban dari tabel user_answers
+        $resultsWithAnswers = $results->map(function ($result) use ($questions) {
+            // Ambil data soal dan jawaban dari tabel user_answers
+            $userAnswers = DB::table('user_answers')
                 ->join('questions', 'user_answers.question_id', '=', 'questions.id')
                 ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
-                ->join('kompetensi', 'questions.kompetensi_id', '=', 'kompetensi.id')
                 ->where('user_answers.user_id', $result->id)
-                ->select('kompetensi.nama as kompetensi_name', DB::raw('SUM(answers.score) as total_score'))
-                ->groupBy('kompetensi_name')
-                ->pluck('total_score', 'kompetensi_name')
-                ->toArray();
+                ->select('questions.id as question_id', 'answers.answer_text')
+                ->get();
 
-            // Add competency scores as an additional attribute to the result
-            $result->competency_scores = $competencyScores;
+            // Membuat array kosong untuk menyimpan jawaban berdasarkan soal
+            $answersByQuestion = [];
+
+            // Mengisi jawaban berdasarkan soal
+            foreach ($questions as $question) {
+                // Temukan jawaban untuk soal yang sesuai
+                $answer = $userAnswers->firstWhere('question_id', $question->id);
+                $answersByQuestion[$question->question_text] = $answer ? $answer->answer_text : 'Belum Dijawab';
+            }
+
+            // Menambahkan jawaban berdasarkan soal ke dalam hasil
+            $result->answers_by_question = $answersByQuestion;
             return $result;
         });
 
-        return Excel::download(new ResultsExport($results), 'hasil_ujian_guru.xlsx');
+        // Ekspor hasil ujian guru ke Excel dengan nama file berdasarkan nama peserta
+        return Excel::download(new GuruAnswersExport($resultsWithAnswers, $questions), 'hasil_ujian_guru.xlsx');
     }
+
+
+
 
     public function exportAnswersUser($userId)
     {
