@@ -103,7 +103,11 @@ class ExportController extends Controller
             )
             ->get(); // Ambil semua data yang sesuai
 
+        // Ambil nama pengguna berdasarkan userId
+        $userName = DB::table('users')->where('id', $userId)->value('name');
+
+
         // Ekspor jawaban ke Excel menggunakan AnswersExport
-        return Excel::download(new AnswersExport($answers), 'answers_user.xlsx');
+        return Excel::download(new AnswersExport($answers), "{$userName}.xlsx");
     }
 }
