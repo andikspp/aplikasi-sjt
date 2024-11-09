@@ -8,14 +8,17 @@ use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
 use App\Exports\AnswersExport;
 use App\Exports\GuruAnswersExport;
+use App\Exports\KepsekAnswersExport;
 
 class ExportController extends Controller
 {
     public function exportResultsKepsek()
     {
-        // Ambil semua soal dari database
+        // Ambil semua soal dan set soal dari database, dengan memfilter berdasarkan role 'guru' pada question_sets
         $questions = DB::table('questions')
-            ->select('id', 'question_text')
+            ->join('question_sets', 'questions.question_set_id', '=', 'question_sets.id')
+            ->select('questions.id', 'questions.question_text', 'question_sets.role')
+            ->where('question_sets.role', 'kepala sekolah') // Memfilter berdasarkan role di question_sets
             ->get();
 
         // Ambil data pengguna dengan role 'guru'
@@ -33,7 +36,7 @@ class ExportController extends Controller
                 'quiz_attempts.ended_at',
                 'quiz_attempts.score'
             )
-            ->where('users.role', 'kepala sekolah')
+            ->where('users.role', 'kepala sekolah') // Hanya pengguna dengan role 'guru'
             ->get();
 
         // Ambil data soal dan jawaban dari tabel user_answers
@@ -64,12 +67,16 @@ class ExportController extends Controller
         // Ekspor hasil ujian guru ke Excel dengan nama file berdasarkan nama peserta
         return Excel::download(new GuruAnswersExport($resultsWithAnswers, $questions), 'hasil_ujian_guru.xlsx');
     }
+
+
 
     public function exportGuruResults()
     {
-        // Ambil semua soal dari database
+        // Ambil semua soal dan set soal dari database, dengan memfilter berdasarkan role 'guru' pada question_sets
         $questions = DB::table('questions')
-            ->select('id', 'question_text')
+            ->join('question_sets', 'questions.question_set_id', '=', 'question_sets.id')
+            ->select('questions.id', 'questions.question_text', 'question_sets.role')
+            ->where('question_sets.role', 'guru') // Memfilter berdasarkan role di question_sets
             ->get();
 
         // Ambil data pengguna dengan role 'guru'
@@ -87,7 +94,7 @@ class ExportController extends Controller
                 'quiz_attempts.ended_at',
                 'quiz_attempts.score'
             )
-            ->where('users.role', 'guru')
+            ->where('users.role', 'guru') // Hanya pengguna dengan role 'guru'
             ->get();
 
         // Ambil data soal dan jawaban dari tabel user_answers
@@ -118,6 +125,7 @@ class ExportController extends Controller
         // Ekspor hasil ujian guru ke Excel dengan nama file berdasarkan nama peserta
         return Excel::download(new GuruAnswersExport($resultsWithAnswers, $questions), 'hasil_ujian_guru.xlsx');
     }
+
 
 
 
