@@ -55,4 +55,5 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::get('/admin/grafik-guru', [AdminController::class, 'grafikGuru'])->name('grafik.guru');
     Route::get('/admin/hasil/kepsek/export', [ExportController::class, 'exportResultsKepsek'])->name('admin.results.kepsek');
     Route::get('/admin/hasil/guru/export', [ExportController::class, 'exportGuruResults'])->name('admin.results.guru');
+    Route::get('/export-answers/{userId}', [ExportController::class, 'exportAnswersUser'])->name('export.answers');
 });

@@ -116,6 +116,8 @@
         <a href="{{ route('grafik.individu', ['userId' => $userId]) }}" class="btn btn-primary">
             Lihat Grafik
         </a>
+        <a href="{{ route('export.answers', ['userId' => $userId]) }}" class="btn btn-success">Export to Excel</a>
+
         <table class="table table-striped table-bordered table-hover mt-4">
             <thead class="thead-dark">
                 <tr>

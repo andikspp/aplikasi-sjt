@@ -6,6 +6,7 @@ use App\Exports\ResultsExport;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\DB;
+use App\Exports\AnswersExport;
 
 class ExportController extends Controller
 {
@@ -83,5 +84,26 @@ class ExportController extends Controller
         });
 
         return Excel::download(new ResultsExport($results), 'hasil_ujian_guru.xlsx');
+    }
+
+    public function exportAnswersUser($userId)
+    {
+        // Ambil data jawaban berdasarkan user_id
+        $answers = DB::table('user_answers')
+            ->join('questions', 'user_answers.question_id', '=', 'questions.id')
+            ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
+            ->join('kompetensi', 'questions.kompetensi_id', '=', 'kompetensi.id')
+            ->where('user_answers.user_id', $userId) // Filter berdasarkan user_id
+            ->select(
+                'user_answers.id as user_answer_id', // ID jawaban pengguna
+                'questions.question_text as question_text', // Teks pertanyaan
+                'answers.answer_text as answer_text', // Teks jawaban
+                'kompetensi.nama as kompetensi_name', // Nama kompetensi
+                'answers.score' // Skor jawaban
+            )
+            ->get(); // Ambil semua data yang sesuai
+
+        // Ekspor jawaban ke Excel menggunakan AnswersExport
+        return Excel::download(new AnswersExport($answers), 'answers_user.xlsx');
     }
 }
