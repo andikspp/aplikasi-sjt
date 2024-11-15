@@ -1,6 +1,6 @@
 @extends('layout.user.user-layout')
 
-@section('title', 'Ujian Aktif')
+@section('title', 'Pengerjaan Aktif')
 
 @section('content')
     <style>
@@ -88,7 +88,7 @@
                     event.preventDefault();
 
                     Swal.fire({
-                        title: 'Anda yakin ingin memulai ujian?',
+                        title: 'Anda yakin ingin memulai pengerjaan?',
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'Ya, mulai!',

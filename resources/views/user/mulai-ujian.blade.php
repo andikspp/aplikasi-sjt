@@ -295,7 +295,7 @@
                     clearInterval(timer);
                     examEnded = true;
                     Swal.fire({
-                        title: 'Waktu ujian telah berakhir!',
+                        title: 'Waktu pengerjaan telah berakhir!',
                         text: 'Form akan dikirimkan secara otomatis.',
                         icon: 'info',
                         showConfirmButton: false,
@@ -396,7 +396,7 @@
             if (unansweredQuestions.length > 0) {
                 Swal.fire({
                     title: 'Ada soal yang belum terisi',
-                    text: 'Semua soal harus terisi sebelum mengirimkan ujian.',
+                    text: 'Semua soal harus terisi sebelum mengirimkan pekerjaan.',
                     icon: 'error',
                     confirmButtonText: 'OK'
                 });
@@ -432,7 +432,7 @@
             document.getElementById('finishBtn').addEventListener('click', function(event) {
                 event.preventDefault();
                 Swal.fire({
-                    title: 'Anda yakin ingin menyelesaikan ujian?',
+                    title: 'Anda yakin ingin mengirim pengerjaan?',
                     text: "Pastikan Anda sudah menjawab semua pertanyaan.",
                     icon: 'warning',
                     showCancelButton: true,

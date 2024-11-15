@@ -19,7 +19,7 @@ class CheckExamStatus
         $user = Auth::user();
 
         if ($user->status !== 'not_started' && $user->status !== 'on_going') {
-            return redirect()->route('dashboard')->with('warning', 'Akses ditolak. Status ujian tidak valid.');
+            return redirect()->route('dashboard')->with('warning', 'Akses ditolak. Status pengerjaan tidak valid.');
         }
 
         return $next($request);
