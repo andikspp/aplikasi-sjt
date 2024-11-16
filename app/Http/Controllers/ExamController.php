@@ -41,9 +41,9 @@ class ExamController extends Controller
                 }
 
                 if ($now < $startExam) {
-                    $statusMessage = 'Waktu pengerjaan belum dimulai';
+                    $statusMessage = 'Waktu sesi belum dimulai';
                 } elseif ($now > $endExam) {
-                    $statusMessage = 'Waktu pengerjaan telah berakhir';
+                    $statusMessage = 'Waktu sesi telah berakhir';
                 }
 
                 return view('user.ujian', [
@@ -78,11 +78,11 @@ class ExamController extends Controller
             $examEnd = $questionSet->end_exam;
 
             if ($currentTime->lt($questionSet->start_exam)) {
-                return redirect()->route('dashboard')->with('error', 'Maaf, pengerjaan belum dimulai.');
+                return redirect()->route('dashboard')->with('error', 'Maaf, sesi belum dimulai.');
             }
 
             if ($currentTime->gt($examEnd)) {
-                return redirect()->route('dashboard')->with('error', 'Maaf, pengerjaan telah berakhir.');
+                return redirect()->route('dashboard')->with('error', 'Maaf, sesi telah berakhir.');
             }
 
             if (!$questionSet) {
@@ -93,9 +93,9 @@ class ExamController extends Controller
             $user->status = 'on_going';
             $user->save();
         } elseif ($user->status === 'submitted') {
-            return redirect()->route('dashboard')->with('error', 'Anda sudah melakukan pengerjaan.');
+            return redirect()->route('dashboard')->with('error', 'Anda sudah melakukan sesi.');
         } elseif ($user->status !== 'on_going') {
-            return redirect()->route('dashboard')->with('error', 'Status pengerjaan tidak valid.');
+            return redirect()->route('dashboard')->with('error', 'Status sesi tidak valid.');
         }
 
         // Ambil paket soal berdasarkan question_set_id dan load relasi questions dan answers
@@ -171,7 +171,7 @@ class ExamController extends Controller
                 'score' => 0,
             ]);
 
-            return redirect()->route('dashboard')->with('success', 'Pengerjaan telah selesai, terima kasih atas partisipasi anda.');
+            return redirect()->route('dashboard')->with('success', 'sesi telah selesai, terima kasih atas partisipasi anda.');
         }
 
         // Calculate score based on the user's answers
@@ -192,7 +192,7 @@ class ExamController extends Controller
             'score' => $score,
         ]);
 
-        return redirect()->route('dashboard')->with('success', 'Pengerjaan telah selesai. Terima kasih atas partisipasi anda.');
+        return redirect()->route('dashboard')->with('success', 'sesi telah selesai. Terima kasih atas partisipasi anda.');
     }
 
     public function saveAnswer(Request $request)

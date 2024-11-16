@@ -295,7 +295,7 @@
                     clearInterval(timer);
                     examEnded = true;
                     Swal.fire({
-                        title: 'Waktu pengerjaan telah berakhir!',
+                        title: 'Waktu sesi telah berakhir!',
                         text: 'Form akan dikirimkan secara otomatis.',
                         icon: 'info',
                         showConfirmButton: false,
@@ -432,7 +432,7 @@
             document.getElementById('finishBtn').addEventListener('click', function(event) {
                 event.preventDefault();
                 Swal.fire({
-                    title: 'Anda yakin ingin mengirim pengerjaan?',
+                    title: 'Anda yakin ingin mengirim sesi?',
                     text: "Pastikan Anda sudah menjawab semua pertanyaan.",
                     icon: 'warning',
                     showCancelButton: true,

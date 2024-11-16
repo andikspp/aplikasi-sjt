@@ -88,7 +88,7 @@
                     event.preventDefault();
 
                     Swal.fire({
-                        title: 'Anda yakin ingin memulai pengerjaan?',
+                        title: 'Anda yakin ingin memulai sesi?',
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonText: 'Ya, mulai!',
