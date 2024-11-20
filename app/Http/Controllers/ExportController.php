@@ -9,11 +9,20 @@ use Illuminate\Support\Facades\DB;
 use App\Exports\AnswersExport;
 use App\Exports\GuruAnswersExport;
 use App\Exports\KepsekAnswersExport;
+use Symfony\Component\HttpFoundation\Request;
 
 class ExportController extends Controller
 {
-    public function exportResultsKepsek()
+    public function exportResultsKepsek(Request $request)
     {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
         // Ambil semua soal dan set soal dari database, dengan memfilter berdasarkan role 'guru' pada question_sets
         $questions = DB::table('questions')
             ->join('question_sets', 'questions.question_set_id', '=', 'question_sets.id')
@@ -36,7 +45,8 @@ class ExportController extends Controller
                 'quiz_attempts.ended_at',
                 'quiz_attempts.score'
             )
-            ->where('users.role', 'kepala sekolah') // Hanya pengguna dengan role 'guru'
+            ->where('users.role', 'kepala sekolah')
+            ->whereBetween('quiz_attempts.ended_at', [$startDate, $endDate])
             ->get();
 
         // Ambil data soal dan jawaban dari tabel user_answers
@@ -67,12 +77,20 @@ class ExportController extends Controller
             return $result;
         });
 
-        // Ekspor hasil ujian guru ke Excel dengan nama file berdasarkan nama peserta
-        return Excel::download(new GuruAnswersExport($resultsWithAnswers, $questions), 'hasil_ks.xlsx');
+        $fileName = 'hasil_ks_' . $startDate . '_to_' . $endDate . '.xlsx';
+        return Excel::download(new GuruAnswersExport($resultsWithAnswers, $questions), $fileName);
     }
 
-    public function exportGuruResults()
+    public function exportGuruResults(Request $request)
     {
+        $request->validate([
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+        ]);
+
+        $startDate = $request->input('start_date');
+        $endDate = $request->input('end_date');
+
         // Ambil semua soal dan set soal dari database, dengan memfilter berdasarkan role 'guru' pada question_sets
         $questions = DB::table('questions')
             ->join('question_sets', 'questions.question_set_id', '=', 'question_sets.id')
@@ -96,6 +114,7 @@ class ExportController extends Controller
                 'quiz_attempts.score'
             )
             ->where('users.role', 'guru') // Hanya pengguna dengan role 'guru'
+            ->whereBetween('quiz_attempts.ended_at', [$startDate, $endDate])
             ->get();
 
         // Ambil data soal dan jawaban dari tabel user_answers
@@ -126,8 +145,8 @@ class ExportController extends Controller
             return $result;
         });
 
-        // Ekspor hasil ujian guru ke Excel dengan nama file berdasarkan nama peserta
-        return Excel::download(new GuruAnswersExport($resultsWithAnswers, $questions), 'hasil_guru.xlsx');
+        $fileName = 'hasil_guru_' . $startDate . '_to_' . $endDate . '.xlsx';
+        return Excel::download(new GuruAnswersExport($resultsWithAnswers, $questions), $fileName);
     }
 
 

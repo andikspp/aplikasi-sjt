@@ -36,9 +36,21 @@
 
     <div class="container mt-5">
         <h2 class="text-center mb-4">Hasil Ujian Guru</h2>
-        <div class="d-flex justify-content-between mb-3">
-            <a href="{{ route('admin.results.guru') }}" class="btn btn-success mb-3">Export to Excel</a>
-            <a href="{{ route('grafik.guru') }}" class="btn btn-primary mb-3 me-auto ms-3">Lihat Grafik</a>
+        <div class="d-flex justify-content-between align-items-end mb-3">
+            <form action="{{ route('admin.results.guru') }}" method="GET" class="d-flex flex-wrap align-items-end">
+                <div class="me-3">
+                    <label for="start_date" class="form-label">Start Date:</label>
+                    <input type="date" name="start_date" id="start_date" class="form-control" required>
+                </div>
+                <div class="me-3">
+                    <label for="end_date" class="form-label">End Date:</label>
+                    <input type="date" name="end_date" id="end_date" class="form-control" required>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-success">Export to Excel</button>
+                </div>
+            </form>
+            <a href="{{ route('grafik.guru') }}" class="btn btn-primary ms-3">Lihat Grafik</a>
         </div>
         <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover">
