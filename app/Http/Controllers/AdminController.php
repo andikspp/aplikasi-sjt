@@ -136,7 +136,7 @@ class AdminController extends Controller
         return view('admin.hasil.index');
     }
 
-    public function resultGuru()
+    public function resultGuru(Request $request)
     {
         $results = DB::table('users')
             ->join('question_sets', 'users.question_set_id', '=', 'question_sets.id')
@@ -158,6 +158,105 @@ class AdminController extends Controller
 
         return view('admin.hasil.guru', ['results' => $results]);
     }
+
+    public function searchGuru(Request $request)
+    {
+        // Ambil input dari form
+        $search = $request->input('search');
+        $jenisPaudFilter = $request->input('jenis_paud');
+
+        // Query dasar untuk data guru
+        $query = DB::table('users')
+            ->join('question_sets', 'users.question_set_id', '=', 'question_sets.id')
+            ->join('quiz_attempts', 'users.id', '=', 'quiz_attempts.user_id')
+            ->select(
+                'users.id',
+                'users.name',
+                'users.username',
+                'users.telepon',
+                'users.instansi as instansi',
+                'users.jenis_paud',
+                'users.role',
+                'question_sets.name as question_set_name',
+                'quiz_attempts.ended_at',
+                'quiz_attempts.score'
+            )
+            ->where('users.role', 'guru'); // Khusus untuk guru
+
+        // Filter berdasarkan pencarian jika input tersedia
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('users.name', 'like', '%' . $search . '%')
+                    ->orWhere('users.username', 'like', '%' . $search . '%')
+                    ->orWhere('users.instansi', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Filter berdasarkan jenis PAUD jika input tersedia
+        if ($jenisPaudFilter) {
+            $query->where('users.jenis_paud', $jenisPaudFilter);
+        }
+
+        // Dapatkan hasil dengan pagination
+        $results = $query->paginate(10);
+
+        // Return ke view dengan hasil pencarian
+        return view('admin.hasil.guru', [
+            'results' => $results,
+            'search' => $search,
+            'jenis_paud' => $jenisPaudFilter,
+        ]);
+    }
+
+    public function searchKs(Request $request)
+    {
+        // Ambil input dari form
+        $search = $request->input('search');
+        $jenisPaudFilter = $request->input('jenis_paud');
+
+        // Query dasar untuk data guru
+        $query = DB::table('users')
+            ->join('question_sets', 'users.question_set_id', '=', 'question_sets.id')
+            ->join('quiz_attempts', 'users.id', '=', 'quiz_attempts.user_id')
+            ->select(
+                'users.id',
+                'users.name',
+                'users.username',
+                'users.telepon',
+                'users.instansi as instansi',
+                'users.jenis_paud',
+                'users.role',
+                'question_sets.name as question_set_name',
+                'quiz_attempts.ended_at',
+                'quiz_attempts.score'
+            )
+            ->where('users.role', 'kepala sekolah'); // Khusus untuk guru
+
+        // Filter berdasarkan pencarian jika input tersedia
+        if ($search) {
+            $query->where(function ($q) use ($search) {
+                $q->where('users.name', 'like', '%' . $search . '%')
+                    ->orWhere('users.username', 'like', '%' . $search . '%')
+                    ->orWhere('users.instansi', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Filter berdasarkan jenis PAUD jika input tersedia
+        if ($jenisPaudFilter) {
+            $query->where('users.jenis_paud', $jenisPaudFilter);
+        }
+
+        // Dapatkan hasil dengan pagination
+        $results = $query->paginate(10);
+
+        // Return ke view dengan hasil pencarian
+        return view('admin.hasil.kepsek', [
+            'results' => $results,
+            'search' => $search,
+            'jenis_paud' => $jenisPaudFilter,
+        ]);
+    }
+
 
     public function resultKepsek()
     {

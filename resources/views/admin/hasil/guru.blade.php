@@ -38,20 +38,51 @@
         <h2 class="text-center mb-4">Hasil Ujian Guru</h2>
         <div class="d-flex justify-content-between align-items-end mb-3">
             <form action="{{ route('admin.results.guru') }}" method="GET" class="d-flex flex-wrap align-items-end">
+
                 <div class="me-3">
                     <label for="start_date" class="form-label">Start Date:</label>
-                    <input type="date" name="start_date" id="start_date" class="form-control" required>
+                    <input type="date" name="start_date" id="start_date" class="form-control"
+                        value="{{ request('start_date') }}" required>
                 </div>
+
                 <div class="me-3">
                     <label for="end_date" class="form-label">End Date:</label>
-                    <input type="date" name="end_date" id="end_date" class="form-control" required>
+                    <input type="date" name="end_date" id="end_date" class="form-control"
+                        value="{{ request('end_date') }}" required>
                 </div>
+
                 <div>
                     <button type="submit" class="btn btn-success">Export to Excel</button>
                 </div>
             </form>
+            <form action="{{ route('search.guru') }}" method="GET" class="d-flex flex-wrap align-items-end">
+                <!-- Search Input -->
+                <div class="me-3">
+                    <label for="search" class="form-label">Search:</label>
+                    <input type="text" name="search" id="search" class="form-control"
+                        placeholder="Nama/Username/Instansi" value="{{ request('search') }}">
+                </div>
+
+                <!-- Filter Jenis PAUD -->
+                <div class="me-3">
+                    <label for="jenis_paud" class="form-label">Jenis PAUD:</label>
+                    <select name="jenis_paud" id="jenis_paud" class="form-select">
+                        <option value="">Semua Jenis PAUD</option>
+                        <option value="Mitra" {{ request('jenis_paud') == 'Mitra' ? 'selected' : '' }}>Mitra</option>
+                        <option value="Pembelajar" {{ request('jenis_paud') == 'Pembelajar' ? 'selected' : '' }}>Pembelajar
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Submit Button -->
+                <div>
+                    <button type="submit" class="btn btn-primary">Cari</button>
+                </div>
+            </form>
+
             <a href="{{ route('grafik.guru') }}" class="btn btn-primary ms-3">Lihat Grafik</a>
         </div>
+
         <div class="table-responsive">
             <table class="table table-striped table-bordered table-hover">
                 <thead class="thead-dark">

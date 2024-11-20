@@ -56,4 +56,6 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::get('/admin/hasil/kepsek/export', [ExportController::class, 'exportResultsKepsek'])->name('admin.results.kepsek');
     Route::get('/admin/hasil/guru/export', [ExportController::class, 'exportGuruResults'])->name('admin.results.guru');
     Route::get('/export-answers/{userId}', [ExportController::class, 'exportAnswersUser'])->name('export.answers');
+    Route::get('admin/search/guru', [AdminController::class, 'searchGuru'])->name('search.guru');
+    Route::get('admin/search/ks', [AdminController::class, 'searchKs'])->name('search.ks');
 });
