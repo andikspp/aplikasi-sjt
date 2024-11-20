@@ -198,7 +198,10 @@ class AdminController extends Controller
         }
 
         // Dapatkan hasil dengan pagination
-        $results = $query->paginate(10);
+        $results = $query->paginate(10)->appends([
+            'search' => $search,
+            'jenis_paud' => $jenisPaudFilter,
+        ]);
 
         // Return ke view dengan hasil pencarian
         return view('admin.hasil.guru', [
@@ -247,7 +250,10 @@ class AdminController extends Controller
         }
 
         // Dapatkan hasil dengan pagination
-        $results = $query->paginate(10);
+        $results = $query->paginate(10)->appends([
+            'search' => $search,
+            'jenis_paud' => $jenisPaudFilter,
+        ]);
 
         // Return ke view dengan hasil pencarian
         return view('admin.hasil.kepsek', [
