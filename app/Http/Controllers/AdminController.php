@@ -448,7 +448,11 @@ class AdminController extends Controller
             $query->where('users.jenis_paud', $jenisPaudFilter);
         }
 
-        $results = $query->orderBy('users.name')->paginate(10);
+        $results = $query->orderBy('users.name')->paginate(10)->appends([
+            'search' => $search,
+            'status' => $statusFilter,
+            'jenis_paud' => $jenisPaudFilter,
+        ]);
 
         return view('admin.data_peserta.guru', compact('results', 'search', 'statusFilter', 'jenisPaudFilter'));
     }
@@ -494,7 +498,11 @@ class AdminController extends Controller
         }
 
 
-        $results = $query->orderBy('users.name')->paginate(10);
+        $results = $query->orderBy('users.name')->paginate(10)->appends([
+            'search' => $search,
+            'status' => $statusFilter,
+            'jenis_paud' => $jenisPaudFilter,
+        ]);
 
         return view('admin.data_peserta.kepsek', compact('results', 'search', 'statusFilter', 'jenisPaudFilter'));
     }
