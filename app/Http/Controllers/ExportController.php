@@ -16,22 +16,22 @@ class ExportController extends Controller
     public function exportResultsKepsek(Request $request)
     {
         $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
         ]);
 
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
 
-        // Ambil semua soal dan set soal dari database, dengan memfilter berdasarkan role 'guru' pada question_sets
+        // Ambil semua soal dan set soal dari database, dengan memfilter berdasarkan role 'kepala sekolah' pada question_sets
         $questions = DB::table('questions')
             ->join('question_sets', 'questions.question_set_id', '=', 'question_sets.id')
             ->select('questions.id', 'questions.question_text', 'question_sets.role')
             ->where('question_sets.role', 'kepala sekolah') // Memfilter berdasarkan role di question_sets
             ->get();
 
-        // Ambil data pengguna dengan role 'guru'
-        $results = DB::table('users')
+        // Ambil data pengguna dengan role 'kepala sekolah'
+        $resultsQuery = DB::table('users')
             ->join('question_sets', 'users.question_set_id', '=', 'question_sets.id')
             ->join('quiz_attempts', 'users.id', '=', 'quiz_attempts.user_id')
             ->select(
@@ -45,9 +45,14 @@ class ExportController extends Controller
                 'quiz_attempts.ended_at',
                 'quiz_attempts.score'
             )
-            ->where('users.role', 'kepala sekolah')
-            ->whereBetween('quiz_attempts.ended_at', [$startDate, $endDate])
-            ->get();
+            ->where('users.role', 'kepala sekolah'); // Hanya pengguna dengan role 'kepala sekolah'
+
+        // Jika tanggal diinput, tambahkan filter berdasarkan tanggal
+        if ($startDate && $endDate) {
+            $resultsQuery->whereBetween('quiz_attempts.ended_at', [$startDate, $endDate]);
+        }
+
+        $results = $resultsQuery->get();
 
         // Ambil data soal dan jawaban dari tabel user_answers
         $resultsWithAnswers = $results->map(function ($result) use ($questions) {
@@ -77,15 +82,19 @@ class ExportController extends Controller
             return $result;
         });
 
-        $fileName = 'hasil_ks_' . $startDate . '_to_' . $endDate . '.xlsx';
+        // Tentukan nama file berdasarkan input tanggal
+        $fileName = $startDate && $endDate
+            ? 'hasil_ks_' . $startDate . '_to_' . $endDate . '.xlsx'
+            : 'hasil_ks_semua_data.xlsx';
+
         return Excel::download(new GuruAnswersExport($resultsWithAnswers, $questions), $fileName);
     }
 
     public function exportGuruResults(Request $request)
     {
         $request->validate([
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
+            'start_date' => 'nullable|date',
+            'end_date' => 'nullable|date|after_or_equal:start_date',
         ]);
 
         $startDate = $request->input('start_date');
@@ -99,7 +108,7 @@ class ExportController extends Controller
             ->get();
 
         // Ambil data pengguna dengan role 'guru'
-        $results = DB::table('users')
+        $resultsQuery = DB::table('users')
             ->join('question_sets', 'users.question_set_id', '=', 'question_sets.id')
             ->join('quiz_attempts', 'users.id', '=', 'quiz_attempts.user_id')
             ->select(
@@ -113,9 +122,14 @@ class ExportController extends Controller
                 'quiz_attempts.ended_at',
                 'quiz_attempts.score'
             )
-            ->where('users.role', 'guru') // Hanya pengguna dengan role 'guru'
-            ->whereBetween('quiz_attempts.ended_at', [$startDate, $endDate])
-            ->get();
+            ->where('users.role', 'guru'); // Hanya pengguna dengan role 'guru'
+
+        // Jika tanggal diinput, tambahkan filter berdasarkan tanggal
+        if ($startDate && $endDate) {
+            $resultsQuery->whereBetween('quiz_attempts.ended_at', [$startDate, $endDate]);
+        }
+
+        $results = $resultsQuery->get();
 
         // Ambil data soal dan jawaban dari tabel user_answers
         $resultsWithAnswers = $results->map(function ($result) use ($questions) {
@@ -145,7 +159,11 @@ class ExportController extends Controller
             return $result;
         });
 
-        $fileName = 'hasil_guru_' . $startDate . '_to_' . $endDate . '.xlsx';
+        // Tentukan nama file berdasarkan input tanggal
+        $fileName = $startDate && $endDate
+            ? 'hasil_guru_' . $startDate . '_to_' . $endDate . '.xlsx'
+            : 'hasil_guru_semua_data.xlsx';
+
         return Excel::download(new GuruAnswersExport($resultsWithAnswers, $questions), $fileName);
     }
 

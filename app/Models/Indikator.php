@@ -20,4 +20,12 @@ class Indikator extends Model
     {
         return $this->belongsTo(Kompetensi::class);
     }
+
+    /**
+     * Relasi ke model Question
+     */
+    public function questions()
+    {
+        return $this->hasMany(Question::class, 'indikator_id');
+    }
 }

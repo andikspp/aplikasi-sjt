@@ -13,11 +13,6 @@ class Kompetensi extends Model
 
     protected $fillable = ['nama'];
 
-    public function questions()
-    {
-        return $this->hasMany(Question::class);
-    }
-
     public function indikator()
     {
         return $this->hasMany(Indikator::class);

@@ -26,7 +26,7 @@
                         <img src="{{ asset('assets/logo kemendikbudristek.png') }}" alt="Logo"
                             class="img-fluid mb-3" style="max-width: 150px;">
                         <h3>Login Admin</h3>
-                        <h4>Situational Judgement Test</h4>
+                        <h4>Pemaknaan Awal</h4>
                     </div>
                     <div class="card-body">
                         @if (session('error'))
@@ -57,8 +57,8 @@
                                 @enderror
                             </div>
                             <div class="mb-3">
-                                <a href="{{ route('register.admin') }}" id="register">
-                                    Daftar Akun </a>
+                                {{-- <a href="{{ route('register.admin') }}" id="register">
+                                    Daftar Akun </a> --}}
                             </div>
                             <button type="submit" class="btn btn-primary w-100 mt-3"
                                 style="background-color: #005689">Login</button>

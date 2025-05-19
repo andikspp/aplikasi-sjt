@@ -40,9 +40,23 @@
             text-decoration-color: white;
         }
 
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+        }
+
         footer {
             background-color: #005689;
             color: white;
+            text-align: center;
+            padding: 1rem 0;
         }
     </style>
 </head>
@@ -99,7 +113,7 @@
     <!-- Footer -->
     <footer class="text-center text-lg-start mt-5">
         <div class="text-center p-3">
-            &copy; 2024 Guru PAUD Dikmas
+            &copy; 2025 Direktorat Guru PAUD dan Dikmas, Kementerian Pendidikan dan Kebudayaan Republik Indonesia
         </div>
     </footer>
 

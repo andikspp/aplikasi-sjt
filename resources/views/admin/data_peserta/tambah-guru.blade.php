@@ -32,20 +32,10 @@
                                 @enderror
                             </div>
 
-                            <!-- Username -->
-                            <div class="mb-3">
-                                <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control @error('username') is-invalid @enderror"
-                                    id="username" name="username" value="{{ old('username') }}" required>
-                                @error('username')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
                             <!-- Telepon -->
                             <div class="mb-3">
                                 <label for="telepon" class="form-label">Telepon</label>
-                                <input type="text" class="form-control @error('telepon') is-invalid @enderror"
+                                <input type="number" class="form-control @error('telepon') is-invalid @enderror"
                                     id="telepon" name="telepon" value="{{ old('telepon') }}" required>
                                 @error('telepon')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -78,6 +68,17 @@
                                 @enderror
                             </div>
 
+                            <!-- Username -->
+                            <div class="mb-3">
+                                <label for="username" class="form-label">Username</label>
+                                <input type="text" class="form-control @error('username') is-invalid @enderror"
+                                    id="username" name="username" value="{{ old('username') }}"
+                                    placeholder="Akan diisi oleh sistem" required>
+                                @error('username')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
                             <!-- Role (Auto-set to Guru) -->
                             <input type="hidden" name="role" value="Guru">
 
@@ -93,8 +94,23 @@
         </div>
     </div>
 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
     <script>
+        $(document).ready(function() {
+            $('#name, #instansi').on('input', function() {
+                const name = $('#name').val().trim().toLowerCase().replace(/\s+/g, '');
+                const instansi = $('#instansi').val().trim().toLowerCase().replace(/\s+/g, '');
+
+                if (name && instansi) {
+                    const username = `${name}.${instansi}`;
+                    $('#username').val(username);
+                } else {
+                    $('#username').val('');
+                }
+            });
+        });
+
         function goBack() {
             window.history.back();
         }
