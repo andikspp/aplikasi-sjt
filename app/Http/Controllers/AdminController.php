@@ -2,17 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Question;
-use App\Models\Answer;
-use Illuminate\Support\Facades\DB;
-use App\Models\QuestionSet;
-use App\Models\QuizAttempt;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Models\Admin;
-use Illuminate\Support\Facades\Hash;
+use App\Models\Answer;
+use App\Models\Question;
+use App\Models\Indikator;
+use App\Models\Kompetensi;
 use App\Models\UserAnswer;
+use App\Models\QuestionSet;
+use App\Models\QuizAttempt;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class AdminController extends Controller
 {
@@ -60,14 +62,25 @@ class AdminController extends Controller
         return view('admin.soal.index', compact('questionSets'));
     }
 
-    public function soalKs()
+    public function soalKs($questionSetId)
     {
-        return view('admin.soal.kepala_sekolah.create');
+        $selectedSet = \App\Models\QuestionSet::findOrFail($questionSetId);
+        $kompetensi = Kompetensi::where('role', 'Kepala Sekolah')->get();
+
+        return view('admin.soal.kepala_sekolah.create', compact('selectedSet', 'kompetensi'));
     }
 
-    public function soalGuru()
+    public function soalGuru($questionSetId)
     {
-        return view('admin.soal.guru.create');
+        $selectedSet = \App\Models\QuestionSet::findOrFail($questionSetId);
+        $kompetensi = Kompetensi::where('role', 'Guru')->get();
+        return view('admin.soal.guru.create', compact('selectedSet', 'kompetensi'));
+    }
+
+    public function getIndikatorByKompetensi($kompetensi_id)
+    {
+        $indikator = Indikator::where('kompetensi_id', $kompetensi_id)->get(['id', 'nama']);
+        return response()->json($indikator);
     }
 
     public function storeQuestion(Request $request)

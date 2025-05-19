@@ -27,22 +27,22 @@
         @endif
         <div class="form-container">
             <h5 class="mb-4">Tambah Paket Soal</h5>
-            <form action="{{ route('store.QuestionSet') }}" method="POST">
+            <form action="{{ route('store.QuestionSet') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 <div class="mb-3">
-                    <label for="name" class="form-label">Nama Paket</label>
+                    <label for="name" class="form-label">Nama Paket <span style="color: red">*</span></label>
                     <input type="text" class="form-control" id="name" name="name" required>
                 </div>
                 <div class="mb-3">
-                    <label for="start_exam" class="form-label">Waktu Mulai Ujian</label>
+                    <label for="start_exam" class="form-label">Waktu Mulai Ujian <span style="color: red">*</span></label>
                     <input type="datetime-local" class="form-control" id="start_exam" name="start_exam" required>
                 </div>
                 <div class="mb-3">
-                    <label for="end_exam" class="form-label">Waktu Berakhir Ujian</label>
+                    <label for="end_exam" class="form-label">Waktu Berakhir Ujian <span style="color: red">*</span></label>
                     <input type="datetime-local" class="form-control" id="end_exam" name="end_exam" required>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Role</label>
+                    <label class="form-label">Role <span style="color: red">*</span></label>
                     <div class="form-check">
                         <input class="form-check-input" type="radio" id="role_guru" name="role" value="Guru"
                             required>
@@ -55,8 +55,25 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="time_limit" class="form-label">Durasi Ujian (Menit)</label>
+                    <label for="time_limit" class="form-label">Durasi Ujian (Menit) <span
+                            style="color: red">*</span></label>
                     <input type="number" class="form-control" id="time_limit" name="time_limit" required>
+                </div>
+                <div class="mb-3">
+                    <label for="excel_file" class="form-label">Import Soal (Opsional)</label>
+                    <input type="file" class="form-control" id="excel_file" name="import_soal" accept=".xlsx,.xls, .csv">
+                    <small class="text-muted">Format file: .xlsx, .xls, .csv</small>
+                    @if ($errors->has('import_soal'))
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Gagal!',
+                                    text: '{{ $errors->first('import_soal') }}',
+                                });
+                            });
+                        </script>
+                    @endif
                 </div>
                 <a href="{{ route('admin.soal') }}" class="btn btn-danger">
                     Kembali
