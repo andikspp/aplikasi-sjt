@@ -13,6 +13,7 @@ use App\Models\QuestionSet;
 use App\Models\QuizAttempt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
@@ -56,10 +57,33 @@ class AdminController extends Controller
         return view('admin.dashboard', compact('admin', 'jumlahUser', 'jumlahInstansi', 'jumlahUjianSelesai', 'jumlahGuru', 'jumlahKepalaSekolah'));
     }
 
-    public function soalPage()
+    public function soalPage(Request $request)
     {
-        $questionSets = QuestionSet::all();
-        return view('admin.soal.index', compact('questionSets'));
+        try {
+            $questionSets = QuestionSet::with('questions')->get();
+
+            // Ambil nama pembuat dari LogAdmin berdasarkan question_set_id
+            foreach ($questionSets as $set) {
+                $log = \App\Models\LogAdmin::where('question_set_id', $set->id)
+                    ->where('action', 'like', 'Menambah paket soal%')
+                    ->orderBy('created_at', 'asc')
+                    ->first();
+                $set->creator_name = $log ? $log->admin_name : '-';
+            }
+
+            // Jika request AJAX, return JSON
+            if ($request->ajax()) {
+                return response()->json($questionSets);
+            }
+
+            // Jika request biasa, return view
+            return view('admin.soal.index', compact('questionSets'));
+        } catch (\Exception $e) {
+            if ($request->ajax()) {
+                return response()->json(['error' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+            }
+            return view('admin.soal.index', ['questionSets' => collect([]), 'error' => $e->getMessage()]);
+        }
     }
 
     public function soalKs($questionSetId)
@@ -164,7 +188,8 @@ class AdminController extends Controller
                 'users.role',
                 'question_sets.name as question_set_name',
                 'quiz_attempts.ended_at',
-                'quiz_attempts.score'
+                'quiz_attempts.score',
+                'quiz_attempts.id as quiz_attempt_id'
             )
             ->where('users.role', 'guru')
             ->paginate(10);
@@ -292,7 +317,8 @@ class AdminController extends Controller
                 'users.role',
                 'question_sets.name as question_set_name',
                 'quiz_attempts.ended_at',
-                'quiz_attempts.score'
+                'quiz_attempts.score',
+                'quiz_attempts.id as quiz_attempt_id'
             )
             ->where('users.role', 'kepala sekolah')
             ->paginate(10);
@@ -303,15 +329,17 @@ class AdminController extends Controller
     public function showQuestionsKs($question_set_id)
     {
         $questionSet = QuestionSet::findOrFail($question_set_id);
-        $questions = $questionSet->questions()->with('answers', 'kompetensi', 'indikator')->paginate(10);
-        return view('admin.soal.kepala_sekolah.detail-soal', compact('questionSet', 'questions'));
+        $kompetensi = Kompetensi::where('role', 'Kepala Sekolah')->get();
+        $questions = $questionSet->questions()->with('answers', 'kompetensi', 'indikator')->get();
+        return view('admin.soal.kepala_sekolah.detail-soal', compact('questionSet', 'questions', 'kompetensi'));
     }
 
     public function showQuestionsGuru($question_set_id)
     {
         $questionSet = QuestionSet::findOrFail($question_set_id);
-        $questions = $questionSet->questions()->with('answers', 'kompetensi')->paginate(10);
-        return view('admin.soal.guru.detail-soal', compact('questionSet', 'questions'));
+        $kompetensi = Kompetensi::where('role', 'Guru')->get();
+        $questions = $questionSet->questions()->with('answers', 'kompetensi')->get();
+        return view('admin.soal.guru.detail-soal', compact('questionSet', 'questions', 'kompetensi'));
     }
 
     public function showEditFormKs($id)
@@ -836,5 +864,277 @@ class AdminController extends Controller
             ->pluck('total_score', 'kompetensi');
 
         return view('admin.hasil.grafik-guru', compact('scoreData', 'scoreByCompetency'));
+    }
+
+    public function logs(Request $request)
+    {
+        try {
+            // Ambil semua admin untuk dropdown
+            $admins = DB::table('admins')->select('id', 'username')->get();
+
+            // Query dasar logs
+            $query = DB::table('logs_admin')->orderBy('created_at', 'desc');
+
+            $logs = $query->get();
+
+            // Untuk view utama
+            return view('admin.logs.index', compact('admins', 'logs'));
+        } catch (\Exception $e) {
+            // Jika terjadi error, redirect atau tampilkan pesan error
+            return back()->with('error', 'Terjadi kesalahan saat mengambil data log: ' . $e->getMessage());
+        }
+    }
+
+    public function filterLogsByAdmin(Request $request)
+    {
+        try {
+            $adminId = $request->input('admin_id');
+            $timeRange = $request->input('time_range');
+            $waktuOrder = $request->input('waktu_order', 'desc');
+
+            $query = DB::table('logs_admin')->orderBy('created_at', $waktuOrder);
+
+            if ($adminId) {
+                $query->where('admin_id', $adminId);
+            }
+
+            if ($timeRange) {
+                $now = \Carbon\Carbon::now();
+                switch ($timeRange) {
+                    case 'today':
+                        $query->whereDate('created_at', $now->toDateString());
+                        break;
+                    case '3days':
+                        $query->where('created_at', '>=', $now->subDays(3));
+                        break;
+                    case '1week':
+                        $query->where('created_at', '>=', $now->subWeek());
+                        break;
+                    case '2weeks':
+                        $query->where('created_at', '>=', $now->subWeeks(2));
+                        break;
+                    case '3weeks':
+                        $query->where('created_at', '>=', $now->subWeeks(3));
+                        break;
+                    case '1month':
+                        $query->where('created_at', '>=', $now->subMonth());
+                        break;
+                }
+            }
+
+            $logs = $query->get()->map(function ($log, $index) {
+                return [
+                    'no' => $index + 1,
+                    'admin_name' => $log->admin_name ?? '-',
+                    'action' => $log->action,
+                    'waktu' => \Carbon\Carbon::parse($log->created_at)->format('d-m-Y H:i:s') . ' WIB',
+                ];
+            });
+
+            return response()->json([
+                'success' => true,
+                'logs' => $logs,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function permintaanPage()
+    {
+        $allowances = \App\Models\Allowance::with(['peserta', 'approvals'])->where('requested_by', auth('admin')->id())->orderBy('created_at', 'desc')->get();
+
+        return view('admin.permintaan.index', compact('allowances'));
+    }
+
+    public function storePermintaan(Request $request)
+    {
+        try {
+            $request->validate([
+                'user_id' => 'required|integer|exists:users,id',
+                'quiz_attempt_id' => 'nullable|integer|exists:quiz_attempts,id',
+                'reason' => 'required|string|max:255',
+            ]);
+
+            $adminId = auth('admin')->id();
+
+            $allowance = \App\Models\Allowance::create([
+                'user_id' => $request->user_id,
+                'quiz_attempt_id' => $request->quiz_attempt_id ?? null,
+                'requested_by' => $adminId,
+                'reason' => $request->reason,
+                'status' => 'pending',
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Permintaan penghapusan berhasil diajukan.',
+                'data' => $allowance,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function cancelPermintaan($id)
+    {
+        try {
+            $adminId = auth('admin')->id();
+            $allowance = \App\Models\Allowance::where('id', $id)
+                ->where('requested_by', $adminId)
+                ->where('status', 'pending')
+                ->first();
+
+            if (!$allowance) {
+                return redirect()->back()->with('error', 'Permintaan tidak ditemukan atau sudah diproses.');
+            }
+
+            $allowance->delete();
+
+            return redirect()->back()->with('success', 'Permintaan berhasil dibatalkan.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function persetujuanPage()
+    {
+        $adminId = auth('admin')->id();
+
+        $allowances = \App\Models\Allowance::with(['peserta', 'adminrequested', 'approvals'])
+            ->where('requested_by', '!=', $adminId)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('admin.persetujuan.index', compact('allowances'));
+    }
+
+    public function approveAllowance($id)
+    {
+        try {
+            $adminId = auth('admin')->id();
+
+            // Cek apakah sudah pernah approve/reject
+            $existing = \App\Models\AllowanceApproval::where('allowance_id', $id)
+                ->where('admin_id', $adminId)
+                ->first();
+
+            if ($existing) {
+                return redirect()->back()->with('error', 'Anda sudah memproses permintaan ini.');
+            }
+
+            // Simpan approval
+            \App\Models\AllowanceApproval::create([
+                'allowance_id' => $id,
+                'admin_id' => $adminId,
+                'status' => 'approved',
+                'approved_at' => now(),
+            ]);
+
+            // Cek apakah semua admin (selain pengaju) sudah approve
+            $allowance = \App\Models\Allowance::with('approvals')->findOrFail($id);
+            $totalAdmin = \App\Models\Admin::where('id', '!=', $allowance->requested_by)->count();
+            $totalApproved = $allowance->approvals()->where('status', 'approved')->count();
+
+            if ($totalApproved >= $totalAdmin) {
+                // Update status allowance
+                $allowance->status = 'approved';
+                $allowance->save();
+
+                if ($allowance->quiz_attempt_id) {
+                    // Penghapusan hasil tes saja
+                    DB::transaction(function () use ($allowance) {
+                        DB::table('quiz_attempts')->where('id', $allowance->quiz_attempt_id)->delete();
+                        DB::table('user_answers')->where('user_id', $allowance->user_id)->delete();
+                        DB::table('users')->where('id', $allowance->user_id)->update(['status' => 'not_started']);
+                    });
+
+                    // Catat log aktivitas admin (setelah hapus hasil tes, peserta masih ada)
+                    $adminPengaju = \App\Models\Admin::find($allowance->requested_by);
+                    $peserta = \App\Models\User::find($allowance->user_id);
+                    $namaPeserta = $peserta ? $peserta->name : 'Unknown';
+
+                    \App\Models\LogAdmin::create([
+                        'admin_id'   => $adminPengaju->id ?? null,
+                        'admin_name' => $adminPengaju->username ?? 'Unknown',
+                        'action' => 'Menghapus hasil tes peserta: ' . $namaPeserta . ' (ID: ' . $allowance->user_id . '). ' . $allowance->reason,
+                        'ip_address' => request()->ip(),
+                        'question_set_id' => null,
+                    ]);
+                } else {
+                    // Penghapusan data peserta (hapus semua data peserta)
+                    // Ambil nama peserta sebelum dihapus
+                    $adminPengaju = \App\Models\Admin::find($allowance->requested_by);
+                    $peserta = \App\Models\User::find($allowance->user_id);
+                    $namaPeserta = $peserta ? $peserta->name : 'Unknown';
+
+                    // Catat log SEBELUM hapus data peserta
+                    \App\Models\LogAdmin::create([
+                        'admin_id'   => $adminPengaju->id ?? null,
+                        'admin_name' => $adminPengaju->username ?? 'Unknown',
+                        'action' => 'Menghapus data peserta: ' . $namaPeserta . ' (ID: ' . $allowance->user_id . '). ' . $allowance->reason,
+                        'ip_address' => request()->ip(),
+                        'question_set_id' => null,
+                    ]);
+
+                    // Baru hapus data peserta dan relasi
+                    DB::transaction(function () use ($allowance) {
+                        DB::table('quiz_attempts')->where('user_id', $allowance->user_id)->delete();
+                        DB::table('user_answers')->where('user_id', $allowance->user_id)->delete();
+                        DB::table('users')->where('id', $allowance->user_id)->delete();
+
+                        DB::table('allowance_approval')
+                            ->whereIn('allowance_id', function ($query) use ($allowance) {
+                                $query->select('id')->from('allowance')->where('user_id', $allowance->user_id);
+                            })->delete();
+
+                        DB::table('allowance')->where('user_id', $allowance->user_id)->delete();
+                    });
+                }
+            }
+
+            return redirect()->back()->with('success', 'Permintaan berhasil disetujui.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function rejectAllowance($id)
+    {
+        try {
+            $adminId = auth('admin')->id();
+
+            // Cek apakah sudah pernah approve/reject
+            $existing = \App\Models\AllowanceApproval::where('allowance_id', $id)
+                ->where('admin_id', $adminId)
+                ->first();
+
+            if ($existing) {
+                return redirect()->back()->with('error', 'Anda sudah memproses permintaan ini.');
+            }
+
+            // Simpan reject
+            \App\Models\AllowanceApproval::create([
+                'allowance_id' => $id,
+                'admin_id' => $adminId,
+                'status' => 'rejected',
+                'approved_at' => now(),
+            ]);
+
+            // Jika ada satu saja yang reject, update status allowance jadi rejected
+            $allowance = \App\Models\Allowance::findOrFail($id);
+            $allowance->status = 'rejected';
+            $allowance->save();
+
+            return redirect()->back()->with('success', 'Permintaan berhasil ditolak.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 }

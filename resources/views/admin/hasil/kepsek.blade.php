@@ -114,7 +114,7 @@
                             <td>{{ $result->score }}</td>
                             <td>
                                 <button type="button" class="btn btn-danger btn-sm"
-                                    onclick="confirmDeletion({{ $result->id }})">Hapus</button>
+                                    onclick="confirmDeletion({{ $result->id }}, {{ $result->quiz_attempt_id }})">Hapus</button>
 
                                 <form id="delete-form-{{ $result->id }}"
                                     action="{{ route('hapus.hasil.kepsek', $result->id) }}" method="POST"
@@ -136,22 +136,52 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
     <script>
-        function confirmDeletion(kepsekId) {
+        function confirmDeletion(kepsekId, quizAttemptId) {
             Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: "Anda tidak akan bisa mengembalikan data ini!",
+                title: 'Ajukan Penghapusan Hasil Tes',
+                text: "Masukkan alasan penghapusan. Permintaan akan dikonfirmasi oleh admin lain.",
                 icon: 'warning',
+                input: 'text',
+                inputLabel: 'Alasan penghapusan',
+                inputPlaceholder: 'Masukkan alasan penghapusan hasil tes',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Alasan penghapusan wajib diisi!';
+                    }
+                },
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, hapus!',
+                confirmButtonText: 'Ajukan',
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    document.getElementById('delete-form-' + kepsekId).submit();
+                    // Kirim AJAX ke backend untuk membuat permintaan penghapusan
+                    $.ajax({
+                        url: '{{ route('admin.permintaan.store') }}',
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            user_id: kepsekId,
+                            quiz_attempt_id: quizAttemptId,
+                            reason: "Permintaan Penghapusan Hasil Tes Peserta Dengan Alasan: " + result
+                                .value
+                        },
+                        success: function(response) {
+                            Swal.fire('Berhasil',
+                                    'Permintaan penghapusan telah diajukan dan menunggu persetujuan admin lain.',
+                                    'success')
+                                .then(() => location.reload());
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Gagal', 'Terjadi kesalahan saat mengajukan permintaan.',
+                                'error');
+                        }
+                    });
                 }
-            })
+            });
         }
+
 
         @if (session('error'))
             Swal.fire({

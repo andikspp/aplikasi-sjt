@@ -23,12 +23,12 @@ class Question extends Model
 
     public function questionSet()
     {
-        return $this->belongsTo(QuestionSet::class);
+        return $this->belongsTo(QuestionSet::class, 'question_set_id');
     }
 
     public function kompetensi()
     {
-        return $this->belongsTo(Kompetensi::class);
+        return $this->belongsTo(Kompetensi::class, 'kompetensi_id');
     }
 
     public function indikator()

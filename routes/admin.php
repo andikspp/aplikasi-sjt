@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\QuestionSetController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ExportController;
+use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\RegisterController;
 
 Route::get('/admin', function () {
@@ -28,6 +29,8 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::get('/admin/soal/guru/{question_set_id}', [AdminController::class, 'showQuestionsGuru'])->name('admin.guru.detail-soal');
     Route::delete('/admin/soal/{id}', [AdminController::class, 'hapusSoal'])->name('hapus.soal');
     Route::get('/admin/indikator/by-kompetensi/{kompetensi_id}', [AdminController::class, 'getIndikatorByKompetensi'])->name('admin.indikator.by-kompetensi');
+    Route::get('/admin/soal/filter', [QuestionSetController::class, 'filterByRole'])->name('admin.soal.filter');
+    Route::get('/admin/soal/guru/detail/filter', [QuestionController::class, 'filterSoalByKompetensi'])->name('admin.soal.filter');
 
     // manajemen paket soal
     Route::get('/admin/add-paket-soal', [QuestionSetController::class, 'create'])->name('create.QuestionSet');
@@ -70,4 +73,18 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::get('/admin/guru/create', [AdminController::class, 'tambahGuru'])->name('admin.tambah.guru');
     Route::get('admin/search/guru', [AdminController::class, 'searchGuru'])->name('search.guru');
     Route::get('admin/search/ks', [AdminController::class, 'searchKs'])->name('search.ks');
+
+    // log aktivitas
+    Route::get('/admin/logs', [AdminController::class, 'logs'])->name('admin.log');
+    Route::get('/admin/logs/filter', [AdminController::class, 'filterLogsByAdmin'])->name('admin.logs.filter');
+
+    // permintaan penghapusan
+    Route::get('admin/permintaan', [AdminController::class, 'permintaanPage'])->name('admin.permintaan');
+    Route::post('admin/permintaan/store', [AdminController::class, 'storePermintaan'])->name('admin.permintaan.store');
+    Route::delete('/allowance/{id}/cancel', [AdminController::class, 'cancelPermintaan'])->name('admin.permintaan.cancel');
+
+    // persetujuan penghapusan
+    Route::get('admin/persetujuan', [AdminController::class, 'persetujuanPage'])->name('admin.persetujuan');
+    Route::post('/admin/persetujuan/approve/{id}', [AdminController::class, 'approveAllowance'])->name('admin.persetujuan.approve');
+    Route::post('/admin/persetujuan/reject/{id}', [AdminController::class, 'rejectAllowance'])->name('admin.persetujuan.reject');
 });

@@ -125,20 +125,47 @@
     <script>
         function confirmDeletion(guruId) {
             Swal.fire({
-                title: 'Apakah Anda yakin?',
-                text: "Anda tidak akan bisa mengembalikan data ini!",
+                title: 'Ajukan Penghapusan Peserta',
+                text: "Masukkan alasan penghapusan. Permintaan akan dikonfirmasi oleh admin lain.",
                 icon: 'warning',
+                input: 'text',
+                inputLabel: 'Alasan penghapusan',
+                inputPlaceholder: 'Masukkan alasan penghapusan peserta',
+                inputValidator: (value) => {
+                    if (!value) {
+                        return 'Alasan penghapusan wajib diisi!';
+                    }
+                },
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, hapus!',
+                confirmButtonText: 'Ajukan',
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Jika dikonfirmasi, submit form secara dinamis
-                    document.getElementById('delete-form-' + guruId).submit();
+                    // Kirim AJAX ke backend untuk membuat permintaan penghapusan
+                    $.ajax({
+                        url: '{{ route('admin.permintaan.store') }}',
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            user_id: guruId,
+                            reason: "Permintaan Penghapusan Peserta Dengan Alasan: " + result
+                                .value
+                        },
+                        success: function(response) {
+                            Swal.fire('Berhasil',
+                                    'Permintaan penghapusan telah diajukan dan menunggu persetujuan admin lain.',
+                                    'success')
+                                .then(() => location.reload());
+                        },
+                        error: function(xhr) {
+                            Swal.fire('Gagal', 'Terjadi kesalahan saat mengajukan permintaan.',
+                                'error');
+                        }
+                    });
                 }
-            })
+            });
         }
 
         @if (session('error'))

@@ -20,4 +20,9 @@ class Admin extends Authenticatable
     ];
 
     protected $table = 'admins';
+
+    public function logs()
+    {
+        return $this->hasMany(LogAdmin::class, 'admin_id');
+    }
 }

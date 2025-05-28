@@ -106,7 +106,10 @@ class QuestionSetController extends Controller
                     }
 
                     // Ambil atau buat kompetensi
-                    $kompetensi = Kompetensi::firstOrCreate(['nama' => $row[1]]);
+                    $kompetensi = Kompetensi::firstOrCreate(
+                        ['nama' => $row[1], 'role' => $request->role]
+                    );
+
                     // Ambil atau buat indikator (harus ada kompetensi_id)
                     $indikator = Indikator::firstOrCreate([
                         'nama' => $row[2],
@@ -134,6 +137,17 @@ class QuestionSetController extends Controller
             }
 
             DB::commit();
+
+            // Catat log admin
+            $admin = auth('admin')->user();
+            \App\Models\LogAdmin::create([
+                'admin_id'   => $admin->id ?? null,
+                'admin_name' => $admin->username ?? 'Unknown',
+                'action'     => 'Menambah paket soal: ' . $questionSet->name,
+                'ip_address' => $request->ip(),
+                'question_set_id' => $questionSet->id,
+            ]);
+
             return redirect()->route('admin.soal')->with('success', 'Paket Soal berhasil disimpan');
         } catch (\Exception $e) {
             DB::rollBack();
@@ -163,6 +177,9 @@ class QuestionSetController extends Controller
         // Cari QuestionSet berdasarkan ID
         $questionSet = QuestionSet::findOrFail($id);
 
+        // Simpan data lama untuk perbandingan
+        $oldData = $questionSet->only(['name', 'time_limit', 'start_exam', 'end_exam', 'role']);
+
         // Update data QuestionSet
         $questionSet->update([
             'name' => $request->name,
@@ -172,16 +189,75 @@ class QuestionSetController extends Controller
             'role' => $request->role,
         ]);
 
+        // Bandingkan perubahan
+        $newData = [
+            'name' => $request->name,
+            'time_limit' => $request->time_limit,
+            'start_exam' => $request->start_exam,
+            'end_exam' => $request->end_exam,
+            'role' => $request->role,
+        ];
+
+        $changes = [];
+        foreach ($oldData as $key => $oldValue) {
+            if ($oldValue != $newData[$key]) {
+                $changes[] = ucfirst(str_replace('_', ' ', $key)) . ': "' . $oldValue . '" → "' . $newData[$key] . '"';
+            }
+        }
+
+        $changeLog = count($changes) ? 'Perubahan: ' . implode(', ', $changes) : 'Tidak ada perubahan data utama.';
+
+        // Catat log admin
+        $admin = auth('admin')->user();
+        \App\Models\LogAdmin::create([
+            'admin_id'   => $admin->id ?? null,
+            'admin_name' => $admin->username ?? 'Unknown',
+            'action'     => 'Mengedit paket soal: ' . $questionSet->name . '. ' . $changeLog,
+            'ip_address' => $request->ip(),
+            'question_set_id' => $questionSet->id,
+        ]);
+
         // Redirect kembali ke halaman list soal dengan pesan sukses
         return redirect()->route('admin.soal')->with('success', 'Paket Soal berhasil diperbarui');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $questionSet = QuestionSet::findOrFail($id);
+
+        $namaPaket = $questionSet->name;
+        $alasan = $request->input('alasan_penghapusan');
+
+        // Catat log admin
+        $admin = auth('admin')->user();
+        \App\Models\LogAdmin::create([
+            'admin_id'   => $admin->id ?? null,
+            'admin_name' => $admin->username ?? 'Unknown',
+            'action'     => 'Menghapus paket soal: ' . $namaPaket . '. Alasan: ' . $alasan,
+            'ip_address' => request()->ip(),
+            'question_set_id' => $id,
+        ]);
 
         $questionSet->delete();
 
         return redirect()->route('admin.soal')->with('success', 'Paket Soal berhasil dihapus');
+    }
+
+    public function filterByRole(Request $request)
+    {
+        try {
+            $role = $request->query('role');
+            $query = \App\Models\QuestionSet::with('questions');
+            if ($role) {
+                $query->where('role', $role);
+            }
+            $questionSets = $query->get();
+
+            return response()->json($questionSets);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Terjadi kesalahan saat mengambil data: ' . $e->getMessage()
+            ], 500);
+        }
     }
 }
