@@ -6,8 +6,9 @@
 
     <style>
         .chart-container {
-            width: 300px;
-            height: 300px;
+            width: 100%;
+            max-width: 400px;
+            height: 350px;
             margin: 0 auto;
         }
     </style>
@@ -16,13 +17,28 @@
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
     <div class="container mt-5">
-        <h2>Grafik Skor Jawaban {{ $userName }}</h2>
-        <div class="chart-container">
-            <canvas id="scorePieChart"></canvas>
-        </div>
-
-        <div class="chart-container">
-            <canvas id="scoreBarChart"></canvas>
+        <h2 class="mb-4 text-center">Grafik Skor Jawaban {{ $userName }}</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-center mb-3">Distribusi Skor</h5>
+                        <div class="chart-container">
+                            <canvas id="scorePieChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body">
+                        <h5 class="card-title text-center mb-3">Skor per Kompetensi</h5>
+                        <div class="chart-container">
+                            <canvas id="scoreBarChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -46,16 +62,26 @@
             options: {
                 responsive: true,
                 plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
                     datalabels: {
                         color: '#fff',
                         formatter: (value, context) => {
                             const total = context.chart.data.datasets[0].data.reduce((acc, val) => acc + val,
                                 0);
-                            const percentage = ((value / total) * 100).toFixed(2) + '%';
+                            if (total === 0) return '0%';
+                            const percentage = ((value / total) * 100).toFixed(1) + '%';
                             return percentage;
                         },
                         font: {
                             weight: 'bold',
+                            size: 14
                         }
                     }
                 }
@@ -71,7 +97,7 @@
             data: {
                 labels: Object.keys(scoreByCompetency),
                 datasets: [{
-                    label: 'Total Skor berdasarkan Kompetensi',
+                    label: 'Total Skor',
                     data: Object.values(scoreByCompetency),
                     backgroundColor: '#3e95cd',
                     borderColor: '#1e88e5',
@@ -81,19 +107,35 @@
             options: {
                 responsive: true,
                 plugins: {
+                    legend: {
+                        display: false
+                    },
                     datalabels: {
-                        color: '#fff',
-                        formatter: (value) => {
-                            return value;
-                        },
+                        color: '#333',
+                        anchor: 'end',
+                        align: 'top',
                         font: {
                             weight: 'bold',
+                            size: 13
                         }
                     }
                 },
                 scales: {
                     x: {
-                        beginAtZero: true
+                        beginAtZero: true,
+                        ticks: {
+                            font: {
+                                size: 13
+                            }
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            font: {
+                                size: 13
+                            }
+                        }
                     }
                 }
             },

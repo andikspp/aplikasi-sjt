@@ -5,144 +5,155 @@
 @section('content')
     <!-- Main Content -->
     <div class="container mt-5">
-        <div class="row">
-            <div class="col-md-12">
-                <h3>Selamat Datang, {{ $admin->username }}</h3>
-                <div class="mt-4">
-                    <div class="row">
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card text-white bg-primary">
-                                <div class="card-header">Total Peserta</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $jumlahUser }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card text-white bg-success">
-                                <div class="card-header">Total Guru</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $jumlahGuru }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card text-white bg-warning">
-                                <div class="card-header">Total Kepala Sekolah</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $jumlahKepalaSekolah }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card text-white bg-info">
-                                <div class="card-header">Total Instansi</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $jumlahInstansi }}</h5>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6 col-lg-4 mb-4">
-                            <div class="card text-white bg-danger">
-                                <div class="card-header">Total Peserta Submit</div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ $jumlahUjianSelesai }}</h5>
-                                </div>
-                            </div>
+        <h3 class="mb-4">Selamat Datang, {{ $admin->username }}</h3>
+        <div class="row mb-4">
+            <div class="col-12">
+                <h5 class="mb-3">Statistik</h5>
+            </div>
+            <div class="col-sm-6 col-lg-4 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 text-white bg-primary h-100">
+                    <div class="card-body d-flex align-items-center">
+                        <i class="bi bi-people-fill fs-1 me-3"></i>
+                        <div>
+                            <div class="fw-bold">Total Peserta</div>
+                            <h4 class="mb-0">{{ $jumlahUser }}</h4>
                         </div>
                     </div>
                 </div>
-                <div class="mt-5">
-                    <canvas id="resultsChart"></canvas>
+            </div>
+            <div class="col-sm-6 col-lg-4 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 text-white bg-success h-100">
+                    <div class="card-body d-flex align-items-center">
+                        <i class="bi bi-person-badge-fill fs-1 me-3"></i>
+                        <div>
+                            <div class="fw-bold">Total Guru</div>
+                            <h4 class="mb-0">{{ $jumlahGuru }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 text-white bg-warning h-100">
+                    <div class="card-body d-flex align-items-center">
+                        <i class="bi bi-person-check-fill fs-1 me-3"></i>
+                        <div>
+                            <div class="fw-bold">Total Kepala Sekolah</div>
+                            <h4 class="mb-0">{{ $jumlahKepalaSekolah }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 text-white bg-info h-100">
+                    <div class="card-body d-flex align-items-center">
+                        <i class="bi bi-building fs-1 me-3"></i>
+                        <div>
+                            <div class="fw-bold">Total Instansi</div>
+                            <h4 class="mb-0">{{ $jumlahInstansi }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-lg-4 mb-4">
+                <div class="card shadow-sm border-0 rounded-4 text-white bg-danger h-100">
+                    <div class="card-body d-flex align-items-center">
+                        <i class="bi bi-check2-circle fs-1 me-3"></i>
+                        <div>
+                            <div class="fw-bold">Total Peserta Submit</div>
+                            <h4 class="mb-0">{{ $jumlahUjianSelesai }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-6 mb-4">
+                <h6 class="mb-2">Peserta</h6>
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body">
+                        <canvas id="pesertaChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <h6 class="mb-2">Guru & Kepala Sekolah</h6>
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body">
+                        <canvas id="guruChart" height="200"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <h6 class="mb-2">Instansi (Jenis PAUD)</h6>
+                <div class="card shadow-sm border-0 rounded-4">
+                    <div class="card-body">
+                        <canvas id="instansiChart" height="200"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        const ctx = document.getElementById('resultsChart').getContext('2d');
-        const resultsChart = new Chart(ctx, {
+        // Peserta Chart
+        new Chart(document.getElementById('pesertaChart').getContext('2d'), {
             type: 'bar',
             data: {
-                labels: ['Total Peserta', 'Total Guru', 'Total Kepala Sekolah', 'Total Instansi',
-                    'Total Peserta Submit'
-                ],
+                labels: ['Total Peserta', 'Peserta Submit'],
                 datasets: [{
                     label: 'Jumlah',
-                    data: [{{ $jumlahUser }}, {{ $jumlahGuru }}, {{ $jumlahKepalaSekolah }},
-                        {{ $jumlahInstansi }}, {{ $jumlahUjianSelesai }}
-                    ],
-                    backgroundColor: [
-                        'rgba(54, 162, 235, 0.8)',
-                        'rgba(0, 255, 0)',
-                        'rgba(255, 206, 86, 0.8)',
-                        'rgba(0, 255, 255)',
-                        'rgba(255, 99, 132, 0.8)'
-                    ],
-                    borderColor: [
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(0, 255, 0)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(0, 255, 255)',
-                        'rgba(255, 99, 132, 0.8)'
-                    ],
-                    borderWidth: 2,
-                    borderRadius: 5,
-                    hoverBackgroundColor: [
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(0, 255, 0)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(0, 255, 255)',
-                        'rgba(255, 99, 132, 0.8)'
-                    ],
-                    hoverBorderColor: [
-                        'rgba(0, 0, 0, 1)',
-                        'rgba(0, 0, 0, 1)',
-                        'rgba(0, 0, 0, 1)',
-                        'rgba(0, 0, 0, 1)',
-                        'rgba(0, 0, 0, 1)'
-                    ],
+                    data: [{{ $jumlahUser }}, {{ $jumlahUjianSelesai }}],
+                    backgroundColor: ['#36A2EB', '#FF6384'],
+                    borderRadius: 5
                 }]
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
                 plugins: {
                     legend: {
-                        display: true,
-                        position: 'top',
-                    },
-                    tooltip: {
-                        enabled: true,
-                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                        titleColor: '#fff',
-                        bodyColor: '#fff',
+                        display: false
                     }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: 'Jumlah',
-                            font: {
-                                size: 16
-                            }
-                        },
-                        ticks: {
-                            callback: function(value) {
-                                return Math.floor(value); // Mengubah angka menjadi integer
-                            }
-                        }
-                    },
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Kategori',
-                            font: {
-                                size: 16
-                            }
-                        }
+                }
+            }
+        });
+
+        // Guru & Kepala Sekolah Chart
+        new Chart(document.getElementById('guruChart').getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: ['Guru', 'Kepala Sekolah'],
+                datasets: [{
+                    label: 'Jumlah',
+                    data: [{{ $jumlahGuru }}, {{ $jumlahKepalaSekolah }}],
+                    backgroundColor: ['#4BC0C0', '#FFCE56'],
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+
+        // Instansi Chart (Pie per jenis PAUD)
+        new Chart(document.getElementById('instansiChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['PAUD Mitra', 'PAUD Pembelajar'],
+                datasets: [{
+                    data: [{{ $jumlahPaudMitra }}, {{ $jumlahPaudPembelajar }}],
+                    backgroundColor: ['#36A2EB', '#FF6384']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: true
                     }
                 }
             }

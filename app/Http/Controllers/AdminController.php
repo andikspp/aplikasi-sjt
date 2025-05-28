@@ -53,8 +53,10 @@ class AdminController extends Controller
         $jumlahUjianSelesai = QuizAttempt::count();
         $jumlahGuru = User::where('role', 'guru')->count();
         $jumlahKepalaSekolah = User::where('role', 'kepala sekolah')->count();
+        $jumlahPaudMitra = \App\Models\User::where('jenis_paud', 'mitra')->count();
+        $jumlahPaudPembelajar = \App\Models\User::where('jenis_paud', 'pembelajar')->count();
 
-        return view('admin.dashboard', compact('admin', 'jumlahUser', 'jumlahInstansi', 'jumlahUjianSelesai', 'jumlahGuru', 'jumlahKepalaSekolah'));
+        return view('admin.dashboard', compact('admin', 'jumlahUser', 'jumlahInstansi', 'jumlahUjianSelesai', 'jumlahGuru', 'jumlahKepalaSekolah', 'jumlahPaudMitra', 'jumlahPaudPembelajar'));
     }
 
     public function soalPage(Request $request)
