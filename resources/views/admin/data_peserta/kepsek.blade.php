@@ -32,13 +32,30 @@
         .table-bordered td {
             border: 1px solid #dee2e6;
         }
+
+        .btn-dikmas {
+            background-color: #005689;
+            color: white;
+        }
+
+        .btn-dikmas:hover {
+            background-color: #004a73;
+            color: white;
+        }
     </style>
 
     <div class="container mt-5">
+        <div class="mb-3">
+            <a href="{{ route('data.peserta') }}" class="btn btn-dikmas">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+        </div>
         <h2 class="text-center mb-4">Data Peserta Kepala Sekolah</h2>
 
         <div class="d-flex justify-content-between mb-3">
-            <a href="{{ route('admin.tambah.kepsek') }}" class="btn btn-success mb-3">Tambah Kepala Sekolah</a>
+            <a href="{{ route('admin.tambah.kepsek') }}" class="btn btn-success mb-3">
+                <i class="bi bi-person-plus-fill me-1"></i> Buat Akun
+            </a>
             <form method="GET" action="{{ route('data.kepala_sekolah') }}" class="mb-3 d-flex align-items-center">
                 <input type="text" name="search" value="{{ $search }}" placeholder="Search..."
                     class="form-control me-2" style="width: 150px;" />
@@ -106,7 +123,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="text-center">No results found</td> <!-- Adjusted colspan -->
+                                <td colspan="10" class="text-center">Data Tidak Ditemukan.</td> <!-- Adjusted colspan -->
                             </tr>
                         @endforelse
                     </tbody>

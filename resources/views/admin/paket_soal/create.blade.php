@@ -60,7 +60,7 @@
                     <input type="number" class="form-control" id="time_limit" name="time_limit" required>
                 </div>
                 <div class="mb-3">
-                    <label for="excel_file" class="form-label">Import Soal (Opsional)</label>
+                    <label for="excel_file" class="form-label">Impor Soal (Opsional)</label>
                     <input type="file" class="form-control" id="excel_file" name="import_soal" accept=".xlsx,.xls, .csv">
                     <small class="text-muted">Format file: .xlsx, .xls, .csv</small>
                     @if ($errors->has('import_soal'))

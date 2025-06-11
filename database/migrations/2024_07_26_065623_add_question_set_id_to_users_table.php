@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->unsignedBigInteger('question_set_id')->nullable()->after('email');
+            $table->unsignedBigInteger('question_set_id')->nullable()->after('username');
             $table->foreign('question_set_id')->references('id')->on('question_sets')->onDelete('set null');
         });
     }

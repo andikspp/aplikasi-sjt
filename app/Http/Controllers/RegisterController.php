@@ -73,6 +73,15 @@ class RegisterController extends Controller
 
         $passwordGuru = 'sjtguru123#';
 
+        $questionSets = QuestionSet::where('role', $request->role)->get();
+
+        // Penanganan jika question set tidak ada
+        if ($questionSets->isEmpty()) {
+            return redirect()->back()
+                ->withErrors(['question_set' => 'Tidak ada paket soal untuk role ini. Silakan tambahkan paket soal terlebih dahulu.'])
+                ->withInput();
+        }
+
         $user = User::create([
             'name' => $request->name,
             'username' => $request->username,
@@ -82,8 +91,6 @@ class RegisterController extends Controller
             'jenis_paud' => $request->jenis_paud,
             'role' => $request->role,
         ]);
-
-        $questionSets = QuestionSet::where('role', $request->role)->get();
 
         $randomQuestionSet = $questionSets->random();
 

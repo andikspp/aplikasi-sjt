@@ -11,12 +11,27 @@
             height: 350px;
             margin: 0 auto;
         }
+
+        .btn-dikmas {
+            background-color: #005689;
+            color: white;
+        }
+
+        .btn-dikmas:hover {
+            background-color: #004a73;
+            color: white;
+        }
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
 
     <div class="container mt-5">
+        <div class="mb-3">
+            <a href="{{ route('hasil.guru') }}" class="btn btn-dikmas">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+        </div>
         <h2 class="mb-4 text-center">Grafik Skor Jawaban Guru</h2>
         <div class="row justify-content-center">
             <div class="col-md-6 mb-4">

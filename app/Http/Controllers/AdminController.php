@@ -219,7 +219,8 @@ class AdminController extends Controller
                 'users.role',
                 'question_sets.name as question_set_name',
                 'quiz_attempts.ended_at',
-                'quiz_attempts.score'
+                'quiz_attempts.score',
+                'quiz_attempts.id as quiz_attempt_id'
             )
             ->where('users.role', 'guru'); // Khusus untuk guru
 
