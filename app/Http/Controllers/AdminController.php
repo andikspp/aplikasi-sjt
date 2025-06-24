@@ -109,65 +109,142 @@ class AdminController extends Controller
         return response()->json($indikator);
     }
 
-    public function storeQuestion(Request $request)
+    public function storeQuestionGuru(Request $request)
     {
-        // Validasi input
-        $validatedData = $request->validate([
-            'indikator_id' => 'required|exists:indikator,id',
-            'kompetensi_id' => 'required|exists:kompetensi,id',
-            'question_text' => 'required|string|max:500',
-            'question_set_id' => 'required|exists:question_sets,id',
-            'option_a' => 'required|string|max:500',
-            'score_a' => 'required|integer|in:1,2,3,4',
-            'option_b' => 'required|string|max:500',
-            'score_b' => 'required|integer|in:1,2,3,4',
-            'option_c' => 'required|string|max:500',
-            'score_c' => 'required|integer|in:1,2,3,4',
-            'option_d' => 'required|string|max:500',
-            'score_d' => 'required|integer|in:1,2,3,4',
-        ]);
+        try {
+            $validatedData = $request->validate([
+                'kompetensi_guru' => 'required|string|max:255',
+                'indikator_guru' => 'required|string|max:255',
+                'question_text' => 'required|string|max:500',
+                'question_set_id' => 'required|exists:question_sets,id',
+                'option_a' => 'required|string|max:500',
+                'score_a' => 'required|integer|in:1,2,3,4',
+                'option_b' => 'required|string|max:500',
+                'score_b' => 'required|integer|in:1,2,3,4',
+                'option_c' => 'required|string|max:500',
+                'score_c' => 'required|integer|in:1,2,3,4',
+                'option_d' => 'required|string|max:500',
+                'score_d' => 'required|integer|in:1,2,3,4',
+            ]);
 
-        // Menyimpan soal
-        $question = Question::create([
-            'question_text' => $validatedData['question_text'],
-            'question_set_id' => $validatedData['question_set_id'],
-            'kompetensi_id' => $validatedData['kompetensi_id'],
-            'indikator_id' => $validatedData['indikator_id'],
-        ]);
+            // Kompetensi Guru
+            if (is_numeric($validatedData['kompetensi_guru'])) {
+                $kompetensi = Kompetensi::where('id', $validatedData['kompetensi_guru'])->where('role', 'Guru')->first();
+                if (!$kompetensi) return back()->with('error', 'Kompetensi tidak ditemukan.');
+            } else {
+                $kompetensi = Kompetensi::firstOrCreate(
+                    ['nama' => $validatedData['kompetensi_guru'], 'role' => 'Guru']
+                );
+            }
 
-        // Menyimpan jawaban
-        Answer::create([
-            'question_id' => $question->id,
-            'answer_text' => $validatedData['option_a'],
-            'score' => $validatedData['score_a'],
-        ]);
-        Answer::create([
-            'question_id' => $question->id,
-            'answer_text' => $validatedData['option_b'],
-            'score' => $validatedData['score_b'],
-        ]);
-        Answer::create([
-            'question_id' => $question->id,
-            'answer_text' => $validatedData['option_c'],
-            'score' => $validatedData['score_c'],
-        ]);
-        Answer::create([
-            'question_id' => $question->id,
-            'answer_text' => $validatedData['option_d'],
-            'score' => $validatedData['score_d'],
-        ]);
+            // Indikator Guru
+            if (is_numeric($validatedData['indikator_guru'])) {
+                $indikator = Indikator::where('id', $validatedData['indikator_guru'])->where('kompetensi_id', $kompetensi->id)->first();
+                if (!$indikator) return back()->with('error', 'Indikator tidak ditemukan.');
+            } else {
+                $indikator = Indikator::firstOrCreate(
+                    ['nama' => $validatedData['indikator_guru'], 'kompetensi_id' => $kompetensi->id]
+                );
+            }
 
-        $questionSet = QuestionSet::find($validatedData['question_set_id']);
-        $ownerPaketSoal = $questionSet->role;
+            // Simpan soal dan jawaban (sama seperti sebelumnya)
+            $question = Question::create([
+                'question_text' => $validatedData['question_text'],
+                'question_set_id' => $validatedData['question_set_id'],
+                'kompetensi_id' => $kompetensi->id,
+                'indikator_id' => $indikator->id,
+            ]);
+            Answer::create(['question_id' => $question->id, 'answer_text' => $validatedData['option_a'], 'score' => $validatedData['score_a']]);
+            Answer::create(['question_id' => $question->id, 'answer_text' => $validatedData['option_b'], 'score' => $validatedData['score_b']]);
+            Answer::create(['question_id' => $question->id, 'answer_text' => $validatedData['option_c'], 'score' => $validatedData['score_c']]);
+            Answer::create(['question_id' => $question->id, 'answer_text' => $validatedData['option_d'], 'score' => $validatedData['score_d']]);
 
-        if ($ownerPaketSoal === 'Kepala Sekolah') {
-            $route = 'admin.ks.detail-soal';
-        } else {
-            $route = 'admin.guru.detail-soal';
+            // Catat aktivitas ke LogAdmin
+            $questionSet = \App\Models\QuestionSet::find($validatedData['question_set_id']);
+            $questionSetName = $questionSet ? $questionSet->name : 'Unknown';
+
+            \App\Models\LogAdmin::create([
+                'admin_id' => auth('admin')->id() ?? null,
+                'admin_name' => auth('admin')->user()->username ?? 'Unknown',
+                'action' => 'Menambah soal guru: "' . $validatedData['question_text'] . '" pada paket soal: ' . $questionSetName,
+                'ip_address' => $request->ip(),
+                'question_set_id' => $validatedData['question_set_id'],
+            ]);
+
+            return redirect()->route('admin.guru.detail-soal', ['question_set_id' => $validatedData['question_set_id']])
+                ->with('success', 'Soal berhasil disimpan!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
 
-        return redirect()->route($route, ['question_set_id' => $validatedData['question_set_id']])
-            ->with('success', 'Soal berhasil disimpan!');
+    public function storeQuestionKepsek(Request $request)
+    {
+        try {
+            $validatedData = $request->validate([
+                'kompetensi_kepsek' => 'required|string|max:255',
+                'indikator_kepsek' => 'required|string|max:255',
+                'question_text' => 'required|string|max:500',
+                'question_set_id' => 'required|exists:question_sets,id',
+                'option_a' => 'required|string|max:500',
+                'score_a' => 'required|integer|in:1,2,3,4',
+                'option_b' => 'required|string|max:500',
+                'score_b' => 'required|integer|in:1,2,3,4',
+                'option_c' => 'required|string|max:500',
+                'score_c' => 'required|integer|in:1,2,3,4',
+                'option_d' => 'required|string|max:500',
+                'score_d' => 'required|integer|in:1,2,3,4',
+            ]);
+
+            // Kompetensi Kepala Sekolah
+            if (is_numeric($validatedData['kompetensi_kepsek'])) {
+                $kompetensi = Kompetensi::where('id', $validatedData['kompetensi_kepsek'])->where('role', 'Kepala Sekolah')->first();
+                if (!$kompetensi) return back()->with('error', 'Kompetensi tidak ditemukan.');
+            } else {
+                $kompetensi = Kompetensi::firstOrCreate(
+                    ['nama' => $validatedData['kompetensi_kepsek'], 'role' => 'Kepala Sekolah']
+                );
+            }
+
+            // Indikator Kepala Sekolah
+            if (is_numeric($validatedData['indikator_kepsek'])) {
+                $indikator = Indikator::where('id', $validatedData['indikator_kepsek'])->where('kompetensi_id', $kompetensi->id)->first();
+                if (!$indikator) return back()->with('error', 'Indikator tidak ditemukan.');
+            } else {
+                $indikator = Indikator::firstOrCreate(
+                    ['nama' => $validatedData['indikator_kepsek'], 'kompetensi_id' => $kompetensi->id]
+                );
+            }
+
+            // Simpan soal dan jawaban (sama seperti sebelumnya)
+            $question = Question::create([
+                'question_text' => $validatedData['question_text'],
+                'question_set_id' => $validatedData['question_set_id'],
+                'kompetensi_id' => $kompetensi->id,
+                'indikator_id' => $indikator->id,
+            ]);
+            Answer::create(['question_id' => $question->id, 'answer_text' => $validatedData['option_a'], 'score' => $validatedData['score_a']]);
+            Answer::create(['question_id' => $question->id, 'answer_text' => $validatedData['option_b'], 'score' => $validatedData['score_b']]);
+            Answer::create(['question_id' => $question->id, 'answer_text' => $validatedData['option_c'], 'score' => $validatedData['score_c']]);
+            Answer::create(['question_id' => $question->id, 'answer_text' => $validatedData['option_d'], 'score' => $validatedData['score_d']]);
+
+            // Catat aktivitas ke LogAdmin
+            $questionSet = \App\Models\QuestionSet::find($validatedData['question_set_id']);
+            $questionSetName = $questionSet ? $questionSet->name : 'Unknown';
+
+            \App\Models\LogAdmin::create([
+                'admin_id' => auth('admin')->id() ?? null,
+                'admin_name' => auth('admin')->user()->username ?? 'Unknown',
+                'action' => 'Menambah soal guru: "' . $validatedData['question_text'] . '" pada paket soal: ' . $questionSetName,
+                'ip_address' => $request->ip(),
+                'question_set_id' => $validatedData['question_set_id'],
+            ]);
+
+            return redirect()->route('admin.ks.detail-soal', ['question_set_id' => $validatedData['question_set_id']])
+                ->with('success', 'Soal berhasil disimpan!');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     public function resultPage()
@@ -272,7 +349,8 @@ class AdminController extends Controller
                 'users.role',
                 'question_sets.name as question_set_name',
                 'quiz_attempts.ended_at',
-                'quiz_attempts.score'
+                'quiz_attempts.score',
+                'quiz_attempts.id as quiz_attempt_id'
             )
             ->where('users.role', 'kepala sekolah'); // Khusus untuk guru
 
@@ -348,64 +426,216 @@ class AdminController extends Controller
     public function showEditFormKs($id)
     {
         $question = Question::with('answers')->findOrFail($id);
+        $kompetensi = Kompetensi::where('role', 'Kepala Sekolah')->get();
 
-        return view('admin.soal.kepala_sekolah.edit-soal', compact('question'));
+        return view('admin.soal.kepala_sekolah.edit-soal', compact('question', 'kompetensi'));
     }
 
     public function showEditFormGuru($id)
     {
         $question = Question::with('answers')->findOrFail($id);
+        $kompetensi = Kompetensi::where('role', 'Guru')->get();
 
-        return view('admin.soal.guru.edit-soal', compact('question'));
+        return view('admin.soal.guru.edit-soal', compact('question', 'kompetensi'));
     }
 
 
-    public function editQuestions(Request $request, $id)
+    public function editQuestionGuru(Request $request, $id)
     {
         $validatedData = $request->validate([
-            'indikator_id' => 'required|exists:indikator,id',
-            'kompetensi_id' => 'required|exists:kompetensi,id',
+            'indikator_guru' => 'required|string|max:255',
+            'kompetensi_guru' => 'required|string|max:255',
             'question_text' => 'required|string|max:500',
             'question_set_id' => 'required|exists:question_sets,id',
             'answers.*.answer_text' => 'required|string|max:500',
             'answers.*.score' => 'required|integer|in:1,2,3,4',
         ]);
 
-        $question = Question::findOrFail($id);
+        $question = Question::with(['answers', 'kompetensi', 'indikator'])->findOrFail($id);
+        $oldData = [
+            'kompetensi' => $question->kompetensi ? $question->kompetensi->nama : '',
+            'indikator' => $question->indikator ? $question->indikator->nama : '',
+            'question_text' => $question->question_text,
+            'answers' => $question->answers->pluck('answer_text', 'id')->toArray(),
+            'scores' => $question->answers->pluck('score', 'id')->toArray(),
+        ];
+
+        // Kompetensi Guru
+        if (is_numeric($validatedData['kompetensi_guru'])) {
+            $kompetensi = Kompetensi::where('id', $validatedData['kompetensi_guru'])->where('role', 'Guru')->first();
+            if (!$kompetensi) return back()->with('error', 'Kompetensi tidak ditemukan.');
+        } else {
+            $kompetensi = Kompetensi::firstOrCreate(
+                ['nama' => $validatedData['kompetensi_guru'], 'role' => 'Guru']
+            );
+        }
+
+        // Indikator Guru
+        if (is_numeric($validatedData['indikator_guru'])) {
+            $indikator = Indikator::where('id', $validatedData['indikator_guru'])->where('kompetensi_id', $kompetensi->id)->first();
+            if (!$indikator) return back()->with('error', 'Indikator tidak ditemukan.');
+        } else {
+            $indikator = Indikator::firstOrCreate(
+                ['nama' => $validatedData['indikator_guru'], 'kompetensi_id' => $kompetensi->id]
+            );
+        }
+
+        // Update the question
+        $question->update([
+            'question_text' => $validatedData['question_text'],
+            'question_set_id' => $validatedData['question_set_id'],
+            'kompetensi_id' => $kompetensi->id,
+            'indikator_id' => $indikator->id,
+        ]);
+
+        // Update the answers
+        $logAnswerChanges = [];
+        foreach ($validatedData['answers'] as $index => $answerData) {
+            $answer = Answer::find($request->input("answer_ids.$index"));
+            if ($answer) {
+                $oldAnswer = $answer->answer_text;
+                $oldScore = $answer->score;
+                $answer->update([
+                    'answer_text' => $answerData['answer_text'],
+                    'score' => $answerData['score'],
+                ]);
+                if ($oldAnswer !== $answerData['answer_text'] || $oldScore != $answerData['score']) {
+                    $logAnswerChanges[] = "Jawaban " . chr(65 + $index) . " diubah dari [\"$oldAnswer\" ($oldScore)] menjadi [\"{$answerData['answer_text']}\" ({$answerData['score']})]";
+                }
+            }
+        }
+
+        $questionSet = QuestionSet::find($validatedData['question_set_id']);
+        $questionSetName = $questionSet ? $questionSet->name : 'Unknown';
+
+        // Detail perubahan
+        $changes = [];
+        if ($oldData['kompetensi'] !== $kompetensi->nama) {
+            $changes[] = "Kompetensi diubah dari \"{$oldData['kompetensi']}\" menjadi \"{$kompetensi->nama}\"";
+        }
+        if ($oldData['indikator'] !== $indikator->nama) {
+            $changes[] = "Indikator diubah dari \"{$oldData['indikator']}\" menjadi \"{$indikator->nama}\"";
+        }
+        if ($oldData['question_text'] !== $validatedData['question_text']) {
+            $changes[] = "Soal diubah dari \"{$oldData['question_text']}\" menjadi \"{$validatedData['question_text']}\"";
+        }
+        if (!empty($logAnswerChanges)) {
+            $changes = array_merge($changes, $logAnswerChanges);
+        }
+        $actionDetail = implode('; ', $changes);
+
+        // Catat aktivitas ke LogAdmin
+        \App\Models\LogAdmin::create([
+            'admin_id' => auth('admin')->id() ?? null,
+            'admin_name' => auth('admin')->user()->username ?? 'Unknown',
+            'action' => 'Mengedit soal guru pada paket soal: ' . $questionSetName . '. ' . ($actionDetail ?: 'Tidak ada perubahan.'),
+            'ip_address' => $request->ip(),
+            'question_set_id' => $validatedData['question_set_id'],
+        ]);
+
+        $route = 'admin.guru.detail-soal';
+
+        return redirect()->route($route, ['question_set_id' => $validatedData['question_set_id']])
+            ->with('success', 'Soal berhasil diperbarui!');
+    }
+
+    public function editQuestionKepsek(Request $request, $id)
+    {
+        $validatedData = $request->validate([
+            'indikator_ks' => 'required|string|max:255',
+            'kompetensi_ks' => 'required|string|max:255',
+            'question_text' => 'required|string|max:500',
+            'question_set_id' => 'required|exists:question_sets,id',
+            'answers.*.answer_text' => 'required|string|max:500',
+            'answers.*.score' => 'required|integer|in:1,2,3,4',
+        ]);
+
+        $question = Question::with(['answers', 'kompetensi', 'indikator'])->findOrFail($id);
+        $oldData = [
+            'kompetensi' => $question->kompetensi ? $question->kompetensi->nama : '',
+            'indikator' => $question->indikator ? $question->indikator->nama : '',
+            'question_text' => $question->question_text,
+            'answers' => $question->answers->pluck('answer_text', 'id')->toArray(),
+            'scores' => $question->answers->pluck('score', 'id')->toArray(),
+        ];
+
+        // Kompetensi Kepsek
+        if (is_numeric($validatedData['kompetensi_ks'])) {
+            $kompetensi = Kompetensi::where('id', $validatedData['kompetensi_ks'])->where('role', 'Kepala Sekolah')->first();
+            if (!$kompetensi) return back()->with('error', 'Kompetensi tidak ditemukan.');
+        } else {
+            $kompetensi = Kompetensi::firstOrCreate(
+                ['nama' => $validatedData['kompetensi_ks'], 'role' => 'Kepala Sekolah']
+            );
+        }
+
+        // Indikator Kepsek
+        if (is_numeric($validatedData['indikator_ks'])) {
+            $indikator = Indikator::where('id', $validatedData['indikator_ks'])->where('kompetensi_id', $kompetensi->id)->first();
+            if (!$indikator) return back()->with('error', 'Indikator tidak ditemukan.');
+        } else {
+            $indikator = Indikator::firstOrCreate(
+                ['nama' => $validatedData['indikator_ks'], 'kompetensi_id' => $kompetensi->id]
+            );
+        }
 
         // Update the question text and question_set_id
         $question->update([
             'question_text' => $validatedData['question_text'],
             'question_set_id' => $validatedData['question_set_id'],
-            'kompetensi_id' => $validatedData['kompetensi_id'],
-            'indikator_id' => $validatedData['indikator_id'],
+            'kompetensi_id' => $kompetensi->id,
+            'indikator_id' => $indikator->id,
         ]);
 
         // Update the answers
         foreach ($validatedData['answers'] as $index => $answerData) {
             $answer = Answer::find($request->input("answer_ids.$index"));
             if ($answer) {
+                $oldAnswer = $answer->answer_text;
+                $oldScore = $answer->score;
                 $answer->update([
                     'answer_text' => $answerData['answer_text'],
                     'score' => $answerData['score'],
                 ]);
+                if ($oldAnswer !== $answerData['answer_text'] || $oldScore != $answerData['score']) {
+                    $logAnswerChanges[] = "Jawaban " . chr(65 + $index) . " diubah dari [\"$oldAnswer\" ($oldScore)] menjadi [\"{$answerData['answer_text']}\" ({$answerData['score']})]";
+                }
             }
         }
 
         $questionSet = QuestionSet::find($validatedData['question_set_id']);
+        $questionSetName = $questionSet ? $questionSet->name : 'Unknown';
 
-        $ownerPaketSoal = $questionSet->role;
-
-        if ($ownerPaketSoal === 'Kepala Sekolah') {
-            $route = 'admin.ks.detail-soal';
-        } else {
-            $route = 'admin.guru.detail-soal';
+        // Detail perubahan
+        $changes = [];
+        if ($oldData['kompetensi'] !== $kompetensi->nama) {
+            $changes[] = "Kompetensi diubah dari \"{$oldData['kompetensi']}\" menjadi \"{$kompetensi->nama}\"";
         }
+        if ($oldData['indikator'] !== $indikator->nama) {
+            $changes[] = "Indikator diubah dari \"{$oldData['indikator']}\" menjadi \"{$indikator->nama}\"";
+        }
+        if ($oldData['question_text'] !== $validatedData['question_text']) {
+            $changes[] = "Soal diubah dari \"{$oldData['question_text']}\" menjadi \"{$validatedData['question_text']}\"";
+        }
+        if (!empty($logAnswerChanges)) {
+            $changes = array_merge($changes, $logAnswerChanges);
+        }
+        $actionDetail = implode('; ', $changes);
+
+        // Catat aktivitas ke LogAdmin
+        \App\Models\LogAdmin::create([
+            'admin_id' => auth('admin')->id() ?? null,
+            'admin_name' => auth('admin')->user()->username ?? 'Unknown',
+            'action' => 'Mengedit soal guru pada paket soal: ' . $questionSetName . '. ' . ($actionDetail ?: 'Tidak ada perubahan.'),
+            'ip_address' => $request->ip(),
+            'question_set_id' => $validatedData['question_set_id'],
+        ]);
+
+        $route = 'admin.ks.detail-soal';
 
         return redirect()->route($route, ['question_set_id' => $validatedData['question_set_id']])
             ->with('success', 'Soal berhasil diperbarui!');
     }
-
 
     public function logout(Request $request)
     {
@@ -629,11 +859,44 @@ class AdminController extends Controller
 
         $guru = User::where('role', 'guru')->findOrFail($id);
 
+        // Simpan data lama sebelum update
+        $oldData = $guru->toArray();
+
         $guru->update($validatedData);
+
+        // Ambil data baru setelah update
+        $newData = $guru->fresh()->toArray();
+
+        // Cek perubahan
+        $changes = [];
+        foreach ($validatedData as $field => $value) {
+            // Untuk field relasi question_set_id, tampilkan nama paket soal
+            if ($field === 'question_set_id') {
+                $oldName = $oldData['question_set_id'] ? (\App\Models\QuestionSet::find($oldData['question_set_id'])->name ?? '-') : '-';
+                $newName = $newData['question_set_id'] ? (\App\Models\QuestionSet::find($newData['question_set_id'])->name ?? '-') : '-';
+                if ($oldData['question_set_id'] != $newData['question_set_id']) {
+                    $changes[] = "Paket soal diubah dari \"$oldName\" menjadi \"$newName\"";
+                }
+            } else {
+                if ($oldData[$field] != $newData[$field]) {
+                    $changes[] = ucfirst(str_replace('_', ' ', $field)) . " diubah dari \"{$oldData[$field]}\" menjadi \"{$newData[$field]}\"";
+                }
+            }
+        }
+
+        // Catat log jika ada perubahan
+        if (!empty($changes)) {
+            \App\Models\LogAdmin::create([
+                'admin_id' => auth('admin')->id() ?? null,
+                'admin_name' => auth('admin')->user()->username ?? 'Unknown',
+                'action' => 'Mengedit data guru: ' . $guru->name . '. ' . implode('; ', $changes),
+                'ip_address' => $request->ip(),
+                'question_set_id' => $newData['question_set_id'] ?? null,
+            ]);
+        }
 
         return redirect()->route('data.guru')->with('success', 'Data guru berhasil diperbarui!');
     }
-
     public function editKepsek($id)
     {
         $kepsek = User::where('role', 'Kepala Sekolah')->findOrFail($id);
@@ -673,7 +936,41 @@ class AdminController extends Controller
 
         $kepsek = User::where('role', 'Kepala Sekolah')->findOrFail($id);
 
+        // Simpan data lama sebelum update
+        $oldData = $kepsek->toArray();
+
         $kepsek->update($validatedData);
+
+        // Ambil data baru setelah update
+        $newData = $kepsek->fresh()->toArray();
+
+        // Cek perubahan
+        $changes = [];
+        foreach ($validatedData as $field => $value) {
+            // Untuk field relasi question_set_id, tampilkan nama paket soal
+            if ($field === 'question_set_id') {
+                $oldName = $oldData['question_set_id'] ? (\App\Models\QuestionSet::find($oldData['question_set_id'])->name ?? '-') : '-';
+                $newName = $newData['question_set_id'] ? (\App\Models\QuestionSet::find($newData['question_set_id'])->name ?? '-') : '-';
+                if ($oldData['question_set_id'] != $newData['question_set_id']) {
+                    $changes[] = "Paket soal diubah dari \"$oldName\" menjadi \"$newName\"";
+                }
+            } else {
+                if ($oldData[$field] != $newData[$field]) {
+                    $changes[] = ucfirst(str_replace('_', ' ', $field)) . " diubah dari \"{$oldData[$field]}\" menjadi \"{$newData[$field]}\"";
+                }
+            }
+        }
+
+        // Catat log jika ada perubahan
+        if (!empty($changes)) {
+            \App\Models\LogAdmin::create([
+                'admin_id' => auth('admin')->id() ?? null,
+                'admin_name' => auth('admin')->user()->username ?? 'Unknown',
+                'action' => 'Mengedit data guru: ' . $kepsek->name . '. ' . implode('; ', $changes),
+                'ip_address' => $request->ip(),
+                'question_set_id' => $newData['question_set_id'] ?? null,
+            ]);
+        }
 
         return redirect()->route('data.kepala_sekolah')->with('success', 'Data Kepala Sekolah berhasil diperbarui!');
     }
@@ -727,6 +1024,16 @@ class AdminController extends Controller
         }
 
         $questionSet = $question->questionSet;
+        $questionSetName = $questionSet ? $questionSet->name : 'Unknown';
+
+        // Catat log sebelum hapus
+        \App\Models\LogAdmin::create([
+            'admin_id' => auth('admin')->id() ?? null,
+            'admin_name' => auth('admin')->user()->username ?? 'Unknown',
+            'action' => 'Menghapus soal: "' . $question->question_text . '" pada paket soal: ' . $questionSetName,
+            'ip_address' => request()->ip(),
+            'question_set_id' => $questionSet ? $questionSet->id : null,
+        ]);
 
         $question->delete();
 

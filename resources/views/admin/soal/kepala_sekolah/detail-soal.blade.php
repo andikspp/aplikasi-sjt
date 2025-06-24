@@ -54,6 +54,11 @@
                         <option value="{{ $kompeten->id }}">{{ $kompeten->nama }}</option>
                     @endforeach
                 </select>
+                <select id="perPage" class="form-select w-auto me-2">
+                    <option value="5">5</option>
+                    <option value="10" selected>10</option>
+                    <option value="all">All</option>
+                </select>
                 <a href="{{ route('admin.soal.ks.create', ['questionSetId' => $questionSet->id]) }}" class="btn btn-custom">
                     Tambah Soal
                 </a>
@@ -157,27 +162,25 @@
         @endif
 
         $(document).ready(function() {
-            $('#filterKompetensi').on('change', function() {
-                var kompetensiId = $(this).val();
+            function loadSoal(page = 1) {
+                var kompetensiId = $('#filterKompetensi').val();
+                var perPage = $('#perPage').val();
                 var questionSetId = "{{ $questionSet->id }}";
-                // Debug: cek nilai kompetensiId dan questionSetId
-                console.log('Kompetensi yang dipilih:', kompetensiId);
-                console.log('Question Set ID:', questionSetId);
 
                 $.get("{{ route('admin.soal.filter') }}", {
                     questionSetId: questionSetId,
-                    kompetensiId: kompetensiId
+                    kompetensiId: kompetensiId,
+                    perPage: perPage,
+                    page: page // penting untuk pagination
                 }, function(data) {
-                    // Render ulang tbody
                     var html = '';
-                    if (data.length === 0) {
+                    if (data.data.length === 0) {
                         html = '<tr><td colspan="13" class="text-center">Tidak ada soal.</td></tr>';
                     } else {
-                        data.forEach(function(q, idx) {
+                        data.data.forEach(function(q, idx) {
                             html += `<tr data-kompetensi="${q.kompetensi_id}">
-                <td>${idx + 1}</td>
-                <td>${q.question_text}</td>`;
-                            // Render jawaban dan bobot (max 4)
+                        <td>${idx + 1 + ((data.current_page-1)*data.per_page)}</td>
+                        <td>${q.question_text}</td>`;
                             for (let i = 0; i < 4; i++) {
                                 if (q.answers[i]) {
                                     html +=
@@ -187,21 +190,52 @@
                                 }
                             }
                             html += `<td>${q.kompetensi ? q.kompetensi.nama : '-'}</td>
-                <td>${q.indikator ? q.indikator.nama : '-'}</td>
-                <td>
-                    <a href="/admin/soal/edit/guru/${q.id}" class="btn btn-warning btn-sm">Edit</a>
-                    <form id="delete-form-${q.id}" action="/admin/soal/hapus/${q.id}" method="POST" style="display:inline;">
-                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
-                        <input type="hidden" name="_method" value="DELETE">
-                        <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(${q.id})">Hapus</button>
-                    </form>
-                </td>
-            </tr>`;
+                        <td>${q.indikator ? q.indikator.nama : '-'}</td>
+                        <td>
+                            <a href="/admin/soal/edit/ks/${q.id}" class="btn btn-warning btn-sm">Edit</a>
+                            <form id="delete-form-${q.id}" action="/admin/soal/${q.id}" method="POST" style="display:inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}">
+                                <input type="hidden" name="_method" value="DELETE">
+                                <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(${q.id})">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>`;
                         });
                     }
                     $('#soalTable tbody').html(html);
+
+                    // Handle pagination
+                    var paginationHtml = '';
+                    if (perPage !== 'all' && data.last_page > 1) {
+                        paginationHtml += '<nav><ul class="pagination justify-content-center">';
+                        for (let i = 1; i <= data.last_page; i++) {
+                            paginationHtml += `<li class="page-item${i === data.current_page ? ' active' : ''}">
+                        <a class="page-link" href="#" data-page="${i}">${i}</a>
+                    </li>`;
+                        }
+                        paginationHtml += '</ul></nav>';
+                    }
+                    $('#pagination-wrapper').html(paginationHtml);
                 });
+            }
+
+            // Trigger loadSoal saat filter berubah
+            $('#filterKompetensi, #perPage').on('change', function() {
+                loadSoal(1);
             });
+
+            // Handle klik pagination
+            $(document).on('click', '.pagination .page-link', function(e) {
+                e.preventDefault();
+                var page = $(this).data('page');
+                loadSoal(page);
+            });
+
+            // Tempatkan wrapper pagination di bawah tabel
+            $('#soalTable').after('<div id="pagination-wrapper" class="mt-3"></div>');
+
+            // Load awal
+            loadSoal(1);
         });
     </script>
 

@@ -24,13 +24,18 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::get('/admin/soal', [AdminController::class, 'soalPage'])->name('admin.soal');
     Route::get('/admin/soal/ks/create/{questionSetId}', [AdminController::class, 'soalKs'])->name('admin.soal.ks.create');
     Route::get('/admin/soal/guru/create/{questionSetId}', [AdminController::class, 'soalGuru'])->name('admin.soal.guru.create');
-    Route::post('/admin/questions', [AdminController::class, 'storeQuestion'])->name('admin.storeQuestion');
+    Route::post('/admin/soal/guru/store', [AdminController::class, 'storeQuestionGuru'])->name('admin.storeQuestionGuru');
+    Route::post('/admin/soal/kepsek/store', [AdminController::class, 'storeQuestionKepsek'])->name('admin.storeQuestionKepsek');
     Route::get('/admin/soal/ks/{question_set_id}', [AdminController::class, 'showQuestionsKs'])->name('admin.ks.detail-soal');
     Route::get('/admin/soal/guru/{question_set_id}', [AdminController::class, 'showQuestionsGuru'])->name('admin.guru.detail-soal');
     Route::delete('/admin/soal/{id}', [AdminController::class, 'hapusSoal'])->name('hapus.soal');
     Route::get('/admin/indikator/by-kompetensi/{kompetensi_id}', [AdminController::class, 'getIndikatorByKompetensi'])->name('admin.indikator.by-kompetensi');
     Route::get('/admin/soal/filter', [QuestionSetController::class, 'filterByRole'])->name('admin.soal.filter');
     Route::get('/admin/soal/guru/detail/filter', [QuestionController::class, 'filterSoalByKompetensi'])->name('admin.soal.filter');
+    Route::get('/admin/soal/edit/ks/{id}', [AdminController::class, 'showEditFormKs'])->name('admin.soal.edit.ks');
+    Route::get('/admin/soal/edit/guru/{id}', [AdminController::class, 'showEditFormGuru'])->name('admin.soal.edit.guru');
+    Route::put('/admin/soal/guru/update/{id}', [AdminController::class, 'editQuestionGuru'])->name('admin.soal.update.guru');
+    Route::put('/admin/soal/ks/update/{id}', [AdminController::class, 'editQuestionKepsek'])->name('admin.soal.update.ks');
 
     // manajemen paket soal
     Route::get('/admin/add-paket-soal', [QuestionSetController::class, 'create'])->name('create.QuestionSet');
@@ -60,9 +65,6 @@ Route::middleware(['auth.admin'])->group(function () {
     // manajemen pengguna
     Route::post('/admin/register/ks', [RegisterController::class, 'registerKepsek'])->name('store.register.kepsek');
     Route::post('/admin/register/guru', [RegisterController::class, 'registerGuru'])->name('store.register.guru');
-    Route::get('/admin/soal/edit/ks/{id}', [AdminController::class, 'showEditFormKs'])->name('admin.soal.edit.ks');
-    Route::get('/admin/soal/edit/guru/{id}', [AdminController::class, 'showEditFormGuru'])->name('admin.soal.edit.guru');
-    Route::put('/admin/soal/update/{id}', [AdminController::class, 'editQuestions'])->name('admin.soal.update');
     Route::get('/admin/guru/edit/{id}', [AdminController::class, 'editGuru'])->name('admin.edit.guru');
     Route::put('/admin/guru/update/{id}', [AdminController::class, 'updateGuru'])->name('admin.update.guru');
     Route::get('/admin/kepsek/edit/{id}', [AdminController::class, 'editKepsek'])->name('admin.edit.kepsek');

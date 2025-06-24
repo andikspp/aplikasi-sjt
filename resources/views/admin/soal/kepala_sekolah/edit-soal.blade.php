@@ -16,7 +16,7 @@
     <div class="container mt-5">
         <div class="form-container">
             <h2 class="text-center mb-4">Edit Soal Kepala Sekolah</h2>
-            <form action="{{ route('admin.soal.update', $question->id) }}" method="POST">
+            <form action="{{ route('admin.soal.update.ks', $question->id) }}" method="POST">
                 @csrf
                 @method('PUT')
 
@@ -41,34 +41,24 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="kompetensi_id" class="form-label">Kompetensi <span style="color: red">*</span></label>
-                    <select class="form-select" id="kompetensi_id" name="kompetensi_id" required>
-                        <option value="">-- Pilih Kompetensi --</option>
-                        @php
-                            $kompetensi = App\Models\Kompetensi::where('role', 'Kepala Sekolah')->get();
-                        @endphp
-                        @foreach ($kompetensi as $kompeten)
-                            <option value="{{ $kompeten->id }}"
-                                {{ $question->kompetensi_id == $kompeten->id ? 'selected' : '' }}>
-                                {{ $kompeten->nama }}
+                    <label for="kompetensi" class="form-label">Kompetensi</label>
+                    <select name="kompetensi_ks" id="kompetensi" class="form-control">
+                        <option value="">Pilih Kompetensi</option>
+                        @foreach ($kompetensi as $item)
+                            <option value="{{ $item->id }}"
+                                {{ $question->kompetensi_id == $item->id ? 'selected' : '' }}>
+                                {{ $item->nama }}
                             </option>
                         @endforeach
                     </select>
+                    <small class="text-muted">Pilih atau ketik untuk menambah kompetensi baru.</small>
                 </div>
 
                 <div class="mb-3">
-                    <label for="indikator_id" class="form-label">Indikator <span style="color: red">*</span></label>
-                    <select class="form-select" id="indikator_id" name="indikator_id" required>
-                        <option value="">-- Pilih Indikator --</option>
-                        @php
-                            $indikator = App\Models\Indikator::whereHas('kompetensi', function ($query) {
-                                $query->where('role', 'Kepala Sekolah');
-                            })->get();
-                        @endphp
-                        @foreach ($indikator as $ind)
-                            <option value="{{ $ind->id }}" {{ $question->indikator_id == $ind->id ? 'selected' : '' }}>
-                                {{ $ind->nama }}</option>
-                        @endforeach
+                    <label for="indikator" class="form-label">Indikator</label>
+                    <select name="indikator_ks" id="indikator" class="form-control">
+                        <option value="">-- Pilih atau tambah indikator --</option>
+                        {{-- Opsi akan diisi via JS --}}
                     </select>
                 </div>
 
@@ -125,66 +115,95 @@
             var questionSetId = document.querySelector('input[name="question_set_id"]').value;
             window.location.href = "/admin/soal/ks/" + questionSetId;
         }
+    </script>
+    @push('scripts')
+        <script>
+            $(document).ready(function() {
+                $('#kompetensi').select2({
+                    tags: true,
+                    placeholder: "Pilih atau tambah kompetensi...",
+                    width: '100%'
+                });
 
-        @if (session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Maaf',
-                text: '{{ session('error') }}',
-            });
-        @endif
+                $('#indikator').select2({
+                    tags: true,
+                    placeholder: "Pilih atau tambah indikator...",
+                    width: '100%'
+                });
 
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: '{{ session('success') }}',
-            });
-        @endif
-
-        // Dynamic indikator by kompetensi
-        document.getElementById('kompetensi_id').addEventListener('change', function() {
-            var kompetensiId = this.value;
-            var indikatorSelect = document.getElementById('indikator_id');
-            indikatorSelect.innerHTML = '<option value="">-- Pilih Indikator --</option>';
-            if (kompetensiId) {
-                fetch('{{ url('/admin/indikator/by-kompetensi') }}/' + kompetensiId)
-                    .then(response => response.json())
-                    .then(data => {
-                        data.forEach(function(ind) {
-                            var opt = document.createElement('option');
-                            opt.value = ind.id;
-                            opt.text = ind.nama;
-                            if (ind.id == {{ $question->indikator_id ?? 'null' }}) {
-                                opt.selected = true;
-                            }
-                            indikatorSelect.appendChild(opt);
-                        });
+                @if (session('error'))
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Maaf',
+                        text: '{{ session('error') }}',
                     });
-            }
-        });
+                @endif
 
-        // Script untuk memastikan bobot jawaban hanya bisa dipilih satu kali
-        const scoreSelects = Array.from(document.querySelectorAll('.score-select'));
+                @if (session('success'))
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: '{{ session('success') }}',
+                    });
+                @endif
 
-        function updateScoreOptions() {
-            const selected = scoreSelects.map(sel => sel.value);
+                $('#kompetensi').on('change', function() {
+                    var selectedKompetensi = $(this).val(); // ambil value baru
+                    var initialIndikator = '{{ $question->indikator_id }}';
 
-            scoreSelects.forEach((select, idx) => {
-                Array.from(select.options).forEach(option => {
-                    option.disabled = false;
-                    if (option.value && selected.includes(option.value) && select.value !== option.value) {
-                        option.disabled = true;
+                    let $indikator = $('#indikator');
+                    $indikator.empty();
+                    $indikator.append('<option value="">-- Pilih atau tambah indikator --</option>');
+
+                    if (selectedKompetensi) {
+                        $.ajax({
+                            url: '/admin/indikator/by-kompetensi/' + selectedKompetensi,
+                            type: 'GET',
+                            success: function(data) {
+                                data.forEach(function(item) {
+                                    $indikator.append('<option value="' + item.id + '">' +
+                                        item.nama + '</option>');
+                                });
+                                // Jika user baru pertama kali load, set indikator awal
+                                if (selectedKompetensi == '{{ $question->kompetensi_id }}') {
+                                    $indikator.val(initialIndikator).trigger('change');
+                                } else {
+                                    $indikator.val('').trigger('change');
+                                }
+                            }
+                        });
+                    } else {
+                        $indikator.val(null).trigger('change');
                     }
                 });
-            });
-        }
 
-        scoreSelects.forEach(select => {
-            select.addEventListener('change', updateScoreOptions);
-        });
+                // Script untuk memastikan bobot jawaban hanya bisa dipilih satu kali
+                const scoreSelects = Array.from(document.querySelectorAll('.score-select'));
 
-        // Inisialisasi saat halaman pertama kali dibuka
-        updateScoreOptions();
-    </script>
+                function updateScoreOptions() {
+                    const selected = scoreSelects.map(sel => sel.value);
+
+                    scoreSelects.forEach((select, idx) => {
+                        Array.from(select.options).forEach(option => {
+                            option.disabled = false;
+                            if (option.value && selected.includes(option.value) && select.value !==
+                                option.value) {
+                                option.disabled = true;
+                            }
+                        });
+                    });
+                }
+
+                scoreSelects.forEach(select => {
+                    select.addEventListener('change', updateScoreOptions);
+                });
+
+                // Inisialisasi saat halaman pertama kali dibuka
+                updateScoreOptions();
+
+                // Trigger event change agar indikator terisi otomatis sesuai kompetensi awal
+                $('#kompetensi').trigger('change');
+            })
+        </script>
+    @endpush
 @endsection

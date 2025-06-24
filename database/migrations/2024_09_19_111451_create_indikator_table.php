@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('nama');
             $table->foreignId('kompetensi_id')->constrained('kompetensi')->onDelete('cascade');
-            $table->enum('role', ['Kepala Sekolah', 'Guru']);
             $table->timestamps();
         });
     }

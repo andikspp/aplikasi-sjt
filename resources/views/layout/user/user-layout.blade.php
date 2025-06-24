@@ -76,7 +76,7 @@
                     </li>
                 </ul>
                 <a class="navbar-text" href="https://gurupauddikmas.kemdikbud.go.id/" target="_blank">
-                    Direktorat Guru PAUD dan Dikmas
+                    Direktorat Guru PAUD dan PNF
                 </a>
             </div>
         </div>
@@ -89,7 +89,8 @@
     <!-- Footer -->
     <footer class="text-center text-lg-start mt-5">
         <div class="text-center p-3">
-            &copy; 2024 Guru PAUD Dikmas
+            &copy; 2025 Direktorat Guru PAUD dan PNF, Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi Republik
+            Indonesia.
         </div>
     </footer>
 

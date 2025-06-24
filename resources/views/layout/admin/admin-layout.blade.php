@@ -9,6 +9,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <style>
         .navbar {
             background-color: #005689;
@@ -73,7 +75,7 @@
                     <img src="{{ asset('assets/logo kemendikbudristek.png') }}" alt="Logo"
                         style="max-width: 100px;">
                     <span class="navbar-text ms-2" style="font-size: 1.2rem;">
-                        Direktorat Guru PAUD dan Dikmas
+                        Direktorat Guru PAUD dan PNF
                     </span>
                 </a>
             </div>
@@ -171,13 +173,14 @@
     <!-- Footer -->
     <footer class="text-center text-lg-start mt-5">
         <div class="text-center p-3">
-            &copy; 2025 Direktorat Guru PAUD dan Dikmas, Kementerian Pendidikan dan Kebudayaan Republik Indonesia
+            &copy; 2025 Direktorat Guru PAUD dan PNF, Kementerian Pendidikan dan Kebudayaan Republik Indonesia
         </div>
     </footer>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script>
         document.getElementById('logout-btn-dropdown').addEventListener('click', function(event) {
             event.preventDefault();

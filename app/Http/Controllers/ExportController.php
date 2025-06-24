@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\AnswersExport;
 use App\Exports\ResultsExport;
+use App\Exports\GuruAnswersExport;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use App\Exports\KepsekAnswersExport;
 use App\Http\Controllers\Controller;
 use Maatwebsite\Excel\Facades\Excel;
-use Illuminate\Support\Facades\DB;
-use App\Exports\AnswersExport;
-use App\Exports\GuruAnswersExport;
-use App\Exports\KepsekAnswersExport;
 use Symfony\Component\HttpFoundation\Request;
 
 class ExportController extends Controller
@@ -99,6 +100,11 @@ class ExportController extends Controller
 
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
+
+        Log::info('ExportGuruResults tanggal:', [
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+        ]);
 
         // Ambil semua soal dan set soal dari database, dengan memfilter berdasarkan role 'guru' pada question_sets
         $questions = DB::table('questions')

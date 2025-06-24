@@ -3,6 +3,12 @@
 @section('title', 'Log Aktivitas Admin')
 
 @section('content')
+    <style>
+        #table-header th {
+            color: white !important;
+            background-color: #005689 !important;
+        }
+    </style>
     <div class="container mt-4">
         <h3 class="mb-4 text-center">Riwayat Aktivitas</h3>
         <div class="row mb-3">
@@ -28,7 +34,7 @@
         </div>
         <div class="table-responsive">
             <table class="table table-bordered table-striped align-middle">
-                <thead class="table-primary">
+                <thead id="table-header">
                     <tr>
                         <th class="text-center">No</th>
                         <th class="text-center">Admin</th>

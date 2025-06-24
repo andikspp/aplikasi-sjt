@@ -16,7 +16,7 @@
     <div class="container mt-5">
         <div class="form-container">
             <h2 class="text-center mb-4">Tambah Soal Guru</h2>
-            <form action="{{ route('admin.storeQuestion') }}" method="POST">
+            <form action="{{ route('admin.storeQuestionGuru') }}" method="POST">
                 @csrf
 
                 <small class="text-muted mb-2 d-block">
@@ -32,19 +32,21 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="kompetensi_id" class="form-label">Kompetensi <span style="color: red">*</span></label>
-                    <select class="form-select" id="kompetensi_id" name="kompetensi_id" required>
-                        <option value="">-- Pilih Kompetensi --</option>
-                        @foreach ($kompetensi as $kompeten)
-                            <option value="{{ $kompeten->id }}">{{ $kompeten->nama }}</option>
+                    <label for="kompetensi" class="form-label">Kompetensi</label>
+                    <select name="kompetensi_guru" id="kompetensi" class="form-control">
+                        @foreach ($kompetensi as $item)
+                            <option value="">Pilih Kompetensi</option>
+                            <option value="{{ $item->id }}">{{ $item->nama }}</option>
                         @endforeach
                     </select>
+                    <small class="text-muted">Pilih atau ketik untuk menambah kompetensi baru.</small>
                 </div>
 
                 <div class="mb-3">
-                    <label for="indikator_id" class="form-label">Indikator <span style="color: red">*</span></label>
-                    <select class="form-select" id="indikator_id" name="indikator_id" required>
-                        <option value="">-- Pilih Indikator --</option>
+                    <label for="indikator" class="form-label">Indikator</label>
+                    <select name="indikator_guru" id="indikator" class="form-control">
+                        <option value="">-- Pilih atau tambah indikator --</option>
+                        {{-- Opsi akan diisi via JS --}}
                     </select>
                 </div>
 
@@ -140,76 +142,102 @@
             </form>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
     <script>
         function goBack() {
             window.history.back();
         }
+    </script>
+    @push('scripts')
+        <script>
+            $(document).ready(function() {
 
-        @if (session('error'))
-            Swal.fire({
-                icon: 'error',
-                title: 'Maaf',
-                text: '{{ session('error') }}',
-            });
-        @endif
+                $('#kompetensi').select2({
+                    tags: true,
+                    placeholder: "Pilih atau tambah kompetensi...",
+                    width: '100%'
+                });
 
-        @if (session('success'))
-            Swal.fire({
-                icon: 'success',
-                title: 'Berhasil!',
-                text: '{{ session('success') }}',
-            });
-        @endif
+                $('#indikator').select2({
+                    tags: true,
+                    placeholder: "Pilih atau tambah indikator...",
+                    width: '100%'
+                });
 
-        document.getElementById('kompetensi_id').addEventListener('change', function() {
-            var kompetensiId = this.value;
-            var indikatorSelect = document.getElementById('indikator_id');
-            indikatorSelect.innerHTML = '<option value="">-- Pilih Indikator --</option>';
-            if (kompetensiId) {
-                fetch('{{ url('/admin/indikator/by-kompetensi') }}/' + kompetensiId)
-                    .then(response => response.json())
-                    .then(data => {
-                        data.forEach(function(ind) {
-                            var opt = document.createElement('option');
-                            opt.value = ind.id;
-                            opt.text = ind.nama;
-                            indikatorSelect.appendChild(opt);
+                // Event listener untuk perubahan pada select kompetensi
+                $('#kompetensi').on('change', function() {
+                    let kompetensiId = $(this).val();
+                    let $indikator = $('#indikator');
+                    $indikator.empty();
+                    $indikator.append('<option value="">-- Pilih atau tambah indikator --</option>');
+
+                    if (kompetensiId) {
+                        $.ajax({
+                            url: '/admin/indikator/by-kompetensi/' + kompetensiId,
+                            type: 'GET',
+                            success: function(data) {
+                                data.forEach(function(item) {
+                                    $indikator.append('<option value="' + item.id + '">' +
+                                        item.nama + '</option>');
+                                });
+                                // Jika pakai select2, refresh
+                                $indikator.val(null).trigger('change');
+                            }
                         });
-                    });
-            }
-        });
-
-        // Script untuk memastikan bobot jawaban hanya bisa dipilih satu kali
-        const scoreSelects = [
-            document.getElementById('score_a'),
-            document.getElementById('score_b'),
-            document.getElementById('score_c'),
-            document.getElementById('score_d')
-        ];
-
-        function updateScoreOptions() {
-            // Ambil semua value yang sudah dipilih
-            const selected = scoreSelects.map(sel => sel.value);
-
-            scoreSelects.forEach((select, idx) => {
-                Array.from(select.options).forEach(option => {
-                    // Enable semua dulu
-                    option.disabled = false;
-                    // Jika value ini sudah dipilih di select lain, disable
-                    if (option.value && selected.includes(option.value) && select.value !== option.value) {
-                        option.disabled = true;
+                    } else {
+                        $indikator.val(null).trigger('change');
                     }
                 });
+
+
+
+                @if (session('error'))
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Maaf',
+                        text: '{{ session('error') }}',
+                    });
+                @endif
+
+                @if (session('success'))
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        text: '{{ session('success') }}',
+                    });
+                @endif
+
+                // Script untuk memastikan bobot jawaban hanya bisa dipilih satu kali
+                const scoreSelects = [
+                    document.getElementById('score_a'),
+                    document.getElementById('score_b'),
+                    document.getElementById('score_c'),
+                    document.getElementById('score_d')
+                ];
+
+                function updateScoreOptions() {
+                    // Ambil semua value yang sudah dipilih
+                    const selected = scoreSelects.map(sel => sel.value);
+
+                    scoreSelects.forEach((select, idx) => {
+                        Array.from(select.options).forEach(option => {
+                            // Enable semua dulu
+                            option.disabled = false;
+                            // Jika value ini sudah dipilih di select lain, disable
+                            if (option.value && selected.includes(option.value) && select.value !==
+                                option.value) {
+                                option.disabled = true;
+                            }
+                        });
+                    });
+                }
+
+                scoreSelects.forEach(select => {
+                    select.addEventListener('change', updateScoreOptions);
+                });
+
+                // Inisialisasi saat halaman pertama kali dibuka
+                updateScoreOptions();
             });
-        }
-
-        scoreSelects.forEach(select => {
-            select.addEventListener('change', updateScoreOptions);
-        });
-
-        // Inisialisasi saat halaman pertama kali dibuka
-        updateScoreOptions();
-    </script>
+        </script>
+    @endpush
 @endsection

@@ -11,7 +11,7 @@ class Kompetensi extends Model
 
     protected $table = 'kompetensi';
 
-    protected $fillable = ['nama'];
+    protected $fillable = ['nama', 'role'];
 
     public function indikator()
     {

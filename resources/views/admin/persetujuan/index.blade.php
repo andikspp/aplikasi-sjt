@@ -3,11 +3,17 @@
 @section('title', 'Persetujuan Akses')
 
 @section('content')
+    <style>
+        #table-header th {
+            color: white !important;
+            background-color: #005689 !important;
+        }
+    </style>
     <div class="container mt-4">
         <h3 class="mb-4 text-center">Persetujuan Akses</h3>
         <div class="table-responsive">
             <table class="table table-bordered table-striped align-middle">
-                <thead class="table-primary">
+                <thead id="table-header">
                     <tr>
                         <th class="text-center">No</th>
                         <th class="text-center">Diajukan Oleh</th>

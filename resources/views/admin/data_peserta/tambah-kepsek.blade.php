@@ -96,6 +96,15 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
+    @if ($errors->has('question_set'))
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Maaf',
+                text: '{{ $errors->first('question_set') }}',
+            });
+        </script>
+    @endif
     <script>
         $(document).ready(function() {
             $('#name, #instansi').on('input', function() {
