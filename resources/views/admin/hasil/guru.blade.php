@@ -213,8 +213,16 @@
                                 .then(() => location.reload());
                         },
                         error: function(xhr) {
-                            Swal.fire('Gagal', 'Terjadi kesalahan saat mengajukan permintaan.',
-                                'error');
+                            // Ambil pesan error dari response JSON
+                            let msg = 'Terjadi kesalahan.';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                msg = xhr.responseJSON.message;
+                            }
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: msg
+                            });
                         }
                     });
                 }

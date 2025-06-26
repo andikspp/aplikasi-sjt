@@ -16,12 +16,14 @@ class AdminSeeder extends Seeder
     {
         DB::table('admins')->insert([
             [
-                'username' => 'admin1',
-                'password' => Hash::make('admin1kece'), // Ganti dengan password yang diinginkan
+                'username' => 'sita',
+                'email' => 'andhika2003.ap31@gmail.com',
+                'password' => Hash::make('adminsita'), // Ganti dengan password yang diinginkan
             ],
             [
-                'username' => 'admin2',
-                'password' => Hash::make('admin2kece'), // Ganti dengan password yang diinginkan
+                'username' => 'made',
+                'email' => 'andika2003.ap31@gmail.com',
+                'password' => Hash::make('adminmade'), // Ganti dengan password yang diinginkan
             ],
 
         ]);

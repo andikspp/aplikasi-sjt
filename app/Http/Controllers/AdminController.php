@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 
 class AdminController extends Controller
 {
@@ -1271,6 +1272,25 @@ class AdminController extends Controller
 
             $adminId = auth('admin')->id();
 
+            // Cek apakah sudah ada permintaan pending untuk user_id dan quiz_attempt_id yang sama
+            $existing = \App\Models\Allowance::where('user_id', $request->user_id)
+                ->where(function ($q) use ($request) {
+                    if ($request->quiz_attempt_id) {
+                        $q->where('quiz_attempt_id', $request->quiz_attempt_id);
+                    } else {
+                        $q->whereNull('quiz_attempt_id');
+                    }
+                })
+                ->where('status', 'pending')
+                ->first();
+
+            if ($existing) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Permintaan penghapusan untuk data ini sudah pernah diajukan dan masih menunggu persetujuan.',
+                ], 422);
+            }
+
             $allowance = \App\Models\Allowance::create([
                 'user_id' => $request->user_id,
                 'quiz_attempt_id' => $request->quiz_attempt_id ?? null,
@@ -1278,6 +1298,16 @@ class AdminController extends Controller
                 'reason' => $request->reason,
                 'status' => 'pending',
             ]);
+
+            // Kirim notifikasi email ke semua admin lain
+            $adminPengaju = \App\Models\Admin::find($adminId);
+            $otherAdmins = \App\Models\Admin::where('id', '!=', $adminId)
+                ->whereNotNull('email')
+                ->pluck('email');
+
+            foreach ($otherAdmins as $email) {
+                Mail::to($email)->send(new \App\Mail\PermintaanPenghapusanMail($adminPengaju, $allowance));
+            }
 
             return response()->json([
                 'success' => true,
@@ -1305,7 +1335,18 @@ class AdminController extends Controller
                 return redirect()->back()->with('error', 'Permintaan tidak ditemukan atau sudah diproses.');
             }
 
+            // Simpan data untuk email sebelum allowance dihapus
+            $adminPengaju = \App\Models\Admin::find($adminId);
+            $otherAdmins = \App\Models\Admin::where('id', '!=', $adminId)
+                ->whereNotNull('email')
+                ->pluck('email');
+
             $allowance->delete();
+
+            // Kirim email notifikasi pembatalan ke admin lain
+            foreach ($otherAdmins as $email) {
+                Mail::to($email)->send(new \App\Mail\PembatalanPermintaan($adminPengaju, $allowance));
+            }
 
             return redirect()->back()->with('success', 'Permintaan berhasil dibatalkan.');
         } catch (\Exception $e) {
