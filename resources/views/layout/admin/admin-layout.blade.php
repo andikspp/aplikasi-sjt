@@ -66,6 +66,9 @@
 </head>
 
 <body>
+    @php
+        $adminCount = \App\Models\Admin::count();
+    @endphp
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom">
         <div class="container-fluid">
@@ -119,27 +122,30 @@
                                 </span>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                                <li>
-                                    <a class="dropdown-item {{ Request::routeIs('admin.permintaan') ? 'active' : '' }}"
-                                        href="{{ route('admin.permintaan') }}">
-                                        Permintaan Akses
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
-                                <li>
-                                    <a class="dropdown-item d-flex justify-content-between align-items-center {{ Request::routeIs('admin.persetujuan') ? 'active' : '' }}"
-                                        href="{{ route('admin.persetujuan') }}">
-                                        <span>Persetujuan Akses</span>
-                                        @if (!empty($pendingPersetujuanCount) && $pendingPersetujuanCount > 0)
-                                            <span class="badge bg-danger ms-2">{{ $pendingPersetujuanCount }}</span>
-                                        @endif
-                                    </a>
-                                </li>
-                                <li>
-                                    <hr class="dropdown-divider">
-                                </li>
+                                @if ($adminCount > 1)
+                                    <li>
+                                        <a class="dropdown-item {{ Request::routeIs('admin.permintaan') ? 'active' : '' }}"
+                                            href="{{ route('admin.permintaan') }}">
+                                            Permintaan Akses
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item d-flex justify-content-between align-items-center {{ Request::routeIs('admin.persetujuan') ? 'active' : '' }}"
+                                            href="{{ route('admin.persetujuan') }}">
+                                            <span>Persetujuan Akses</span>
+                                            @if (!empty($pendingPersetujuanCount) && $pendingPersetujuanCount > 0)
+                                                <span
+                                                    class="badge bg-danger ms-2">{{ $pendingPersetujuanCount }}</span>
+                                            @endif
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                @endif
                                 <li>
                                     <a class="dropdown-item {{ Request::routeIs('admin.log') ? 'active' : '' }}"
                                         href="{{ route('admin.log') }}">

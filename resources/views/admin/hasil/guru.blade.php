@@ -176,56 +176,92 @@
 
     <script>
         function confirmDeletion(guruId, quizAttemptId) {
-            Swal.fire({
-                title: 'Ajukan Penghapusan Hasil Tes',
-                text: "Masukkan alasan penghapusan. Permintaan akan dikonfirmasi oleh admin lain.",
-                icon: 'warning',
-                input: 'text',
-                inputLabel: 'Alasan penghapusan',
-                inputPlaceholder: 'Masukkan alasan penghapusan hasil tes',
-                inputValidator: (value) => {
-                    if (!value) {
-                        return 'Alasan penghapusan wajib diisi!';
-                    }
-                },
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ajukan',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    // Kirim AJAX ke backend untuk membuat permintaan penghapusan
-                    $.ajax({
-                        url: '{{ route('admin.permintaan.store') }}',
-                        type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}',
-                            user_id: guruId,
-                            quiz_attempt_id: quizAttemptId,
-                            reason: "Permintaan Penghapusan Hasil Tes Peserta Dengan Alasan: " + result
-                                .value
-                        },
-                        success: function(response) {
-                            Swal.fire('Berhasil',
-                                    'Permintaan penghapusan telah diajukan dan menunggu persetujuan admin lain.',
-                                    'success')
-                                .then(() => location.reload());
-                        },
-                        error: function(xhr) {
-                            // Ambil pesan error dari response JSON
-                            let msg = 'Terjadi kesalahan.';
-                            if (xhr.responseJSON && xhr.responseJSON.message) {
-                                msg = xhr.responseJSON.message;
-                            }
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Gagal',
-                                text: msg
+            // Cek jumlah admin dulu
+            $.get('{{ route('admin.checkAdminCount') }}', function(response) {
+                const adminCount = response.count;
+                Swal.fire({
+                    title: adminCount > 1 ? 'Ajukan Penghapusan Hasil Tes' :
+                        'Konfirmasi Penghapusan Hasil Tes',
+                    text: adminCount > 1 ?
+                        "Masukkan alasan penghapusan. Permintaan akan dikonfirmasi oleh admin lain." :
+                        "Masukkan alasan penghapusan. Data akan langsung dihapus.",
+                    icon: 'warning',
+                    input: 'text',
+                    inputLabel: 'Alasan penghapusan',
+                    inputPlaceholder: 'Masukkan alasan penghapusan hasil tes',
+                    inputValidator: (value) => {
+                        if (!value) {
+                            return 'Alasan penghapusan wajib diisi!';
+                        }
+                    },
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: adminCount > 1 ? 'Ajukan' : 'Hapus',
+                    cancelButtonText: 'Batal'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        if (adminCount > 1) {
+                            // Proses pengajuan seperti sebelumnya
+                            $.ajax({
+                                url: '{{ route('admin.permintaan.store') }}',
+                                type: 'POST',
+                                data: {
+                                    _token: '{{ csrf_token() }}',
+                                    user_id: guruId,
+                                    quiz_attempt_id: quizAttemptId,
+                                    reason: result.value
+                                },
+                                success: function(response) {
+                                    Swal.fire('Berhasil',
+                                            'Permintaan penghapusan telah diajukan dan menunggu persetujuan admin lain.',
+                                            'success')
+                                        .then(() => location.reload());
+                                },
+                                error: function(xhr) {
+                                    let msg = 'Terjadi kesalahan.';
+                                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                                        msg = xhr.responseJSON.message;
+                                    }
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal',
+                                        text: msg
+                                    });
+                                }
+                            });
+                        } else {
+                            // Langsung hapus
+                            $.ajax({
+                                url: '{{ route('hapus.hasil.guru', ':id') }}'.replace(':id',
+                                    guruId),
+                                type: 'POST',
+                                data: {
+                                    _token: '{{ csrf_token() }}',
+                                    reason: result.value,
+                                    quiz_attempt_id: quizAttemptId
+                                },
+                                success: function(response) {
+                                    Swal.fire('Berhasil',
+                                            'Hasil tes berhasil dihapus.',
+                                            'success')
+                                        .then(() => location.reload());
+                                },
+                                error: function(xhr) {
+                                    let msg = 'Terjadi kesalahan.';
+                                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                                        msg = xhr.responseJSON.message;
+                                    }
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal',
+                                        text: msg
+                                    });
+                                }
                             });
                         }
-                    });
-                }
+                    }
+                });
             });
         }
 

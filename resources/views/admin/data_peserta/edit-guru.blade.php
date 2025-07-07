@@ -77,8 +77,11 @@
                                 <label for="role" class="form-label">Role</label>
                                 <select id="role" name="role"
                                     class="form-select @error('role') is-invalid @enderror" required>
-                                    <option value="Guru" selected>Guru</option>
-                                    <option value="Kepala Sekolah">Kepala Sekolah</option>
+                                    <option value="Guru" {{ old('role', $guru->role) == 'Guru' ? 'selected' : '' }}>Guru
+                                    </option>
+                                    <option value="Kepala Sekolah"
+                                        {{ old('role', $guru->role) == 'Kepala Sekolah' ? 'selected' : '' }}>Kepala Sekolah
+                                    </option>
                                 </select>
                                 @error('role')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -90,36 +93,9 @@
                                 <label for="question_set_id" class="form-label">Paket Soal</label>
                                 <select id="question_set_id" name="question_set_id"
                                     class="form-select @error('question_set_id') is-invalid @enderror" required>
-                                    <option value="">Pilih Paket Soal</option>
-                                    @foreach ($questionSets as $id => $name)
-                                        <option value="{{ $id }}"
-                                            {{ old('question_set_id', $guru->question_set_id) == $id ? 'selected' : '' }}>
-                                            {{ $name }}
-                                        </option>
-                                    @endforeach
+                                    <!-- Opsi akan diisi oleh JS -->
                                 </select>
                                 @error('question_set_id')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
-                            <!-- Status -->
-                            <div class="mb-3">
-                                <label for="status" class="form-label">Status</label>
-                                <select id="status" name="status"
-                                    class="form-select @error('status') is-invalid @enderror" required>
-                                    <option value="">Pilih Status</option>
-                                    <option value="not_started"
-                                        {{ old('status', $guru->status) == 'not_started' ? 'selected' : '' }}>Not Started
-                                    </option>
-                                    <option value="on_going"
-                                        {{ old('status', $guru->status) == 'on_going' ? 'selected' : '' }}>On Going
-                                    </option>
-                                    <option value="submitted"
-                                        {{ old('status', $guru->status) == 'submitted' ? 'selected' : '' }}>Submitted
-                                    </option>
-                                </select>
-                                @error('status')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -138,6 +114,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
     <script>
+        const paketGuru = @json($paketGuru);
+        const paketKepsek = @json($paketKepsek);
+
         function goBack() {
             window.history.back();
         }
@@ -157,5 +136,22 @@
                 text: '{{ session('success') }}',
             });
         @endif
+
+        function updatePaketSoal(role) {
+            let paket = role === 'Kepala Sekolah' ? paketKepsek : paketGuru;
+            let select = document.getElementById('question_set_id');
+            select.innerHTML = '<option value="">Pilih Paket Soal</option>';
+            for (const [id, name] of Object.entries(paket)) {
+                let selected = "{{ old('question_set_id', $guru->question_set_id) }}" == id ? 'selected' : '';
+                select.innerHTML += `<option value="${id}" ${selected}>${name}</option>`;
+            }
+        }
+
+        document.getElementById('role').addEventListener('change', function() {
+            updatePaketSoal(this.value);
+        });
+
+        // Inisialisasi saat halaman dimuat
+        updatePaketSoal(document.getElementById('role').value);
     </script>
 @endsection

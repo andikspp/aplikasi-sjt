@@ -49,12 +49,10 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::get('/admin/hasil', [AdminController::class, 'resultPage'])->name('hasil');
     Route::get('/admin/data-peserta', [AdminController::class, 'dataPeserta'])->name('data.peserta');
     Route::get('/jawaban-peserta/{userId}', [AdminController::class, 'jawabanPeserta'])->name('jawaban.peserta');
-    Route::get('/admin/data-guru', [AdminController::class, 'dataGuru'])->name('data.guru');
-    Route::get('/admin/data-kepsek', [AdminController::class, 'dataKepsek'])->name('data.kepala_sekolah');
     Route::get('/admin/hasil-guru', [AdminController::class, 'resultGuru'])->name('hasil.guru');
     Route::get('/admin/hasil-kepsek', [AdminController::class, 'resultKepsek'])->name('hasil.kepala_sekolah');
-    Route::delete('/admin/hasil/kepsek/delete/{id}', [AdminController::class, 'hapusHasilKepsek'])->name('hapus.hasil.kepsek');
-    Route::delete('/admin/hasil/guru/delete/{id}', [AdminController::class, 'hapusHasilGuru'])->name('hapus.hasil.guru');
+    Route::post('/admin/hasil/kepsek/delete/{id}', [AdminController::class, 'hapusHasilKepsek'])->name('hapus.hasil.kepsek');
+    Route::post('/admin/hasil/guru/delete/{id}', [AdminController::class, 'hapusHasilGuru'])->name('hapus.hasil.guru');
     Route::get('/admin/grafik-individu/{userId}', [AdminController::class, 'grafikIndividu'])->name('grafik.individu');
     Route::get('/admin/grafik-kepsek', [AdminController::class, 'grafikKepsek'])->name('grafik.kepsek');
     Route::get('/admin/grafik-guru', [AdminController::class, 'grafikGuru'])->name('grafik.guru');
@@ -62,15 +60,17 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::get('/admin/hasil/guru/export', [ExportController::class, 'exportGuruResults'])->name('admin.results.guru');
     Route::get('/export-answers/{userId}', [ExportController::class, 'exportAnswersUser'])->name('export.answers');
 
-    // manajemen pengguna
+    // manajemen data peserta
     Route::post('/admin/register/ks', [RegisterController::class, 'registerKepsek'])->name('store.register.kepsek');
     Route::post('/admin/register/guru', [RegisterController::class, 'registerGuru'])->name('store.register.guru');
+    Route::get('/admin/data-guru', [AdminController::class, 'dataGuru'])->name('data.guru');
+    Route::get('/admin/data-kepsek', [AdminController::class, 'dataKepsek'])->name('data.kepala_sekolah');
     Route::get('/admin/guru/edit/{id}', [AdminController::class, 'editGuru'])->name('admin.edit.guru');
     Route::put('/admin/guru/update/{id}', [AdminController::class, 'updateGuru'])->name('admin.update.guru');
     Route::get('/admin/kepsek/edit/{id}', [AdminController::class, 'editKepsek'])->name('admin.edit.kepsek');
     Route::put('/admin/kepsek/update/{id}', [AdminController::class, 'updateKepsek'])->name('admin.update.kepsek');
-    Route::delete('/admin/guru/delete/{id}', [AdminController::class, 'destroyGuru'])->name('admin.delete.guru');
-    Route::delete('/admin/kepsek/delete/{id}', [AdminController::class, 'destroyKepsek'])->name('admin.delete.kepsek');
+    Route::post('/admin/guru/delete/{id}', [AdminController::class, 'destroyGuru'])->name('admin.delete.guru');
+    Route::post('/admin/kepsek/delete/{id}', [AdminController::class, 'destroyKepsek'])->name('admin.delete.kepsek');
     Route::get('/admin/kepsek/create', [AdminController::class, 'tambahKepsek'])->name('admin.tambah.kepsek');
     Route::get('/admin/guru/create', [AdminController::class, 'tambahGuru'])->name('admin.tambah.guru');
     Route::get('admin/search/guru', [AdminController::class, 'searchGuru'])->name('search.guru');
@@ -80,13 +80,20 @@ Route::middleware(['auth.admin'])->group(function () {
     Route::get('/admin/logs', [AdminController::class, 'logs'])->name('admin.log');
     Route::get('/admin/logs/filter', [AdminController::class, 'filterLogsByAdmin'])->name('admin.logs.filter');
 
-    // permintaan penghapusan
-    Route::get('admin/permintaan', [AdminController::class, 'permintaanPage'])->name('admin.permintaan');
-    Route::post('admin/permintaan/store', [AdminController::class, 'storePermintaan'])->name('admin.permintaan.store');
-    Route::delete('/allowance/{id}/cancel', [AdminController::class, 'cancelPermintaan'])->name('admin.permintaan.cancel');
+    Route::middleware(['auth:admin', 'multiple.admin'])->group(function () {
+        // permintaan penghapusan
+        Route::get('admin/permintaan', [AdminController::class, 'permintaanPage'])->name('admin.permintaan');
+        Route::post('admin/permintaan/store', [AdminController::class, 'storePermintaan'])->name('admin.permintaan.store');
+        Route::delete('/allowance/{id}/cancel', [AdminController::class, 'cancelPermintaan'])->name('admin.permintaan.cancel');
+        Route::delete('/admin/permintaan/{id}/hapus', [AdminController::class, 'destroyAllowance'])->name('admin.permintaan.destroy');
+        Route::post('/admin/permintaan/{id}/reapply', [AdminController::class, 'reapplyAllowance'])->name('admin.permintaan.reapply');
 
-    // persetujuan penghapusan
-    Route::get('admin/persetujuan', [AdminController::class, 'persetujuanPage'])->name('admin.persetujuan');
-    Route::post('/admin/persetujuan/approve/{id}', [AdminController::class, 'approveAllowance'])->name('admin.persetujuan.approve');
-    Route::post('/admin/persetujuan/reject/{id}', [AdminController::class, 'rejectAllowance'])->name('admin.persetujuan.reject');
+        // persetujuan penghapusan
+        Route::get('admin/persetujuan', [AdminController::class, 'persetujuanPage'])->name('admin.persetujuan');
+        Route::post('/admin/persetujuan/approve/{id}', [AdminController::class, 'approveAllowance'])->name('admin.persetujuan.approve');
+        Route::post('/admin/persetujuan/reject/{id}', [AdminController::class, 'rejectAllowance'])->name('admin.persetujuan.reject');
+    });
+
+    // rute untuk mengecek jumlah admin
+    Route::get('/admin/check-admin-count', [AdminController::class, 'checkAdminCount'])->name('admin.checkAdminCount');
 });

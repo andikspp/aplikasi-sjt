@@ -68,7 +68,7 @@
         </div>
         <div class="row mb-4">
             <div class="col-md-6 mb-4">
-                <h6 class="mb-2">Peserta</h6>
+                <h6 class="mb-2">Grafik Perbandingan Total Peserta dan Total Peserta Submit</h6>
                 <div class="card shadow-sm border-0 rounded-4">
                     <div class="card-body">
                         <canvas id="pesertaChart" height="200"></canvas>
@@ -76,7 +76,7 @@
                 </div>
             </div>
             <div class="col-md-6 mb-4">
-                <h6 class="mb-2">Guru & Kepala Sekolah</h6>
+                <h6 class="mb-2">Grafik Perbandingan Jumlah Guru dan Kepala Sekolah</h6>
                 <div class="card shadow-sm border-0 rounded-4">
                     <div class="card-body">
                         <canvas id="guruChart" height="200"></canvas>
@@ -84,7 +84,7 @@
                 </div>
             </div>
             <div class="col-md-6 mb-4">
-                <h6 class="mb-2">Instansi (Jenis PAUD)</h6>
+                <h6 class="mb-2">Grafik Perbandingan Jumlah PAUD Mitra dan PAUD Pembelajar</h6>
                 <div class="card shadow-sm border-0 rounded-4">
                     <div class="card-body">
                         <canvas id="instansiChart" height="200"></canvas>

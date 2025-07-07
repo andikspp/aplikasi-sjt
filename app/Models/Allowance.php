@@ -12,7 +12,8 @@ class Allowance extends Model
     protected $table = 'allowance';
 
     protected $fillable = [
-        'user_id', // id hasil tes yang ingin dihapus
+        'user_id',
+        'name',           // nama peserta, untuk menyimpan nama peserta yang ingin dihapus
         'quiz_attempt_id', // id quiz attempt yang ingin dihapus
         'requested_by',   // id admin yang meminta
         'reason',

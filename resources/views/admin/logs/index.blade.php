@@ -46,72 +46,111 @@
                     </tr>
                 </thead>
                 <tbody id="logTableBody">
-                    @forelse($logs as $log)
-                        <tr>
-                            <td class="text-center">{{ $loop->iteration }}</td>
-                            <td class="text-center">{{ $log->admin_name ?? '-' }}</td>
-                            <td class="text-center">{{ $log->action }}</td>
-                            <td class="text-center">{{ \Carbon\Carbon::parse($log->created_at)->format('d-m-Y H:i:s') }} WIB
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="4" class="text-center">Belum ada aktivitas.</td>
-                        </tr>
-                    @endforelse
                 </tbody>
             </table>
+            <div class="pagination-wrapper d-flex justify-content-center">
+            </div>
         </div>
     </div>
 @endsection
 
 @push('scripts')
     <script>
-        var waktuOrder = 'desc';
+        $(document).ready(function() {
+            var waktuOrder = 'desc';
 
-        function loadLogs() {
-            var adminId = $('#adminFilter').val();
-            var timeRange = $('#timeFilter').val();
-            $.ajax({
-                url: '{{ route('admin.logs.filter') }}',
-                type: 'GET',
-                data: {
-                    admin_id: adminId,
-                    time_range: timeRange,
-                    waktu_order: waktuOrder
-                },
-                success: function(response) {
-                    var html = '';
-                    if (response.success && response.logs.length > 0) {
-                        response.logs.forEach(function(log) {
-                            html += '<tr>' +
-                                '<td class="text-center">' + log.no + '</td>' +
-                                '<td class="text-center">' + log.admin_name + '</td>' +
-                                '<td class="text-center">' + log.action + '</td>' +
-                                '<td class="text-center">' + log.waktu + '</td>' +
-                                '</tr>';
-                        });
-                    } else {
-                        html = '<tr><td colspan="4" class="text-center">Belum ada aktivitas.</td></tr>';
+            function loadLogs() {
+                var adminId = $('#adminFilter').val();
+                var timeRange = $('#timeFilter').val();
+                $.ajax({
+                    url: '{{ route('admin.logs.filter') }}',
+                    type: 'GET',
+                    data: {
+                        admin_id: adminId,
+                        time_range: timeRange,
+                        waktu_order: waktuOrder
+                    },
+                    success: function(response) {
+                        var html = '';
+                        if (response.success && response.logs.length > 0) {
+                            response.logs.forEach(function(log) {
+                                html += '<tr>' +
+                                    '<td class="text-center">' + log.no + '</td>' +
+                                    '<td class="text-center">' + log.admin_name + '</td>' +
+                                    '<td class="text-center">' + log.action + '</td>' +
+                                    '<td class="text-center">' + log.waktu + '</td>' +
+                                    '</tr>';
+                            });
+                        } else {
+                            html =
+                                '<tr><td colspan="4" class="text-center">Belum ada aktivitas.</td></tr>';
+                        }
+                        $('#logTableBody').html(html);
+                        if (response.pagination !== undefined) {
+                            $('.pagination-wrapper').html(response.pagination);
+                        } else {
+                            $('.pagination-wrapper').html('');
+                        }
+                    },
+                    error: function(xhr) {
+                        $('#logTableBody').html(
+                            '<tr><td colspan="4" class="text-center text-danger">Gagal memuat data log.</td></tr>'
+                        );
                     }
-                    $('#logTableBody').html(html);
-                },
-                error: function(xhr) {
-                    $('#logTableBody').html(
-                        '<tr><td colspan="4" class="text-center text-danger">Gagal memuat data log.</td></tr>'
-                    );
-                }
+                });
+            }
+
+            // Panggil saat halaman pertama kali dimuat
+            loadLogs();
+
+            $('#adminFilter, #timeFilter').on('change', function() {
+                loadLogs();
             });
-        }
 
-        $('#adminFilter, #timeFilter').on('change', function() {
-            loadLogs();
-        });
+            $('#sortWaktu').on('click', function() {
+                waktuOrder = (waktuOrder === 'desc') ? 'asc' : 'desc';
+                $('#arrowWaktu').text(waktuOrder === 'desc' ? '▼' : '▲');
+                loadLogs();
+            });
 
-        $('#sortWaktu').on('click', function() {
-            waktuOrder = (waktuOrder === 'desc') ? 'asc' : 'desc';
-            $('#arrowWaktu').text(waktuOrder === 'desc' ? '▼' : '▲');
-            loadLogs();
+            $(document).on('click', '.pagination a', function(e) {
+                e.preventDefault();
+                var url = $(this).attr('href');
+                var adminId = $('#adminFilter').val();
+                var timeRange = $('#timeFilter').val();
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: {
+                        admin_id: adminId,
+                        time_range: timeRange,
+                        waktu_order: waktuOrder
+                    },
+                    success: function(response) {
+                        var html = '';
+                        if (response.success && response.logs.length > 0) {
+                            response.logs.forEach(function(log) {
+                                html += '<tr>' +
+                                    '<td class="text-center">' + log.no + '</td>' +
+                                    '<td class="text-center">' + log.admin_name +
+                                    '</td>' +
+                                    '<td class="text-center">' + log.action + '</td>' +
+                                    '<td class="text-center">' + log.waktu + '</td>' +
+                                    '</tr>';
+                            });
+                        } else {
+                            html =
+                                '<tr><td colspan="4" class="text-center">Belum ada aktivitas.</td></tr>';
+                        }
+                        $('#logTableBody').html(html);
+                        if (response.pagination !== undefined) {
+                            $('.pagination-wrapper').html(response.pagination);
+                        } else {
+                            $('.pagination-wrapper').html('');
+                        }
+                    }
+                });
+            });
         });
     </script>
 @endpush

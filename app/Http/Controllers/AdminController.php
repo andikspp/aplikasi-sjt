@@ -824,11 +824,10 @@ class AdminController extends Controller
     {
         $guru = User::where('role', 'guru')->findOrFail($id);
 
-        $questionSets = DB::table('question_sets')
-            ->where('role', 'Guru')
-            ->pluck('name', 'id');
+        $paketGuru = DB::table('question_sets')->where('role', 'Guru')->pluck('name', 'id');
+        $paketKepsek = DB::table('question_sets')->where('role', 'Kepala Sekolah')->pluck('name', 'id');
 
-        return view('admin.data_peserta.edit-guru', compact('guru', 'questionSets'));
+        return view('admin.data_peserta.edit-guru', compact('guru', 'paketGuru', 'paketKepsek'));
     }
 
 
@@ -848,12 +847,6 @@ class AdminController extends Controller
                 'string',
                 'max:50',
                 'in:Guru,Kepala Sekolah'
-            ],
-            'status' => [
-                'required',
-                'string',
-                'max:50',
-                'in:not_started,on_going,submitted'
             ],
             'question_set_id' => 'nullable|exists:question_sets,id',
         ]);
@@ -984,6 +977,15 @@ class AdminController extends Controller
             return redirect()->route('admin.data.guru')->with('error', 'Data guru tidak ditemukan.');
         }
 
+        // Catat log sebelum hapus
+        \App\Models\LogAdmin::create([
+            'admin_id'   => auth('admin')->id() ?? null,
+            'admin_name' => auth('admin')->user()->username ?? 'Unknown',
+            'action'     => 'Menghapus data guru: ' . $guru->name . ' (ID: ' . $guru->id . ')',
+            'ip_address' => request()->ip(),
+            'question_set_id' => $guru->question_set_id ?? null,
+        ]);
+
         $guru->delete();
 
         return redirect()->route('data.guru')->with('success', 'Data guru berhasil dihapus.');
@@ -996,6 +998,15 @@ class AdminController extends Controller
         if (!$kepsek) {
             return redirect()->route('admin.data.guru')->with('error', 'Data guru tidak ditemukan.');
         }
+
+        // Catat log sebelum hapus
+        \App\Models\LogAdmin::create([
+            'admin_id'   => auth('admin')->id() ?? null,
+            'admin_name' => auth('admin')->user()->username ?? 'Unknown',
+            'action'     => 'Menghapus data kepala sekolah: ' . $kepsek->name . ' (ID: ' . $kepsek->id . ')',
+            'ip_address' => request()->ip(),
+            'question_set_id' => $kepsek->question_set_id ?? null,
+        ]);
 
         $kepsek->delete();
 
@@ -1049,28 +1060,46 @@ class AdminController extends Controller
 
     public function hapusHasilKepsek($userId)
     {
+        $admin = auth('admin')->user();
+        $user = \App\Models\User::find($userId);
+
         DB::transaction(function () use ($userId) {
             DB::table('quiz_attempts')->where('user_id', $userId)->delete();
-
             DB::table('users')->where('id', $userId)->update(['status' => 'not_started']);
-
             DB::table('user_answers')->where('user_id', $userId)->delete();
         });
 
+        // Catat log penghapusan hasil tes kepala sekolah
+        \App\Models\LogAdmin::create([
+            'admin_id'   => $admin->id ?? null,
+            'admin_name' => $admin->username ?? 'Unknown',
+            'action'     => 'Menghapus hasil tes kepala sekolah: ' . ($user->name ?? 'Unknown') . ' (ID: ' . $userId . ')',
+            'ip_address' => request()->ip(),
+            'question_set_id' => $user->question_set_id ?? null,
+        ]);
 
         return redirect()->route('hasil.kepala_sekolah')->with('success', 'Data berhasil dihapus.');
     }
 
     public function hapusHasilGuru($userId)
     {
+        $admin = auth('admin')->user();
+        $user = \App\Models\User::find($userId);
+
         DB::transaction(function () use ($userId) {
             DB::table('quiz_attempts')->where('user_id', $userId)->delete();
-
             DB::table('users')->where('id', $userId)->update(['status' => 'not_started']);
-
             DB::table('user_answers')->where('user_id', $userId)->delete();
         });
 
+        // Catat log penghapusan hasil tes
+        \App\Models\LogAdmin::create([
+            'admin_id'   => $admin->id ?? null,
+            'admin_name' => $admin->username ?? 'Unknown',
+            'action'     => 'Menghapus hasil tes guru: ' . ($user->name ?? 'Unknown') . ' (ID: ' . $userId . ')',
+            'ip_address' => request()->ip(),
+            'question_set_id' => $user->question_set_id ?? null,
+        ]);
 
         return redirect()->route('hasil.guru')->with('success', 'Data berhasil dihapus.');
     }
@@ -1186,7 +1215,7 @@ class AdminController extends Controller
             // Query dasar logs
             $query = DB::table('logs_admin')->orderBy('created_at', 'desc');
 
-            $logs = $query->get();
+            $logs = $query->paginate(20);
 
             // Untuk view utama
             return view('admin.logs.index', compact('admins', 'logs'));
@@ -1233,18 +1262,35 @@ class AdminController extends Controller
                 }
             }
 
-            $logs = $query->get()->map(function ($log, $index) {
-                return [
-                    'no' => $index + 1,
-                    'admin_name' => $log->admin_name ?? '-',
-                    'action' => $log->action,
-                    'waktu' => \Carbon\Carbon::parse($log->created_at)->format('d-m-Y H:i:s') . ' WIB',
-                ];
-            });
+            $total = $query->count();
+
+            if ($total > 20) {
+                $logsPaginated = $query->paginate(20);
+                $logs = $logsPaginated->getCollection()->map(function ($log, $index) use ($logsPaginated) {
+                    return [
+                        'no' => ($logsPaginated->currentPage() - 1) * $logsPaginated->perPage() + $index + 1,
+                        'admin_name' => $log->admin_name ?? '-',
+                        'action' => $log->action,
+                        'waktu' => \Carbon\Carbon::parse($log->created_at)->format('d-m-Y H:i:s') . ' WIB',
+                    ];
+                });
+                $pagination = (string) $logsPaginated->links('pagination.pagination');
+            } else {
+                $logs = $query->get()->map(function ($log, $index) {
+                    return [
+                        'no' => $index + 1,
+                        'admin_name' => $log->admin_name ?? '-',
+                        'action' => $log->action,
+                        'waktu' => \Carbon\Carbon::parse($log->created_at)->format('d-m-Y H:i:s') . ' WIB',
+                    ];
+                });
+                $pagination = '';
+            }
 
             return response()->json([
                 'success' => true,
                 'logs' => $logs,
+                'pagination' => $pagination,
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -1253,7 +1299,6 @@ class AdminController extends Controller
             ], 500);
         }
     }
-
     public function permintaanPage()
     {
         $allowances = \App\Models\Allowance::with(['peserta', 'approvals'])->where('requested_by', auth('admin')->id())->orderBy('created_at', 'desc')->get();
@@ -1293,6 +1338,7 @@ class AdminController extends Controller
 
             $allowance = \App\Models\Allowance::create([
                 'user_id' => $request->user_id,
+                'name' => \App\Models\User::find($request->user_id)->name ?? 'Unknown',
                 'quiz_attempt_id' => $request->quiz_attempt_id ?? null,
                 'requested_by' => $adminId,
                 'reason' => $request->reason,
@@ -1418,6 +1464,13 @@ class AdminController extends Controller
                         'ip_address' => request()->ip(),
                         'question_set_id' => null,
                     ]);
+
+                    // Kirim email notifikasi ke admin pengaju
+                    if ($adminPengaju && $adminPengaju->email) {
+                        Log::info('Akan mengirim email ke: ' . $adminPengaju->email);
+                        Mail::to($adminPengaju->email)->send(new \App\Mail\PermintaanDisetujuiMail($adminPengaju, $allowance));
+                        Log::info('Email sudah dipanggil ke: ' . $adminPengaju->email);
+                    }
                 } else {
                     // Penghapusan data peserta (hapus semua data peserta)
                     // Ambil nama peserta sebelum dihapus
@@ -1439,14 +1492,14 @@ class AdminController extends Controller
                         DB::table('quiz_attempts')->where('user_id', $allowance->user_id)->delete();
                         DB::table('user_answers')->where('user_id', $allowance->user_id)->delete();
                         DB::table('users')->where('id', $allowance->user_id)->delete();
-
-                        DB::table('allowance_approval')
-                            ->whereIn('allowance_id', function ($query) use ($allowance) {
-                                $query->select('id')->from('allowance')->where('user_id', $allowance->user_id);
-                            })->delete();
-
-                        DB::table('allowance')->where('user_id', $allowance->user_id)->delete();
                     });
+
+                    // Kirim email notifikasi ke admin pengaju
+                    if ($adminPengaju && $adminPengaju->email) {
+                        Log::info('Akan mengirim email ke: ' . $adminPengaju->email);
+                        Mail::to($adminPengaju->email)->send(new \App\Mail\PermintaanDisetujuiMail($adminPengaju, $allowance));
+                        Log::info('Email sudah dipanggil ke: ' . $adminPengaju->email);
+                    }
                 }
             }
 
@@ -1483,9 +1536,52 @@ class AdminController extends Controller
             $allowance->status = 'rejected';
             $allowance->save();
 
+            // Kirim email notifikasi ke admin pengaju
+            $adminPengaju = \App\Models\Admin::find($allowance->requested_by);
+            if ($adminPengaju && $adminPengaju->email) {
+                Mail::to($adminPengaju->email)->send(new \App\Mail\PermintaanDitolakMail($adminPengaju, $allowance));
+            }
+
             return redirect()->back()->with('success', 'Permintaan berhasil ditolak.');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
+    }
+
+    public function destroyAllowance($id)
+    {
+        $allowance = \App\Models\Allowance::findOrFail($id);
+        $allowance->delete();
+        return redirect()->back()->with('success', 'Permintaan berhasil dihapus.');
+    }
+
+    public function reapplyAllowance($id)
+    {
+        $allowance = \App\Models\Allowance::findOrFail($id);
+        $allowance->status = 'pending';
+        $allowance->save();
+
+        // (Opsional) Hapus approval sebelumnya
+        \App\Models\AllowanceApproval::where('allowance_id', $id)->delete();
+
+        $adminId = auth('admin')->id();
+
+        // Kirim notifikasi email ke semua admin lain
+        $adminPengaju = \App\Models\Admin::find($adminId);
+        $otherAdmins = \App\Models\Admin::where('id', '!=', $adminId)
+            ->whereNotNull('email')
+            ->pluck('email');
+
+        foreach ($otherAdmins as $email) {
+            Mail::to($email)->send(new \App\Mail\PermintaanPenghapusanMail($adminPengaju, $allowance));
+        }
+
+        return redirect()->back()->with('success', 'Permintaan berhasil diajukan kembali.');
+    }
+
+    public function checkAdminCount()
+    {
+        $count = \App\Models\Admin::count();
+        return response()->json(['count' => $count]);
     }
 }

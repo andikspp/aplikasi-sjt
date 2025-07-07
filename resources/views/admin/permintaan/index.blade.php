@@ -21,14 +21,14 @@
                         <th class="text-center">Status</th>
                         <th class="text-center">Tanggal Permintaan</th>
                         <th class="text-center">Persetujuan Admin</th>
-                        <th class="text-center">Pembatalan</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($allowances as $item)
                         <tr>
                             <td class="text-center">{{ $loop->iteration }}</td>
-                            <td class="text-center">{{ $item->peserta->name ?? '-' }}</td>
+                            <td class="text-center">{{ $item->name ?? '-' }}</td>
                             <td class="text-center">{{ $item->reason }}</td>
                             <td class="text-center">
                                 @if ($item->status == 'pending')
@@ -73,7 +73,20 @@
                                             class="btn btn-danger btn-sm btn-cancel-allowance">Batalkan</button>
                                     </form>
                                 @else
-                                    <span class="text-muted">-</span>
+                                    <form action="{{ route('admin.permintaan.destroy', $item->id) }}" method="POST"
+                                        class="d-inline form-delete-allowance">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit"
+                                            class="btn btn-success btn-sm btn-delete-allowance">OK</button>
+                                    </form>
+                                    @if ($item->status == 'rejected')
+                                        <form action="{{ route('admin.permintaan.reapply', $item->id) }}" method="POST"
+                                            class="d-inline">
+                                            @csrf
+                                            <button type="submit" class="btn btn-warning btn-sm">Ajukan Kembali</button>
+                                        </form>
+                                    @endif
                                 @endif
                             </td>
                         </tr>

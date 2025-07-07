@@ -16,11 +16,6 @@ class AdminSeeder extends Seeder
     {
         DB::table('admins')->insert([
             [
-                'username' => 'sita',
-                'email' => 'andhika2003.ap31@gmail.com',
-                'password' => Hash::make('adminsita'), // Ganti dengan password yang diinginkan
-            ],
-            [
                 'username' => 'made',
                 'email' => 'andika2003.ap31@gmail.com',
                 'password' => Hash::make('adminmade'), // Ganti dengan password yang diinginkan
