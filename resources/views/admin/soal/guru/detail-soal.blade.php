@@ -193,8 +193,8 @@
                             html += `<td>${q.kompetensi ? q.kompetensi.nama : '-'}</td>
                         <td>${q.indikator ? q.indikator.nama : '-'}</td>
                         <td>
-                            <a href="/admin/soal/edit/guru/${q.id}" class="btn btn-warning btn-sm">Edit</a>
-                            <form id="delete-form-${q.id}" action="/admin/soal/${q.id}" method="POST" style="display:inline;">
+                             <a href="{{ route('admin.soal.edit.guru', '') }}/${q.id}" class="btn btn-warning btn-sm">Edit</a>
+                            <form id="delete-form-${q.id}" action="{{ route('hapus.soal', '') }}/${q.id}" method="POST" style="display:inline;">
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                                 <input type="hidden" name="_method" value="DELETE">
                                 <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete(${q.id})">Hapus</button>
