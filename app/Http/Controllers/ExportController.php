@@ -16,10 +16,17 @@ class ExportController extends Controller
 {
     public function exportResultsKepsek(Request $request)
     {
-        $request->validate([
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-        ]);
+        $request->validate(
+            [
+                'start_date' => 'nullable|date',
+                'end_date' => 'nullable|date|after_or_equal:start_date',
+            ],
+            [
+                'start_date.date' => 'Tanggal mulai harus berupa tanggal yang valid.',
+                'end_date.date' => 'Tanggal akhir harus berupa tanggal yang valid.',
+                'end_date.after_or_equal' => 'Tanggal akhir harus setelah atau sama dengan tanggal mulai.',
+            ]
+        );
 
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
@@ -50,7 +57,9 @@ class ExportController extends Controller
 
         // Jika tanggal diinput, tambahkan filter berdasarkan tanggal
         if ($startDate && $endDate) {
-            $resultsQuery->whereBetween('quiz_attempts.ended_at', [$startDate, $endDate]);
+            $startDateTime = $startDate . ' 00:00:00';
+            $endDateTime = $endDate . ' 23:59:59';
+            $resultsQuery->whereBetween('quiz_attempts.ended_at', [$startDateTime, $endDateTime]);
         }
 
         $results = $resultsQuery->get();
@@ -83,6 +92,10 @@ class ExportController extends Controller
             return $result;
         });
 
+        if ($results->isEmpty()) {
+            return redirect()->back()->with('error', 'Data tidak ditemukan pada rentang tanggal tersebut.');
+        }
+
         // Tentukan nama file berdasarkan input tanggal
         $fileName = $startDate && $endDate
             ? 'hasil_ks_' . $startDate . '_to_' . $endDate . '.xlsx'
@@ -93,10 +106,17 @@ class ExportController extends Controller
 
     public function exportGuruResults(Request $request)
     {
-        $request->validate([
-            'start_date' => 'nullable|date',
-            'end_date' => 'nullable|date|after_or_equal:start_date',
-        ]);
+        $request->validate(
+            [
+                'start_date' => 'nullable|date',
+                'end_date' => 'nullable|date|after_or_equal:start_date',
+            ],
+            [
+                'start_date.date' => 'Tanggal mulai harus berupa tanggal yang valid.',
+                'end_date.date' => 'Tanggal akhir harus berupa tanggal yang valid.',
+                'end_date.after_or_equal' => 'Tanggal akhir harus setelah atau sama dengan tanggal mulai.',
+            ]
+        );
 
         $startDate = $request->input('start_date');
         $endDate = $request->input('end_date');
@@ -132,7 +152,9 @@ class ExportController extends Controller
 
         // Jika tanggal diinput, tambahkan filter berdasarkan tanggal
         if ($startDate && $endDate) {
-            $resultsQuery->whereBetween('quiz_attempts.ended_at', [$startDate, $endDate]);
+            $startDateTime = $startDate . ' 00:00:00';
+            $endDateTime = $endDate . ' 23:59:59';
+            $resultsQuery->whereBetween('quiz_attempts.ended_at', [$startDateTime, $endDateTime]);
         }
 
         $results = $resultsQuery->get();
@@ -172,8 +194,6 @@ class ExportController extends Controller
 
         return Excel::download(new GuruAnswersExport($resultsWithAnswers, $questions), $fileName);
     }
-
-
 
 
     public function exportAnswersUser($userId)

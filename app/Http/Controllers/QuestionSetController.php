@@ -24,11 +24,12 @@ class QuestionSetController extends Controller
             'name' => 'required|string|max:255|unique:question_sets',
             'time_limit' => 'required|integer',
             'start_exam' => 'required|date_format:Y-m-d\TH:i',
-            'end_exam' => 'required|date_format:Y-m-d\TH:i|after:start_exam',
+            'end_exam' => 'required|date_format:Y-m-d\TH:i|after:start_exam|after:now',
             'role' => 'required|in:Guru,Kepala Sekolah',
             'import_soal' => 'nullable|file|mimes:xlsx,xls,csv'
         ], [
             'name.unique' => 'Nama paket soal sudah terpakai.',
+            'end_exam.after' => 'Tanggal akhir ujian harus setelah tanggal mulai ujian dan setelah waktu saat ini.',
         ]);
 
         DB::beginTransaction();
@@ -168,10 +169,11 @@ class QuestionSetController extends Controller
             'name' => 'required|string|max:255|unique:question_sets,name,' . $id,
             'time_limit' => 'required|integer',
             'start_exam' => 'required|date_format:Y-m-d\TH:i',
-            'end_exam' => 'required|date_format:Y-m-d\TH:i|after:start_exam',
+            'end_exam' => 'required|date_format:Y-m-d\TH:i|after:start_exam|after:now',
             'role' => 'required|in:Guru,Kepala Sekolah',
         ], [
             'name.unique' => 'Nama paket soal sudah terpakai.',
+            'end_exam.after' => 'Tanggal akhir ujian harus setelah tanggal mulai ujian dan setelah waktu saat ini.',
         ]);
 
         // Cari QuestionSet berdasarkan ID

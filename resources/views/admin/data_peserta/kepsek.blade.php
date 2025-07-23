@@ -84,7 +84,6 @@
                             <th>No.</th>
                             <th>Nama</th>
                             <th>Username</th>
-                            <th>Telepon</th>
                             <th>Instansi</th>
                             <th>Jenis</th>
                             <th>Role</th>
@@ -99,7 +98,6 @@
                                 <td>{{ $loop->iteration + $results->firstItem() - 1 }}</td>
                                 <td>{{ $result->name ?? 'N/A' }}</td>
                                 <td>{{ $result->username ?? 'N/A' }}</td>
-                                <td>{{ $result->telepon ?? 'N/A' }}</td>
                                 <td>{{ strtoupper($result->instansi) ?? 'N/A' }}</td>
                                 <td>{{ ucwords($result->jenis_paud) ?? 'N/A' }}</td>
                                 <td>{{ ucwords($result->role) ?? 'N/A' }}</td>

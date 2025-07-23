@@ -35,9 +35,9 @@
             text-decoration: underline;
         }
 
-        .navbar-nav .nav-item:hover {
+        /* .navbar-nav .nav-item:hover {
             transform: scale(1.05);
-        }
+        } */
 
         .navbar-nav .nav-link.active {
             text-decoration: underline;

@@ -24,7 +24,7 @@ class RegisterController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users',
-            'telepon' => 'required|string|max:15',
+            'telepon' => 'nullable|string|max:15',
             'instansi' => 'required|string|max:255',
             'jenis_paud' => 'required|in:mitra,pembelajar',
             'role' => 'required|in:Kepala Sekolah',
@@ -37,10 +37,14 @@ class RegisterController extends Controller
         $passwordKepsek = 'sjtguru123#';
 
         try {
-            $questionSets = QuestionSet::where('role', $request->role)->get();
+            $now = now();
+            $questionSets = QuestionSet::where('role', $request->role)
+                ->where('start_exam', '<=', $now)
+                ->where('end_exam', '>=', $now)
+                ->get();
 
             if ($questionSets->isEmpty()) {
-                throw new \Exception('Tidak ada paket soal untuk role ini. Silakan tambahkan paket soal terlebih dahulu.');
+                throw new \Exception('Tidak ada paket soal aktif untuk role ini. Silakan tambahkan paket soal yang aktif terlebih dahulu.');
             }
 
             $user = User::create([
@@ -77,7 +81,7 @@ class RegisterController extends Controller
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'username' => 'required|string|max:255|unique:users',
-            'telepon' => 'required|string|max:15',
+            'telepon' => 'nullable|string|max:15',
             'instansi' => 'required|string|max:255',
             'jenis_paud' => 'required|in:mitra,pembelajar',
             'role' => 'required|in:Guru,Kepala Sekolah',
@@ -90,10 +94,14 @@ class RegisterController extends Controller
         $passwordGuru = 'sjtguru123#';
 
         try {
-            $questionSets = QuestionSet::where('role', $request->role)->get();
+            $now = now();
+            $questionSets = QuestionSet::where('role', $request->role)
+                ->where('start_exam', '<=', $now)
+                ->where('end_exam', '>=', $now)
+                ->get();
 
             if ($questionSets->isEmpty()) {
-                throw new \Exception('Tidak ada paket soal untuk role ini. Silakan tambahkan paket soal terlebih dahulu.');
+                throw new \Exception('Tidak ada paket soal aktif untuk role ini. Silakan tambahkan paket soal yang aktif terlebih dahulu.');
             }
 
             $user = User::create([

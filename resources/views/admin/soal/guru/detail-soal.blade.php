@@ -42,9 +42,24 @@
             background-color: #012a41;
             color: white;
         }
+
+        .btn-dikmas {
+            background-color: #005689;
+            color: white;
+        }
+
+        .btn-dikmas:hover {
+            background-color: #004a73;
+            color: white;
+        }
     </style>
 
     <div class="container mt-5">
+        <div class="mb-3">
+            <a href="{{ route('admin.soal') }}" class="btn btn-dikmas">
+                <i class="bi bi-arrow-left"></i> Kembali
+            </a>
+        </div>
         <h2 class="text-center mb-4">{{ $questionSet->name }}</h2>
         <div class="row mb-3">
             <div class="col d-flex justify-content-end align-items-center gap-2">

@@ -32,8 +32,29 @@
         .table-bordered td {
             border: 1px solid #dee2e6;
         }
+
+        .btn-dikmas {
+            background-color: #005689;
+            color: white;
+        }
+
+        .btn-dikmas:hover {
+            background-color: #004a73;
+            color: white;
+        }
     </style>
     <div class="container mt-5">
+        <div class="mb-3">
+            @if ($userRole === 'guru')
+                <a href="{{ route('hasil.guru') }}" class="btn btn-dikmas">
+                    <i class="bi bi-arrow-left"></i> Kembali
+                </a>
+            @elseif ($userRole === 'kepala sekolah')
+                <a href="{{ route('hasil.kepala_sekolah') }}" class="btn btn-dikmas">
+                    <i class="bi bi-arrow-left"></i> Kembali
+                </a>
+            @endif
+        </div>
         <h2 class="text-center">Detail Jawaban {{ $userName }}</h2>
         <a href="{{ route('grafik.individu', ['userId' => $userId]) }}" class="btn btn-primary">
             Lihat Grafik

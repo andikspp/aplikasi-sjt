@@ -45,79 +45,187 @@
         }
 
         .question-card {
-            margin-bottom: 20px;
+            border-radius: 18px;
+            border: none;
+            margin-bottom: 30px;
+            background: #fff;
+            transition: box-shadow 0.2s;
         }
 
-        .question-card h5 {
-            margin-bottom: 15px;
+        .question-card .card-body {
+            padding: 2rem 1.5rem;
         }
 
-        .question-card .form-check {
-            color: #000;
-            /* Warna hitam untuk opsi jawaban */
+        .soal-badge {
+            background: linear-gradient(90deg, #005689 70%, #0077b6 100%);
+            color: #fff;
+            font-weight: bold;
+            font-size: 1.3rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0, 86, 137, 0.10);
         }
 
-        .question-card .form-check-label {
-            color: #000;
-            /* Warna hitam untuk label opsi jawaban */
+        .question-text {
+            text-align: justify;
+        }
+
+        .question-number {
+            cursor: pointer;
+            width: 44px;
+            height: 44px;
+            line-height: 44px;
+            font-size: 1.1rem;
+            margin: 6px;
+            border-radius: 50%;
+            border: 2px solid #0077b6;
+            background: #fff;
+            color: #0077b6;
+            font-weight: 600;
+            transition: background 0.2s, color 0.2s, border 0.2s;
+            box-shadow: 0 2px 6px rgba(0, 86, 137, 0.07);
+            user-select: none;
+        }
+
+        .question-number.active,
+        .question-number:active {
+            background: linear-gradient(90deg, #005689 70%, #0077b6 100%);
+            color: #fff;
+            border: 2px solid #005689;
+        }
+
+        .question-number.answered {
+            background: #28a745;
+            color: #fff;
+            border: 2px solid #28a745;
+        }
+
+        .question-number:hover {
+            background: #0077b6;
+            color: #fff;
+            border: 2px solid #0077b6;
+        }
+
+        .btn-primary,
+        .btn-outline-primary,
+        .btn-success {
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 1.05rem;
+            padding: 0.5rem 1.5rem;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #005689 70%, #0077b6 100%);
+            border: none;
+        }
+
+        .btn-primary:hover,
+        .btn-outline-primary:hover {
+            background: linear-gradient(90deg, #0077b6 70%, #005689 100%);
+            color: #fff;
+        }
+
+        .btn-outline-primary {
+            border: 2px solid #0077b6;
+            color: #0077b6;
+            background: #fff;
+        }
+
+        .btn-success {
+            background: linear-gradient(90deg, #28a745 70%, #218838 100%);
+            border: none;
+        }
+
+        .btn-success:hover {
+            background: linear-gradient(90deg, #218838 70%, #28a745 100%);
         }
 
         .form-check-input {
             width: 20px;
             height: 20px;
-            border: 2px solid black;
-            /* Tebalkan border */
+            border: 2px solid #005689;
         }
 
-        /* Optional: To make the checked circle also bold */
         .form-check-input:checked {
-            background-color: black;
-            /* Isi lingkaran ketika dipilih */
+            background-color: #005689;
+            border-color: #005689;
         }
 
         .form-check-label {
             margin-left: 10px;
-            /* Atur sesuai kebutuhan */
-        }
-
-        .question-number {
-            cursor: pointer;
-            width: calc(33.33% - 10px);
-            /* 33.33% lebar dikurangi margin */
-            height: 40px;
-            /* Tetap tinggi */
-            line-height: 40px;
-            /* Sentris vertikal */
-            font-size: 16px;
-            /* Ukuran teks */
-            margin: 5px;
-            /* Mengatur margin lebih kecil agar muat 3 kolom */
-            box-sizing: border-box;
-        }
-
-        .question-number.active {
-            background-color: #007bff;
-            color: #fff;
-        }
-
-        .question-number.answered {
-            background-color: #28a745;
-            color: #fff;
-        }
-
-        .timer {
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.05rem;
         }
 
         .remaining-time {
             font-size: 1.2rem;
             color: #dc3545;
+            font-weight: 600;
+        }
+
+        @media (max-width: 991.98px) {
+            .question-card .card-body {
+                padding: 1.2rem 0.7rem;
+            }
+
+            .soal-badge {
+                width: 38px;
+                height: 38px;
+                font-size: 1rem;
+            }
+
+            .question-number {
+                width: 32px;
+                height: 32px;
+                font-size: 0.95rem;
+                line-height: 32px;
+                margin: 3px 2px;
+            }
+
+            .remaining-time {
+                font-size: 1rem;
+            }
+
+            .card-title {
+                font-size: 1.1rem;
+            }
         }
 
         @media (max-width: 576px) {
-            .question-card {
-                margin-bottom: 10px;
+            .container {
+                padding-left: 4px !important;
+                padding-right: 4px !important;
+            }
+
+            .question-card .card-body {
+                padding: 0.7rem 0.3rem;
+            }
+
+            .soal-badge {
+                width: 30px;
+                height: 30px;
+                font-size: 0.85rem;
+            }
+
+            .question-number {
+                width: 26px;
+                height: 26px;
+                font-size: 0.8rem;
+                line-height: 26px;
+                margin: 2px 1px;
+            }
+
+            .remaining-time {
+                font-size: 0.95rem;
+            }
+
+            .card-title {
+                font-size: 1rem;
             }
         }
     </style>
@@ -127,7 +235,7 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ route('dashboard') }}">
+            <a class="navbar-brand" href="#">
                 <img src="{{ asset('assets/logo kemendikbudristek.png') }}" alt="Logo" style="max-width: 100px;">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -135,45 +243,48 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <a class="navbar-text" href="https://gurupauddikmas.kemdikbud.go.id/" target="_blank">
-                    Direktorat Guru PAUD dan Dikmas
+                <a class="navbar-text" href="#">
+                    Direktorat Guru PAUD dan PNF
                 </a>
             </div>
         </div>
     </nav>
 
-    <div class="container mt-5">
+    <div class="container py-3">
         @if (session('warning'))
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 {{ session('warning') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         @endif
-        <div class="row">
-            <div class="col-md-8">
-                {{-- <h2 class="text-center mb-4">Situational Judgement Test</h2> --}}
+        <div class="row g-3">
+            <div class="col-12 col-lg-8">
                 <form id="quizForm" action="{{ route('submitExam') }}" method="POST">
                     @csrf
                     @foreach ($questions as $index => $question)
-                        <div class="card question-card question" id="question-{{ $index + 1 }}"
+                        <div class="card question-card question shadow-lg mb-3" id="question-{{ $index + 1 }}"
                             style="display: {{ $index === 0 ? 'block' : 'none' }};">
                             <div class="card-body">
-                                <h5 class="card-title">Soal {{ $index + 1 }}</h5><br>
-                                <h5 class="fw-bold text-justify" style="text-align: justify;">
-                                    {{ $question['question_text'] }}</h5><br>
-                                <br>
+                                <div class="d-flex align-items-center mb-3 flex-wrap">
+                                    <div class="soal-badge me-3 mb-2 mb-md-0">{{ $index + 1 }}</div>
+                                    <h4 class="card-title mb-0 fw-bold text-primary">Soal {{ $index + 1 }}</h4>
+                                </div>
+                                <div class="question-text mb-4">
+                                    <span class="fw-semibold"
+                                        style="font-size:1.15rem;">{{ $question['question_text'] }}</span>
+                                </div>
                                 @if (isset($question['answers']))
                                     @foreach ($question['answers'] as $answer)
-                                        <div class="form-check">
+                                        <div class="form-check mb-2">
                                             <input class="form-check-input" type="radio"
                                                 name="answers[{{ $index + 1 }}]"
                                                 id="q{{ $index + 1 }}{{ $answer['id'] }}"
-                                                value="{{ $answer['id'] }}" {{-- Periksa apakah jawaban ini sudah dipilih dan tandai jika ya --}}
+                                                value="{{ $answer['id'] }}"
                                                 {{ isset($savedAnswers[$question['id']]) && $savedAnswers[$question['id']] == $answer['id'] ? 'checked' : '' }}>
-                                            <h5 class="form-check-label fw-bold"
+                                            <label class="form-check-label fw-semibold"
                                                 for="q{{ $index + 1 }}{{ $answer['id'] }}">
                                                 {{ $answer['answer_text'] }}
-                                            </h5>
+                                            </label>
                                         </div>
                                     @endforeach
                                 @else
@@ -181,19 +292,24 @@
                                 @endif
 
                                 <!-- Navigation buttons -->
-                                <div class="d-flex justify-content-between mt-4">
+                                <div class="d-flex justify-content-between mt-4 flex-wrap gap-2">
                                     @if ($index > 0)
-                                        <button type="button" class="btn btn-secondary prev-question"
-                                            id="prevBtn">Sebelumnya</button>
+                                        <button type="button" class="btn btn-outline-primary prev-question"
+                                            id="prevBtn">
+                                            <i class="fa fa-arrow-left me-1"></i> Sebelumnya
+                                        </button>
                                     @else
                                         <span></span>
                                     @endif
 
                                     @if ($index < count($questions) - 1)
-                                        <button type="button" class="btn btn-primary next-question"
-                                            id="nextBtn">Berikutnya</button>
+                                        <button type="button" class="btn btn-primary next-question" id="nextBtn">
+                                            Berikutnya <i class="fa fa-arrow-right ms-1"></i>
+                                        </button>
                                     @else
-                                        <button type="button" class="btn btn-success" id="finishBtn">Selesai</button>
+                                        <button type="button" class="btn btn-success" id="finishBtn">
+                                            <i class="fa fa-check me-1"></i> Selesai
+                                        </button>
                                     @endif
                                 </div>
                             </div>
@@ -201,16 +317,16 @@
                     @endforeach
                 </form>
             </div>
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="remaining-time ms-2 mt-2" id="remaining-time">Waktu: <span
-                            id="timer">00:00:00</span></div>
+            <div class="col-12 col-lg-4 mt-3 mt-lg-0">
+                <div class="card shadow-sm">
+                    <div class="remaining-time ms-2 mt-2" id="remaining-time">
+                        <i class="fa fa-clock me-1"></i>Waktu: <span id="timer">00:00:00</span>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Nomor Soal</h5>
-                        <div class="d-flex flex-wrap">
+                        <h5 class="card-title mb-3">Nomor Soal</h5>
+                        <div class="d-flex flex-wrap justify-content-start gap-1">
                             @foreach ($questions as $index => $question)
-                                <div class="question-number border text-center p-2 m-1"
-                                    id="question-number-{{ $index + 1 }}"
+                                <div class="question-number text-center" id="question-number-{{ $index + 1 }}"
                                     onclick="showQuestion({{ $index + 1 }})">{{ $index + 1 }}</div>
                             @endforeach
                         </div>
@@ -223,7 +339,8 @@
     <!-- Footer -->
     <footer class="text-center text-lg-start mt-5">
         <div class="text-center p-3">
-            &copy; 2024 Guru PAUD Dikmas
+            &copy; 2025 Direktorat Guru PAUD dan PNF, Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi Republik
+            Indonesia.
         </div>
     </footer>
 
@@ -233,6 +350,7 @@
         let currentQuestion = 1;
         let timer;
         let totalTime = {{ $questionSet->time_limit }} * 60;
+        let examStartKey = 'examStartTime_{{ auth()->user()->id }}_{{ $questionSet->id }}';
         let examEnded = false;
         let questionOrder = [];
 
@@ -241,6 +359,17 @@
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+
+        function getExamStartTime() {
+            let stored = localStorage.getItem(examStartKey);
+            if (stored) {
+                return parseInt(stored, 10);
+            } else {
+                let now = Math.floor(Date.now() / 1000);
+                localStorage.setItem(examStartKey, now);
+                return now;
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
             startExam();
@@ -283,23 +412,30 @@
         });
 
         function startExam() {
-            const examEndsAt = new Date(@json($examEnd)); // Ambil waktu akhir ujian dari sesi
-            let totalTime = Math.floor((examEndsAt - new Date()) / 1000); // Hitung waktu sisa dalam detik
+            let examStartTime = getExamStartTime(); // detik epoch
+            let now = Math.floor(Date.now() / 1000);
+            let elapsed = now - examStartTime;
+            let remainingTime = totalTime - elapsed;
 
-            document.getElementById('timer').textContent = formatTime(totalTime);
+            if (remainingTime <= 0) {
+                remainingTime = 0;
+            }
+
+            document.getElementById('timer').textContent = formatTime(remainingTime);
 
             timer = setInterval(() => {
-                totalTime--;
-                document.getElementById('timer').textContent = formatTime(totalTime);
-                if (totalTime <= 0) {
+                remainingTime--;
+                document.getElementById('timer').textContent = formatTime(remainingTime);
+                if (remainingTime <= 0) {
                     clearInterval(timer);
                     examEnded = true;
+                    localStorage.removeItem(examStartKey); // hapus waktu mulai dari localStorage
                     Swal.fire({
                         title: 'Waktu sesi telah berakhir!',
                         text: 'Form akan dikirimkan secara otomatis.',
                         icon: 'info',
                         showConfirmButton: false,
-                        timer: 2000 // Set timer to close SweetAlert after 2 seconds
+                        timer: 2000
                     }).then(() => {
                         checkCompletion();
                     });
@@ -384,6 +520,7 @@
             if (examEnded) {
                 document.getElementById('quizForm').submit();
                 localStorage.removeItem('currentQuestion'); // Hapus nomor soal dari localStorage
+                localStorage.removeItem(examStartKey);
                 return;
             }
 
@@ -403,6 +540,7 @@
             } else {
                 document.getElementById('quizForm').submit();
                 localStorage.removeItem('currentQuestion'); // Hapus nomor soal dari localStorage
+                localStorage.removeItem(examStartKey);
             }
         }
 
@@ -456,11 +594,6 @@
                 saveCurrentAnswer();
                 markAnswered();
             });
-        });
-
-        window.addEventListener('beforeunload', function(e) {
-            e.preventDefault();
-            e.returnValue = ''; // Ini diperlukan untuk menampilkan dialog konfirmasi di beberapa browser
         });
     </script>
 

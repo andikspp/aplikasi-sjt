@@ -33,16 +33,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Telepon -->
-                            <div class="mb-3">
-                                <label for="telepon" class="form-label">Telepon</label>
-                                <input type="text" class="form-control @error('telepon') is-invalid @enderror"
-                                    id="telepon" name="telepon" value="{{ old('telepon', $guru->telepon) }}" required>
-                                @error('telepon')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
                             <!-- Instansi -->
                             <div class="mb-3">
                                 <label for="instansi" class="form-label">Instansi</label>
@@ -77,10 +67,10 @@
                                 <label for="role" class="form-label">Role</label>
                                 <select id="role" name="role"
                                     class="form-select @error('role') is-invalid @enderror" required>
-                                    <option value="Guru" {{ old('role', $guru->role) == 'Guru' ? 'selected' : '' }}>Guru
+                                    <option value="Guru" {{ old('role', $guru->role) == 'guru' ? 'selected' : '' }}>Guru
                                     </option>
                                     <option value="Kepala Sekolah"
-                                        {{ old('role', $guru->role) == 'Kepala Sekolah' ? 'selected' : '' }}>Kepala Sekolah
+                                        {{ old('role', $guru->role) == 'kepala sekolah' ? 'selected' : '' }}>Kepala Sekolah
                                     </option>
                                 </select>
                                 @error('role')

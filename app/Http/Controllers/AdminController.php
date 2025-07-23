@@ -255,6 +255,9 @@ class AdminController extends Controller
 
     public function resultGuru(Request $request)
     {
+        $sort = request('sort', 'score');
+        $direction = request('direction', 'desc');
+
         $results = DB::table('users')
             ->join('question_sets', 'users.question_set_id', '=', 'question_sets.id')
             ->join('quiz_attempts', 'users.id', '=', 'quiz_attempts.user_id')
@@ -272,6 +275,7 @@ class AdminController extends Controller
                 'quiz_attempts.id as quiz_attempt_id'
             )
             ->where('users.role', 'guru')
+            ->orderBy($sort, $direction)
             ->paginate(10);
 
         return view('admin.hasil.guru', ['results' => $results]);
@@ -386,6 +390,9 @@ class AdminController extends Controller
 
     public function resultKepsek()
     {
+        $sort = request('sort', 'score');
+        $direction = request('direction', 'desc');
+
         $results = DB::table('users')
             ->join('question_sets', 'users.question_set_id', '=', 'question_sets.id')
             ->join('quiz_attempts', 'users.id', '=', 'quiz_attempts.user_id')
@@ -403,6 +410,7 @@ class AdminController extends Controller
                 'quiz_attempts.id as quiz_attempt_id'
             )
             ->where('users.role', 'kepala sekolah')
+            ->orderBy($sort, $direction)
             ->paginate(10);
 
         return view('admin.hasil.kepsek', ['results' => $results]);
@@ -788,6 +796,8 @@ class AdminController extends Controller
             ->with(['question.kompetensi', 'answer'])
             ->get();
 
+        $userRole = User::find($userId)->role;
+
         // Jika Anda menggunakan query builder:
         $answers = DB::table('user_answers')
             ->join('questions', 'user_answers.question_id', '=', 'questions.id')
@@ -808,7 +818,7 @@ class AdminController extends Controller
 
         $userName = $answers->first()->user_name ?? 'Unknown';
 
-        return view('admin.hasil.detail-jawaban', compact('answers', 'userName', 'userId'));
+        return view('admin.hasil.detail-jawaban', compact('answers', 'userName', 'userId', 'userRole'));
     }
 
 
@@ -835,7 +845,7 @@ class AdminController extends Controller
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'telepon' => 'required|string|max:15',
+            'telepon' => 'nullable|string|max:15',
             'instansi' => 'required|string|max:255',
             'jenis_paud' => [
                 'required',
@@ -895,18 +905,17 @@ class AdminController extends Controller
     {
         $kepsek = User::where('role', 'Kepala Sekolah')->findOrFail($id);
 
-        $questionSets = DB::table('question_sets')
-            ->where('role', 'Kepala Sekolah')
-            ->pluck('name', 'id');
+        $paketGuru = DB::table('question_sets')->where('role', 'Guru')->pluck('name', 'id');
+        $paketKepsek = DB::table('question_sets')->where('role', 'Kepala Sekolah')->pluck('name', 'id');
 
-        return view('admin.data_peserta.edit-kepsek', compact('kepsek', 'questionSets'));
+        return view('admin.data_peserta.edit-kepsek', compact('kepsek', 'paketGuru', 'paketKepsek'));
     }
 
     public function updateKepsek(Request $request, $id)
     {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
-            'telepon' => 'required|string|max:15',
+            'telepon' => 'nullable|string|max:15',
             'instansi' => 'required|string|max:255',
             'jenis_paud' => [
                 'required',
@@ -1106,6 +1115,7 @@ class AdminController extends Controller
 
     public function grafikIndividu($userId)
     {
+        $userId = User::where('id', $userId)->value('id');
         // Ambil data jawaban pengguna dengan kompetensi
         $answers = DB::table('user_answers')
             ->join('questions', 'user_answers.question_id', '=', 'questions.id')
@@ -1136,7 +1146,8 @@ class AdminController extends Controller
         return view('admin.hasil.grafik-individu-guru', [
             'userName' => $answers->first()->user_name ?? 'Unknown',
             'scoreData' => $scoreData,
-            'scoreByCompetency' => $scoreByCompetency
+            'scoreByCompetency' => $scoreByCompetency,
+            'userId' => $userId,
         ]);
     }
 

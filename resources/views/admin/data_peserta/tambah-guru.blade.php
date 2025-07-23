@@ -32,16 +32,6 @@
                                 @enderror
                             </div>
 
-                            <!-- Telepon -->
-                            <div class="mb-3">
-                                <label for="telepon" class="form-label">Telepon</label>
-                                <input type="number" class="form-control @error('telepon') is-invalid @enderror"
-                                    id="telepon" name="telepon" value="{{ old('telepon') }}" required>
-                                @error('telepon')
-                                    <div class="invalid-feedback">{{ $message }}</div>
-                                @enderror
-                            </div>
-
                             <!-- Instansi -->
                             <div class="mb-3">
                                 <label for="instansi" class="form-label">Instansi</label>

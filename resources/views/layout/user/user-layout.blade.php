@@ -41,9 +41,35 @@
             text-decoration-color: white;
         }
 
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            flex: 1;
+        }
+
         footer {
             background-color: #005689;
             color: white;
+            text-align: center;
+            padding: 1rem 0;
+            font-size: 1rem;
+        }
+
+        @media (max-width: 576px) {
+            .navbar-text {
+                font-size: 1rem !important;
+            }
+
+            footer {
+                font-size: 0.9rem;
+                padding: 0.7rem 0;
+            }
         }
     </style>
 </head>
@@ -52,22 +78,25 @@
     <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light navbar-custom">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ route('dashboard') }}">
-                <img src="{{ asset('assets/logo kemendikbudristek.png') }}" alt="Logo" style="max-width: 100px;">
-            </a>
+            <div class="d-flex align-items-center flex-wrap">
+                <a class="navbar-brand d-flex align-items-center" href="#">
+                    <img src="{{ asset('assets/logo kemendikbudristek.png') }}" alt="Logo" class="img-fluid"
+                        style="max-width: 80px;">
+                    <span class="navbar-text ms-2 d-none d-md-inline" style="font-size: 1.2rem;">
+                        Direktorat Guru PAUD dan PNF
+                    </span>
+                </a>
+            </div>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ml-auto">
+                <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
                         <a class="nav-link {{ Request::routeIs('dashboard') ? 'active' : '' }}"
                             href="{{ route('dashboard') }}">Dashboard</a>
                     </li>
-                    {{-- <li class="nav-item">
-                        <a class="nav-link" href="{{ route('profil') }}">Profile</a>
-                    </li> --}}
                     <li class="nav-item">
                         <a class="nav-link" href="#" id="logout-btn">Logout</a>
                         <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -75,9 +104,6 @@
                         </form>
                     </li>
                 </ul>
-                <a class="navbar-text" href="https://gurupauddikmas.kemdikbud.go.id/" target="_blank">
-                    Direktorat Guru PAUD dan PNF
-                </a>
             </div>
         </div>
     </nav>

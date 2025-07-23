@@ -37,11 +37,15 @@
                 </div>
                 <div class="mb-3">
                     <label for="start_exam" class="form-label">Waktu Mulai Ujian</label>
-                    <input type="datetime-local" class="form-control" id="start_exam" name="start_exam" required>
+                    <input type="datetime-local" class="form-control" id="start_exam" name="start_exam"
+                        value="{{ old('start_exam', \Carbon\Carbon::parse($questionSet->start_exam)->format('Y-m-d\TH:i')) }}"
+                        required>
                 </div>
                 <div class="mb-3">
                     <label for="end_exam" class="form-label">Waktu Berakhir Ujian</label>
-                    <input type="datetime-local" class="form-control" id="end_exam" name="end_exam" required>
+                    <input type="datetime-local" class="form-control" id="end_exam" name="end_exam"
+                        value="{{ old('end_exam', \Carbon\Carbon::parse($questionSet->end_exam)->format('Y-m-d\TH:i')) }}"
+                        required>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Role</label>

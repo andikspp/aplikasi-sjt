@@ -109,8 +109,6 @@ class ExamController extends Controller
             return redirect()->route('dashboard')->with('error', 'Paket soal tidak ditemukan.');
         }
 
-
-
         $questions = $questionSet->questions->toArray(); // Ubah ke array untuk pengacakan
 
         // Acak urutan soal jika belum diatur di sesi

@@ -79,6 +79,26 @@
                     Kembali
                 </a>
                 <button type="submit" class="btn btn-success">Simpan</button>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const form = document.querySelector('form');
+                        form.addEventListener('submit', function(e) {
+                            const endExam = document.getElementById('end_exam').value;
+                            if (endExam) {
+                                const endDate = new Date(endExam);
+                                const now = new Date();
+                                if (endDate < now) {
+                                    e.preventDefault();
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Gagal!',
+                                        text: 'Waktu berakhir ujian tidak boleh di masa lalu.',
+                                    });
+                                }
+                            }
+                        });
+                    });
+                </script>
             </form>
         </div>
     </div>

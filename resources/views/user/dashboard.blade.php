@@ -4,116 +4,128 @@
 
 @section('content')
     <style>
+        body {
+            background: linear-gradient(135deg, #e3f2fd 0%, #f8f9fa 100%);
+        }
+
+        .dashboard-card {
+            border-radius: 18px;
+            box-shadow: 0 4px 24px rgba(0, 86, 137, 0.08);
+            border: none;
+            margin-bottom: 32px;
+        }
+
         .card-header {
-            background-color: #005689;
+            background: linear-gradient(90deg, #005689 70%, #0077b6 100%);
             color: #fff;
             font-weight: bold;
+            border-radius: 18px 18px 0 0;
+            padding: 1.2rem 1.5rem;
         }
 
-        .card-body {
-            background-color: #f8f9fa;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
+        .avatar {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #005689;
+            margin-right: 18px;
         }
 
         .info-item i {
             color: #005689;
-            margin-right: 10px;
+            font-size: 1.5rem;
+            margin-right: 14px;
         }
 
-
-
         .btn-custom {
-            background-color: #005689;
+            background: linear-gradient(90deg, #005689 70%, #0077b6 100%);
             color: white;
+            font-size: 1.2rem;
+            padding: 0.7rem 2.5rem;
+            border-radius: 30px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 86, 137, 0.12);
+            transition: background 0.2s;
         }
 
         .btn-custom:hover {
-            background-color: #012a41;
-            color: white;
+            background: linear-gradient(90deg, #0077b6 70%, #005689 100%);
+            color: #fff;
+        }
+
+        .progress {
+            height: 18px;
+            border-radius: 10px;
+        }
+
+        .progress-bar {
+            background-color: #005689;
+        }
+
+        .welcome-title {
+            font-weight: 700;
+            font-size: 2rem;
+            margin-bottom: 10px;
         }
     </style>
-    <!-- Main Content -->
     <div class="container mt-5">
-        <!-- resources/views/dashboard.blade.php -->
-        {{-- @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show">
-                {{ session('error') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif
-
-        @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show">
-                {{ session('success') }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        @endif --}}
-
-        <div class="row">
-            <div class="col-md-12">
-                <h3>Selamat Datang, {{ $user->name }}</h3>
-
-                {{-- <div class="card mt-4">
-                    <div class="card-header">
-                        Ujian Aktif
-                    </div>
-                    <div class="card-body">
-                        <p>Tidak ada ujian yang aktif.</p>
-                    </div>
-                </div>  --}}
-
-                <!-- Another Content Section -->
-                <div class="card mt-4 shadow-sm">
-                    <div class="card-header text-white">
-                        <h5 class="mb-0">Informasi Pribadi</h5>
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="dashboard-card card shadow-lg">
+                    <div class="card-header d-flex align-items-center">
+                        <div>
+                            <div class="welcome-title">Selamat Datang, {{ $user->name }}</div>
+                            <span class="badge bg-primary">{{ ucwords($user->role) }}</span>
+                        </div>
                     </div>
                     <div class="card-body">
                         <div class="info-item mb-3 d-flex align-items-center">
-                            <i class="fas fa-user fa-lg mr-3"></i>
-                            <p class="mb-0">Nama: <strong>{{ $user->name }}</strong> ({{ ucwords($user->role) }})
-                            </p>
+                            <i class="fas fa-user"></i>
+                            <span>Nama: <strong>{{ $user->name }}</strong></span>
                         </div>
                         <div class="info-item mb-3 d-flex align-items-center">
-                            <i class="fas fa-envelope fa-lg mr-3"></i>
-                            <p class="mb-0">Username: <strong>{{ $user->username }}</strong></p>
+                            <i class="fas fa-envelope"></i>
+                            <span>Username: <strong>{{ $user->username }}</strong></span>
                         </div>
                         <div class="info-item mb-3 d-flex align-items-center">
-                            <i class="fas fa-phone fa-lg mr-3"></i>
-                            <p class="mb-0">Nomor Telepon: <strong>{{ $user->telepon }}</strong></p>
-                        </div>
-                        <div class="info-item mb-3 d-flex align-items-center">
-                            <i class="fas fa-home fa-lg mr-3"></i>
-                            <p class="mb-0">Satuan PAUD: <strong>{{ strtoupper($user->instansi) }}</strong></p>
+                            <i class="fas fa-home"></i>
+                            <span>Instansi: <strong>{{ strtoupper($user->instansi) }}</strong></span>
                         </div>
                     </div>
                 </div>
 
-                <div class="card mt-4 shadow-sm">
-                    <div class="card-header text-white">
-                        <h5 class="mb-0">Riwayat</h5>
+                <div class="dashboard-card card shadow-lg">
+                    <div class="card-header">
+                        <h5 class="mb-0">Riwayat Ujian</h5>
                     </div>
                     <div class="card-body">
                         @if ($quizAttempt)
                             <div class="info-item d-flex align-items-center mb-3">
-                                <i class="fas fa-calendar-alt fa-lg mr-3"></i>
-                                <p class="mb-0">Waktu Selesai Submit: <strong>{{ $endedAt->format('d-m-Y, H:i:s') }}
-                                        WIB</strong></p>
+                                <i class="fas fa-calendar-alt"></i>
+                                <span>Waktu Selesai Submit: <strong>{{ $endedAt->format('d-m-Y, H:i:s') }}
+                                        WIB</strong></span>
+                            </div>
+                            {{-- Contoh progress bar jika ingin tampilkan progress --}}
+                            <div class="mb-3">
+                                <label class="form-label">Progress Ujian</label>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: 100%">Selesai</div>
+                                </div>
                             </div>
                         @else
-                            <p class="text-center mb-0">Belum ada riwayat submit.</p>
+                            <div class="text-center text-muted mb-0">
+                                <i class="fas fa-info-circle fa-2x mb-2"></i>
+                                <div>Belum ada riwayat submit.</div>
+                            </div>
                         @endif
                     </div>
                 </div>
 
                 <div class="d-flex justify-content-end mt-4">
-                    <a href="{{ route('exam') }}"><button class="btn btn-custom">Mulai</button></a>
+                    <a href="{{ route('exam') }}">
+                        <button class="btn btn-custom shadow">Mulai Ujian <i class="fas fa-arrow-right ms-2"></i></button>
+                    </a>
                 </div>
             </div>
         </div>

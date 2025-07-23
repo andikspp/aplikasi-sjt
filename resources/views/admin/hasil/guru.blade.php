@@ -127,8 +127,48 @@
                         <th>Instansi</th>
                         <th>Jenis</th>
                         <th>Paket Soal</th>
-                        <th>Waktu Selesai</th>
-                        <th>Score</th>
+                        <th>
+                            <a href="{{ route(
+                                'hasil.guru',
+                                array_merge(request()->except('page'), [
+                                    'sort' => 'ended_at',
+                                    'direction' => request('sort') === 'ended_at' && request('direction') === 'asc' ? 'desc' : 'asc',
+                                ]),
+                            ) }}"
+                                style="color:inherit; text-decoration:none;">
+                                Waktu Selesai
+                                @if (request('sort') === 'ended_at')
+                                    @if (request('direction') === 'asc')
+                                        <i class="bi bi-caret-up-fill"></i>
+                                    @else
+                                        <i class="bi bi-caret-down-fill"></i>
+                                    @endif
+                                @else
+                                    <i class="bi bi-caret-up"></i><i class="bi bi-caret-down"></i>
+                                @endif
+                            </a>
+                        </th>
+                        <th>
+                            <a href="{{ route(
+                                'hasil.guru',
+                                array_merge(request()->except('page'), [
+                                    'sort' => 'score',
+                                    'direction' => request('sort') === 'score' && request('direction') === 'asc' ? 'desc' : 'asc',
+                                ]),
+                            ) }}"
+                                style="color:inherit; text-decoration:none;">
+                                Score
+                                @if (request('sort') === 'score')
+                                    @if (request('direction') === 'asc')
+                                        <i class="bi bi-caret-up-fill"></i>
+                                    @else
+                                        <i class="bi bi-caret-down-fill"></i>
+                                    @endif
+                                @else
+                                    <i class="bi bi-caret-up"></i><i class="bi bi-caret-down"></i>
+                                @endif
+                            </a>
+                        </th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -173,7 +213,15 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11.12.3/dist/sweetalert2.all.min.js"></script>
-
+    @if ($errors->any())
+        <script>
+            Swal.fire({
+                icon: 'error',
+                title: 'Validasi Gagal',
+                text: '{{ $errors->first() }}'
+            });
+        </script>
+    @endif
     <script>
         function confirmDeletion(guruId, quizAttemptId) {
             // Cek jumlah admin dulu
