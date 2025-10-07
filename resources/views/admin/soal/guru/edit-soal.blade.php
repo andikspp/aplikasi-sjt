@@ -41,8 +41,8 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="kompetensi" class="form-label">Kompetensi</label>
-                    <select name="kompetensi_guru" id="kompetensi" class="form-control">
+                    <label for="kompetensi" class="form-label">Kompetensi <span style="color: red">*</span></label>
+                    <select name="kompetensi_guru" id="kompetensi" class="form-control" required>
                         <option value="">Pilih Kompetensi</option>
                         @foreach ($kompetensi as $item)
                             <option value="{{ $item->id }}"
@@ -55,8 +55,8 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="indikator" class="form-label">Indikator</label>
-                    <select name="indikator_guru" id="indikator" class="form-control">
+                    <label for="indikator" class="form-label">Indikator <span style="color: red">*</span></label>
+                    <select name="indikator_guru" id="indikator" class="form-control" required>
                         <option value="">-- Pilih atau tambah indikator --</option>
                         {{-- Opsi akan diisi via JS --}}
                     </select>

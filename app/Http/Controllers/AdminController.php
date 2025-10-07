@@ -814,11 +814,13 @@ class AdminController extends Controller
                 'indikator.nama as indikator_nama'
             )
             ->where('user_answers.user_id', $userId)
-            ->paginate(10);
+            ->get();
 
         $userName = $answers->first()->user_name ?? 'Unknown';
 
-        return view('admin.hasil.detail-jawaban', compact('answers', 'userName', 'userId', 'userRole'));
+        $quizAttempt = QuizAttempt::where('user_id', $userId)->latest()->first();
+
+        return view('admin.hasil.detail-jawaban', compact('answers', 'userName', 'userId', 'userRole', 'quizAttempt'));
     }
 
 
@@ -1116,6 +1118,7 @@ class AdminController extends Controller
     public function grafikIndividu($userId)
     {
         $userId = User::where('id', $userId)->value('id');
+
         // Ambil data jawaban pengguna dengan kompetensi
         $answers = DB::table('user_answers')
             ->join('questions', 'user_answers.question_id', '=', 'questions.id')
@@ -1130,12 +1133,18 @@ class AdminController extends Controller
             ->where('user_answers.user_id', $userId)
             ->get();
 
-        // Menghitung total skor per kompetensi
+        // Menghitung RATA-RATA skor per kompetensi (bukan total)
         $scoreByCompetency = $answers->groupBy('kompetensi_name')->map(function ($items) {
-            return $items->sum('score');
+            return round($items->avg('score'), 2); // Rata-rata skor per kompetensi
         });
 
-        // Data untuk grafik pie
+        // Alternatif: Menghitung persentase capaian (jika skor maksimal adalah 4)
+        $percentageByCompetency = $answers->groupBy('kompetensi_name')->map(function ($items) {
+            $avgScore = $items->avg('score');
+            return round(($avgScore / 4) * 100, 1); // Persentase dari skor maksimal 4
+        });
+
+        // Data untuk grafik pie (tetap sama)
         $scoreData = [
             '4' => $answers->where('score', 4)->count(),
             '3' => $answers->where('score', 3)->count(),
@@ -1143,18 +1152,23 @@ class AdminController extends Controller
             '1' => $answers->where('score', 1)->count(),
         ];
 
+        // Hitung jumlah soal per kompetensi
+        $questionCountByCompetency = $answers->groupBy('kompetensi_name')->map(function ($items) {
+            return $items->count();
+        });
+
         return view('admin.hasil.grafik-individu-guru', [
             'userName' => $answers->first()->user_name ?? 'Unknown',
             'scoreData' => $scoreData,
-            'scoreByCompetency' => $scoreByCompetency,
+            'scoreByCompetency' => $scoreByCompetency, // Rata-rata skor
+            'percentageByCompetency' => $percentageByCompetency, // Persentase capaian
+            'questionCountByCompetency' => $questionCountByCompetency,
             'userId' => $userId,
         ]);
     }
 
-
     public function grafikKepsek()
     {
-        // Data for existing chart (Total scores for kepala sekolah)
         $scores = DB::table('user_answers')
             ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
             ->join('users', 'user_answers.user_id', '=', 'users.id')
@@ -1170,24 +1184,49 @@ class AdminController extends Controller
             '1' => $scores->get(1, 0),
         ];
 
-        // Data for new chart (Scores grouped by kompetensi for kepala sekolah)
-        $scoreByCompetency = DB::table('user_answers')
+        // Data rata-rata skor per kompetensi (kecuali Pedagogik)
+        $competencyScores = DB::table('user_answers')
             ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
             ->join('users', 'user_answers.user_id', '=', 'users.id')
             ->join('questions', 'user_answers.question_id', '=', 'questions.id')
             ->join('kompetensi', 'questions.kompetensi_id', '=', 'kompetensi.id')
             ->where('users.role', 'kepala sekolah')
-            ->select(DB::raw('kompetensi.nama as kompetensi, SUM(answers.score) as total_score'))
+            ->where('kompetensi.nama', '!=', 'Pedagogik') // EXCLUDE PEDAGOGIK
+            ->whereNotIn('kompetensi.nama', ['Pedagogik', 'pedagogik', 'PEDAGOGIK'])
+            ->select(
+                'kompetensi.nama as kompetensi',
+                DB::raw('AVG(answers.score) as avg_score'),
+                DB::raw('COUNT(answers.score) as question_count')
+            )
             ->groupBy('kompetensi.nama')
-            ->pluck('total_score', 'kompetensi');
+            ->get();
 
-        // Pass both datasets to the view
-        return view('admin.hasil.grafik-kepsek', compact('scoreData', 'scoreByCompetency'));
+        $scoreByCompetency = $competencyScores->pluck('avg_score', 'kompetensi')->map(function ($score) {
+            return round($score, 2);
+        });
+
+        $percentageByCompetency = $competencyScores->pluck('avg_score', 'kompetensi')->map(function ($score) {
+            return round(($score / 4) * 100, 1);
+        });
+
+        $questionCountByCompetency = $competencyScores->pluck('question_count', 'kompetensi');
+
+        $jumlahKs = DB::table('users')
+            ->join('quiz_attempts', 'users.id', '=', 'quiz_attempts.user_id')
+            ->where('users.role', 'kepala sekolah')
+            ->count();
+
+        return view('admin.hasil.grafik-kepsek', compact(
+            'scoreData',
+            'scoreByCompetency',
+            'percentageByCompetency',
+            'questionCountByCompetency',
+            'jumlahKs'
+        ));
     }
-
-
     public function grafikGuru()
     {
+        // Data untuk pie chart (tetap sama - distribusi skor jawaban)
         $scores = DB::table('user_answers')
             ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
             ->join('users', 'user_answers.user_id', '=', 'users.id')
@@ -1203,18 +1242,46 @@ class AdminController extends Controller
             '1' => $scores->get(1, 0),
         ];
 
-        // Data for new chart (Scores grouped by kompetensi for kepala sekolah)
-        $scoreByCompetency = DB::table('user_answers')
+        // Data untuk bar chart - RATA-RATA skor per kompetensi (bukan total)
+        $competencyScores = DB::table('user_answers')
             ->join('answers', 'user_answers.answer_id', '=', 'answers.id')
             ->join('users', 'user_answers.user_id', '=', 'users.id')
             ->join('questions', 'user_answers.question_id', '=', 'questions.id')
             ->join('kompetensi', 'questions.kompetensi_id', '=', 'kompetensi.id')
-            ->where('users.role', 'Guru')
-            ->select(DB::raw('kompetensi.nama as kompetensi, SUM(answers.score) as total_score'))
+            ->where('users.role', 'guru')
+            ->select(
+                'kompetensi.nama as kompetensi',
+                DB::raw('AVG(answers.score) as avg_score'),
+                DB::raw('COUNT(answers.score) as question_count')
+            )
             ->groupBy('kompetensi.nama')
-            ->pluck('total_score', 'kompetensi');
+            ->get();
 
-        return view('admin.hasil.grafik-guru', compact('scoreData', 'scoreByCompetency'));
+        // Konversi ke format yang sesuai untuk chart
+        $scoreByCompetency = $competencyScores->pluck('avg_score', 'kompetensi')->map(function ($score) {
+            return round($score, 2);
+        });
+
+        // Persentase capaian (dari skor maksimal 4)
+        $percentageByCompetency = $competencyScores->pluck('avg_score', 'kompetensi')->map(function ($score) {
+            return round(($score / 4) * 100, 1);
+        });
+
+        // Jumlah soal per kompetensi
+        $questionCountByCompetency = $competencyScores->pluck('question_count', 'kompetensi');
+
+        $jumlahGuru = DB::table('users')
+            ->join('quiz_attempts', 'users.id', '=', 'quiz_attempts.user_id')
+            ->where('users.role', 'guru')
+            ->count();
+
+        return view('admin.hasil.grafik-guru', compact(
+            'scoreData',
+            'scoreByCompetency',
+            'percentageByCompetency',
+            'questionCountByCompetency',
+            'jumlahGuru'
+        ));
     }
 
     public function logs(Request $request)
