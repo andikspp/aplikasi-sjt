@@ -170,24 +170,33 @@
                     $indikator.empty();
                     $indikator.append('<option value="">-- Pilih atau tambah indikator --</option>');
 
-                    if (kompetensiId) {
+                    if (kompetensiId && !isNaN(kompetensiId)) {
+                        let ajaxUrl = "{{ route('admin.indikator.by-kompetensi', ':kompetensiId') }}";
+                        ajaxUrl = ajaxUrl.replace(':kompetensiId', kompetensiId);
+
                         $.ajax({
-                            url: '/admin/indikator/by-kompetensi/' + kompetensiId,
+                            url: ajaxUrl,
                             type: 'GET',
                             success: function(data) {
-                                data.forEach(function(item) {
-                                    $indikator.append('<option value="' + item.id + '">' +
-                                        item.nama + '</option>');
+                                data.forEach(function(indikator) {
+                                    let newOption = new Option(indikator.nama, indikator.id,
+                                        false,
+                                        false);
+                                    $indikator.append(newOption);
                                 });
-                                // Jika pakai select2, refresh
-                                $indikator.val(null).trigger('change');
+                                $indikator.trigger('change');
+                            },
+                            error: function(xhr, status, error) {
+                                console.error('Error fetching indikator:', error);
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error',
+                                    text: 'Gagal memuat indikator. Silakan coba lagi.',
+                                });
                             }
                         });
-                    } else {
-                        $indikator.val(null).trigger('change');
                     }
                 });
-
 
 
                 @if (session('error'))
